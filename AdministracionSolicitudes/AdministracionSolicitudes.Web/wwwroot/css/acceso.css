@@ -1,0 +1,160 @@
+﻿:root {
+    --fondo: #f4f3ef;
+    --superficie: #ffffff;
+    --texto: #202124;
+    --texto-suave: #686b70;
+    --borde: #d8d6cf;
+    --acento: #263c53;
+    --error: #8e3b46;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.pagina-acceso {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    min-height: 100vh;
+}
+
+.identidad-acceso {
+    align-items: center;
+    border-right: 1px solid var(--borde);
+    display: flex;
+    padding: 8vw;
+}
+
+.identidad-contenido {
+    max-width: 540px;
+}
+
+.icono-acceso {
+    height: 38px;
+    margin-bottom: 36px;
+    width: 38px;
+}
+
+.organizacion-acceso {
+    color: var(--texto-suave);
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.identidad-acceso h1 {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    margin: 0;
+}
+
+.identidad-acceso p {
+    color: var(--texto-suave);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-top: 24px;
+}
+
+.formulario-acceso {
+    align-items: center;
+    background: var(--superficie);
+    display: flex;
+    justify-content: center;
+    padding: 50px;
+}
+
+.formulario-contenido {
+    max-width: 380px;
+    width: 100%;
+}
+
+.etiqueta-acceso {
+    color: var(--texto-suave);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.formulario-contenido h2 {
+    font-size: 28px;
+    font-weight: 500;
+    margin: 10px 0 38px;
+}
+
+.campo-acceso {
+    margin-bottom: 24px;
+}
+
+    .campo-acceso label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .campo-acceso input {
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid var(--borde);
+        border-radius: 0;
+        outline: none;
+        padding: 10px 0;
+        width: 100%;
+    }
+
+        .campo-acceso input:focus {
+            border-bottom-color: var(--acento);
+        }
+
+    .campo-acceso span,
+    .mensaje-error {
+        color: var(--error);
+        font-size: 12px;
+    }
+
+.boton-acceso {
+    background: var(--acento);
+    border: 0;
+    color: #ffffff;
+    margin-top: 10px;
+    padding: 12px 30px;
+}
+
+.mensaje-acceso {
+    border-left: 2px solid var(--error);
+    color: var(--error);
+    font-size: 13px;
+    margin-bottom: 24px;
+    padding: 8px 12px;
+}
+
+@media (max-width: 800px) {
+    .pagina-acceso {
+        grid-template-columns: 1fr;
+    }
+
+    .identidad-acceso {
+        display: none;
+    }
+
+    .formulario-acceso {
+        min-height: 100vh;
+        padding: 30px;
+    }
+}
