@@ -1,0 +1,60 @@
+﻿@page
+@model AdministracionSolicitudes.Web.Pages.Cuenta.LoginModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Iniciar sesion";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar sesion - Administracion de Solicitudes</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/acceso.css" asp-append-version="true" />
+</head>
+<body>
+    <main class="pagina-acceso">
+        <section class="identidad-acceso">
+            <div class="identidad-contenido">
+                <img src="~/images/application-icon.svg" class="icono-acceso" alt="" />
+                <span class="organizacion-acceso">Publica S.A.</span>
+                <h1>Administracion de Solicitudes</h1>
+                <p>Control y seguimiento centralizado de solicitudes.</p>
+            </div>
+        </section>
+
+        <section class="formulario-acceso">
+            <div class="formulario-contenido">
+                <span class="etiqueta-acceso">Acceso al sistema</span>
+                <h2>Iniciar sesion</h2>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Message))
+                {
+                    <div class="mensaje-acceso">@Model.Message</div>
+                }
+
+                <div asp-validation-summary="ModelOnly" class="mensaje-error"></div>
+
+                <form method="post">
+                    <div class="campo-acceso">
+                        <label asp-for="Input.Username">Usuario</label>
+                        <input asp-for="Input.Username" autocomplete="username" />
+                        <span asp-validation-for="Input.Username"></span>
+                    </div>
+
+                    <div class="campo-acceso">
+                        <label asp-for="Input.Password">Contrasena</label>
+                        <input asp-for="Input.Password" autocomplete="current-password" />
+                        <span asp-validation-for="Input.Password"></span>
+                    </div>
+
+                    <button type="submit" class="boton-acceso">Ingresar</button>
+                </form>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
