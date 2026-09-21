@@ -77,3 +77,69 @@
         border-top: 1px solid var(--borde);
     }
 }
+
+.bienvenida {
+    align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    max-width: 1050px;
+    padding-top: 35px;
+}
+
+.bienvenida-contenido {
+    max-width: 700px;
+}
+
+.bienvenida-etiqueta {
+    color: var(--texto-suave);
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+.bienvenida h1 {
+    font-size: clamp(32px, 5vw, 54px);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    margin: 0;
+}
+
+.bienvenida p {
+    color: var(--texto-suave);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-top: 22px;
+    max-width: 620px;
+}
+
+.bienvenida-marca {
+    align-items: center;
+    border-left: 1px solid var(--borde);
+    display: flex;
+    justify-content: center;
+    min-height: 170px;
+    padding-left: 60px;
+}
+
+    .bienvenida-marca img {
+        height: 72px;
+        width: 72px;
+    }
+
+@media (max-width: 800px) {
+    .bienvenida {
+        flex-direction: column;
+        gap: 40px;
+    }
+
+    .bienvenida-marca {
+        border-left: 0;
+        border-top: 1px solid var(--borde);
+        justify-content: flex-start;
+        min-height: auto;
+        padding: 30px 0 0;
+        width: 100%;
+    }
+}

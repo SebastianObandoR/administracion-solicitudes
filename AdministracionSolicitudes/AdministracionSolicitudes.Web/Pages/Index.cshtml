@@ -5,39 +5,16 @@
     ViewData["Title"] = "Inicio";
 }
 
-<section class="encabezado-pagina">
-    <span class="etiqueta-pagina">Pública S.A. · Control interno</span>
+<section class="bienvenida">
+    <div class="bienvenida-contenido">
+        <span class="bienvenida-etiqueta">Administracion de Solicitudes</span>
 
-    <h1>Administración de solicitudes</h1>
+        <h1>Bienvenido, @Model.FullName</h1>
 
-    <p>
-        Espacio central para el registro, seguimiento y control de las solicitudes
-        gestionadas por la organización.
-    </p>
-</section>
-
-<section class="franja-modulos" aria-label="Módulos principales">
-    <div class="modulo">
-        <span class="numero-modulo">01 / Solicitudes</span>
-        <span class="titulo-modulo">Gestión central</span>
-        <span class="descripcion-modulo">
-            Registro, seguimiento, estados y control de solicitudes.
-        </span>
+        <p>Desde este espacio puede acceder a las diferentes opciones disponibles para la gestion y seguimiento de solicitudes.</p>
     </div>
 
-    <div class="modulo">
-        <span class="numero-modulo">02 / Tareas</span>
-        <span class="titulo-modulo">Seguimiento operativo</span>
-        <span class="descripcion-modulo">
-            Registro del trabajo y horas asociadas a cada solicitud.
-        </span>
-    </div>
-
-    <div class="modulo">
-        <span class="numero-modulo">03 / Reportes</span>
-        <span class="titulo-modulo">Consulta y control</span>
-        <span class="descripcion-modulo">
-            Información consolidada para el seguimiento mensual.
-        </span>
+    <div class="bienvenida-marca">
+        <img src="~/images/application-icon.svg" alt="Logo de la empresa" />
     </div>
 </section>
