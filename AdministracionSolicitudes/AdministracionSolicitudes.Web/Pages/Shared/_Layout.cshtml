@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IConfiguration Configuration
+
+@{
+    ViewData["SystemName"] = Configuration["SystemSettings:Name"] ?? "Administración de Solicitudes";
+    ViewData["OrganizationName"] = Configuration["SystemSettings:Organization"] ?? "Pública S.A.";
+    ViewData["LayoutUserName"] = Context.Session.GetString("FullName") ?? "Usuario";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - @ViewData["SystemName"]</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/sitio.css" asp-append-version="true" />
+</head>
+
+<body>
+    <div class="espacio-trabajo" id="espacioTrabajo">
+        <partial name="_Sidebar" />
+
+        <section class="contenido-trabajo">
+            <partial name="_Topbar" />
+
+            <main class="contenido-pagina">
+                @RenderBody()
+            </main>
+        </section>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/estructura.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

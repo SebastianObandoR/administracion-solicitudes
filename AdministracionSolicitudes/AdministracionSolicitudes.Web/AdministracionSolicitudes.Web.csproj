@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AdministracionSolicitudes.Entities\AdministracionSolicitudes.Entities.csproj" />
+    <ProjectReference Include="..\AdministracionSolicitudes.Repository\AdministracionSolicitudes.Repository.csproj" />
+    <ProjectReference Include="..\AdministracionSolicitudes.Services\AdministracionSolicitudes.Services.csproj" />
+  </ItemGroup>
+
+</Project>
