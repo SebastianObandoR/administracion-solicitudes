@@ -1,0 +1,169 @@
+.espacio-trabajo {
+    display: flex;
+    min-height: 100vh;
+}
+
+.contenido-trabajo {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.panel-superior {
+    align-items: center;
+    background: var(--superficie);
+    border-bottom: 1px solid var(--borde);
+    display: flex;
+    height: 78px;
+    justify-content: space-between;
+    padding: 0 34px;
+}
+
+.panel-superior-izquierda {
+    align-items: center;
+    display: flex;
+    gap: 24px;
+}
+
+.boton-menu {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: center;
+    padding: 8px 2px;
+    width: 30px;
+}
+
+    .boton-menu span {
+        background: var(--texto);
+        display: block;
+        height: 1px;
+        transition: width 0.2s ease;
+        width: 24px;
+    }
+
+        .boton-menu span:last-child {
+            width: 16px;
+        }
+
+    .boton-menu:hover span:last-child {
+        width: 24px;
+    }
+
+.contexto-pagina {
+    display: flex;
+    flex-direction: column;
+}
+
+.etiqueta-contexto {
+    color: var(--texto-suave);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.titulo-contexto {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.area-perfil {
+    align-items: center;
+    display: flex;
+    gap: 14px;
+}
+
+.informacion-perfil {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+}
+
+.etiqueta-perfil {
+    color: var(--texto-suave);
+    font-size: 11px;
+}
+
+.nombre-perfil {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.marca-perfil {
+    align-items: center;
+    border: 1px solid var(--texto);
+    display: flex;
+    font-size: 13px;
+    font-weight: 700;
+    height: 36px;
+    justify-content: center;
+    width: 36px;
+}
+
+.contenido-pagina {
+    flex: 1;
+    padding: 46px 52px;
+}
+
+.espacio-trabajo.esta-colapsado .panel-lateral {
+    width: 78px;
+}
+
+.espacio-trabajo.esta-colapsado .nombre-marca,
+.espacio-trabajo.esta-colapsado .titulo-grupo,
+.espacio-trabajo.esta-colapsado .texto-navegacion,
+.espacio-trabajo.esta-colapsado .pie-lateral {
+    display: none;
+}
+
+.espacio-trabajo.esta-colapsado .area-marca {
+    justify-content: center;
+    padding: 18px 0;
+}
+
+.espacio-trabajo.esta-colapsado .navegacion-principal {
+    padding: 25px 10px;
+}
+
+.espacio-trabajo.esta-colapsado .grupo-navegacion {
+    margin-bottom: 22px;
+}
+
+.espacio-trabajo.esta-colapsado .elemento-navegacion {
+    justify-content: center;
+    padding: 8px 0;
+}
+
+.espacio-trabajo.esta-colapsado .numero-navegacion {
+    text-align: center;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .panel-lateral {
+        left: -268px;
+        position: fixed;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .espacio-trabajo.menu-movil-abierto .panel-lateral {
+        left: 0;
+    }
+
+    .contenido-pagina {
+        padding: 30px 24px;
+    }
+
+    .panel-superior {
+        padding: 0 24px;
+    }
+
+    .informacion-perfil {
+        display: none;
+    }
+}

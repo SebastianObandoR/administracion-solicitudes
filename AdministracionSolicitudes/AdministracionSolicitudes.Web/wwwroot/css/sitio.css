@@ -1,0 +1,35 @@
+﻿@import url("./estructura.css");
+@import url("./navegacion.css");
+@import url("./paginas.css");
+
+:root {
+    --fondo: #f4f3ef;
+    --superficie: #ffffff;
+    --navegacion: #eceae4;
+    --texto: #202124;
+    --texto-suave: #686b70;
+    --borde: #d8d6cf;
+    --acento: #263c53;
+    --acento-suave: #dfe5ea;
+    --acento-secundario: #8e3b46;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: "Segoe UI", Arial, sans-serif;
+}

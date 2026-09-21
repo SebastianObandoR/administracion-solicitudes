@@ -1,0 +1,79 @@
+﻿.encabezado-pagina {
+    border-left: 3px solid var(--acento-secundario);
+    margin-bottom: 42px;
+    max-width: 760px;
+    padding-left: 20px;
+}
+
+.etiqueta-pagina {
+    color: var(--texto-suave);
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.encabezado-pagina h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    margin: 0;
+}
+
+.encabezado-pagina p {
+    color: var(--texto-suave);
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 14px 0 0;
+    max-width: 650px;
+}
+
+.franja-modulos {
+    border-bottom: 1px solid var(--borde);
+    border-top: 1px solid var(--borde);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1000px;
+}
+
+.modulo {
+    min-height: 130px;
+    padding: 24px;
+}
+
+    .modulo + .modulo {
+        border-left: 1px solid var(--borde);
+    }
+
+.numero-modulo {
+    color: var(--acento-secundario);
+    display: block;
+    font-family: Consolas, monospace;
+    font-size: 11px;
+    margin-bottom: 18px;
+}
+
+.titulo-modulo {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.descripcion-modulo {
+    color: var(--texto-suave);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+    .franja-modulos {
+        grid-template-columns: 1fr;
+    }
+
+    .modulo + .modulo {
+        border-left: 0;
+        border-top: 1px solid var(--borde);
+    }
+}
