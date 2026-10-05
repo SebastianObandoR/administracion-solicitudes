@@ -1,23 +1,12 @@
 ﻿@{
     var userName = ViewData["LayoutUserName"]?.ToString() ?? "Usuario";
     var pageTitle = ViewData["Title"]?.ToString() ?? "Inicio";
-
-    var userInitial = string.IsNullOrWhiteSpace(userName)
-        ? "U"
-        : userName[..1].ToUpperInvariant();
 }
 
 <header class="panel-superior">
-    <div class="panel-superior-izquierda">
-        <button class="boton-menu" id="botonMenu" type="button" aria-label="Mostrar u ocultar menu">
-            <span></span>
-            <span></span>
-        </button>
-
-        <div class="contexto-pagina">
-            <span class="etiqueta-contexto">Area de trabajo</span>
-            <span class="titulo-contexto">@pageTitle</span>
-        </div>
+    <div class="contexto-pagina">
+        <span class="etiqueta-contexto">Area de trabajo</span>
+        <span class="titulo-contexto">@pageTitle</span>
     </div>
 
     <div class="area-perfil">
@@ -26,8 +15,8 @@
             <span class="nombre-perfil">@userName</span>
         </div>
 
-        <div class="marca-perfil">
-            @userInitial
+        <div class="marca-perfil" title="@userName">
+            <i class="bi bi-person icono-usuario"></i>
         </div>
     </div>
 </header>

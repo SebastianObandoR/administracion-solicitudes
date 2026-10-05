@@ -4,7 +4,7 @@
     --texto: #202124;
     --texto-suave: #686b70;
     --borde: #d8d6cf;
-    --acento: #263c53;
+    --acento: #2d7a78;
     --error: #8e3b46;
 }
 
@@ -41,11 +41,22 @@ body {
     max-width: 540px;
 }
 
-.icono-acceso {
-    height: 38px;
-    margin-bottom: 36px;
-    width: 38px;
+.marca-acceso {
+    align-items: center;
+    background: linear-gradient(135deg, #2d7a78, #3c918e);
+    border-radius: 22px;
+    display: flex;
+    height: 78px;
+    justify-content: center;
+    margin-bottom: 34px;
+    width: 78px;
 }
+
+    .marca-acceso i {
+        color: #ffffff;
+        font-size: 36px;
+        line-height: 1;
+    }
 
 .organizacion-acceso {
     color: var(--texto-suave);

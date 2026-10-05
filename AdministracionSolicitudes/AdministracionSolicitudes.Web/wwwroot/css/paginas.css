@@ -1,93 +1,14 @@
-﻿.encabezado-pagina {
-    border-left: 3px solid var(--acento-secundario);
-    margin-bottom: 42px;
-    max-width: 760px;
-    padding-left: 20px;
-}
-
-.etiqueta-pagina {
-    color: var(--texto-suave);
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-}
-
-.encabezado-pagina h1 {
-    font-size: clamp(28px, 4vw, 42px);
-    font-weight: 400;
-    letter-spacing: -0.03em;
-    margin: 0;
-}
-
-.encabezado-pagina p {
-    color: var(--texto-suave);
-    font-size: 15px;
-    line-height: 1.7;
-    margin: 14px 0 0;
-    max-width: 650px;
-}
-
-.franja-modulos {
-    border-bottom: 1px solid var(--borde);
-    border-top: 1px solid var(--borde);
+﻿.bienvenida {
+    align-items: center;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    max-width: 1000px;
-}
-
-.modulo {
-    min-height: 130px;
-    padding: 24px;
-}
-
-    .modulo + .modulo {
-        border-left: 1px solid var(--borde);
-    }
-
-.numero-modulo {
-    color: var(--acento-secundario);
-    display: block;
-    font-family: Consolas, monospace;
-    font-size: 11px;
-    margin-bottom: 18px;
-}
-
-.titulo-modulo {
-    display: block;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.descripcion-modulo {
-    color: var(--texto-suave);
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-@media (max-width: 800px) {
-    .franja-modulos {
-        grid-template-columns: 1fr;
-    }
-
-    .modulo + .modulo {
-        border-left: 0;
-        border-top: 1px solid var(--borde);
-    }
-}
-
-.bienvenida {
-    align-items: flex-start;
-    display: flex;
-    justify-content: space-between;
-    max-width: 1050px;
-    padding-top: 35px;
+    gap: 60px;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    max-width: 1180px;
+    padding-top: 32px;
 }
 
 .bienvenida-contenido {
-    max-width: 700px;
+    min-width: 0;
 }
 
 .bienvenida-etiqueta {
@@ -95,14 +16,16 @@
     display: block;
     font-size: 11px;
     letter-spacing: 0.12em;
-    margin-bottom: 14px;
+    margin-bottom: 15px;
     text-transform: uppercase;
 }
 
 .bienvenida h1 {
-    font-size: clamp(32px, 5vw, 54px);
+    color: var(--texto);
+    font-size: clamp(40px, 4.3vw, 56px);
     font-weight: 400;
     letter-spacing: -0.04em;
+    line-height: 1.08;
     margin: 0;
 }
 
@@ -110,36 +33,55 @@
     color: var(--texto-suave);
     font-size: 15px;
     line-height: 1.7;
-    margin-top: 22px;
-    max-width: 620px;
+    margin: 22px 0 0;
+    max-width: 650px;
 }
 
-.bienvenida-marca {
+.area-logo-bienvenida {
     align-items: center;
-    border-left: 1px solid var(--borde);
     display: flex;
     justify-content: center;
-    min-height: 170px;
-    padding-left: 60px;
+    min-height: 220px;
 }
 
-    .bienvenida-marca img {
-        height: 72px;
-        width: 72px;
+.logo-bienvenida {
+    align-items: center;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    justify-content: center;
+}
+
+    .logo-bienvenida i {
+        color: var(--navegacion);
+        font-size: 118px;
+        line-height: 1;
     }
+
+@media (max-width: 1050px) {
+    .bienvenida {
+        gap: 40px;
+        grid-template-columns: minmax(0, 1fr) 220px;
+    }
+
+    .logo-bienvenida i {
+        font-size: 96px;
+    }
+}
 
 @media (max-width: 800px) {
     .bienvenida {
-        flex-direction: column;
-        gap: 40px;
+        gap: 35px;
+        grid-template-columns: 1fr;
     }
 
-    .bienvenida-marca {
-        border-left: 0;
-        border-top: 1px solid var(--borde);
+    .area-logo-bienvenida {
         justify-content: flex-start;
         min-height: auto;
-        padding: 30px 0 0;
-        width: 100%;
+    }
+
+    .logo-bienvenida i {
+        font-size: 82px;
     }
 }
