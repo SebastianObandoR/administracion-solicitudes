@@ -1,17 +1,15 @@
-﻿@import url("./estructura.css");
-@import url("./navegacion.css");
-@import url("./paginas.css");
-
-:root {
-    --fondo: #f4f3ef;
+﻿:root {
+    --fondo: #f5f7f7;
     --superficie: #ffffff;
-    --navegacion: #eceae4;
-    --texto: #202124;
-    --texto-suave: #686b70;
-    --borde: #d8d6cf;
-    --acento: #263c53;
-    --acento-suave: #dfe5ea;
-    --acento-secundario: #8e3b46;
+    --navegacion: #203943;
+    --navegacion-hover: #2b4b56;
+    --texto: #20282b;
+    --texto-suave: #6c777b;
+    --texto-navegacion: #ffffff;
+    --texto-navegacion-suave: rgba(255, 255, 255, 0.74);
+    --borde: #dce2e3;
+    --acento: #2d7a78;
+    --acento-suave: #e5f1f0;
 }
 
 * {

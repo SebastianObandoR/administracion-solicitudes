@@ -1,71 +1,59 @@
 ﻿@{
-    var systemName = ViewData["SystemName"]?.ToString() ?? "Administración de Solicitudes";
-
     var currentPath = Context.Request.Path.Value?.ToLowerInvariant() ?? "/";
     var isHome = currentPath == "/" || currentPath == "/index";
 }
 
 <aside class="panel-lateral">
-    <div class="area-marca">
-        <img src="~/images/application-icon.svg" class="icono-marca" alt="Icono de Administracion de Solicitudes" />
-        <span class="nombre-marca">@systemName</span>
+    <div class="marca-sistema">
+        <div class="logo-sistema-sidebar">
+            <i class="bi bi-ui-checks-grid"></i>
+        </div>
+
+        <div class="identidad-sistema">
+            <span class="nombre-empresa">PUBLICA S.A.</span>
+            <span class="nombre-sistema">Administracion de Solicitudes</span>
+        </div>
     </div>
 
     <nav class="navegacion-principal" aria-label="Navegacion principal">
-        <div class="grupo-navegacion">
-            <span class="titulo-grupo">General</span>
+        <a class="elemento-navegacion @(isHome ? "esta-activo" : string.Empty)" asp-page="/Index">
+            <i class="bi bi-speedometer2 icono-navegacion"></i>
+            <span class="texto-navegacion">Inicio</span>
+        </a>
 
-            <a class="elemento-navegacion @(isHome ? "esta-activo" : string.Empty)" asp-page="/Index" title="Inicio">
-                <span class="numero-navegacion">01</span>
-                <span class="texto-navegacion">Inicio</span>
-            </a>
-        </div>
+        <span class="elemento-navegacion esta-pendiente">
+            <i class="bi bi-file-earmark-text icono-navegacion"></i>
+            <span class="texto-navegacion">Solicitudes</span>
+        </span>
 
-        <div class="grupo-navegacion">
-            <span class="titulo-grupo">Gestion</span>
+        <span class="elemento-navegacion esta-pendiente">
+            <i class="bi bi-list-task icono-navegacion"></i>
+            <span class="texto-navegacion">Tareas</span>
+        </span>
 
-            <span class="elemento-navegacion esta-pendiente" title="Solicitudes">
-                <span class="numero-navegacion">02</span>
-                <span class="texto-navegacion">Solicitudes</span>
-            </span>
+        <span class="elemento-navegacion esta-pendiente">
+            <i class="bi bi-people icono-navegacion"></i>
+            <span class="texto-navegacion">Usuarios</span>
+        </span>
 
-            <span class="elemento-navegacion esta-pendiente" title="Tareas">
-                <span class="numero-navegacion">03</span>
-                <span class="texto-navegacion">Tareas</span>
-            </span>
-        </div>
+        <span class="elemento-navegacion esta-pendiente">
+            <i class="bi bi-person-badge icono-navegacion"></i>
+            <span class="texto-navegacion">Representantes</span>
+        </span>
 
-        <div class="grupo-navegacion">
-            <span class="titulo-grupo">Administracion</span>
+        <span class="elemento-navegacion esta-pendiente">
+            <i class="bi bi-diagram-3 icono-navegacion"></i>
+            <span class="texto-navegacion">Estados</span>
+        </span>
 
-            <span class="elemento-navegacion esta-pendiente" title="Usuarios">
-                <span class="numero-navegacion">04</span>
-                <span class="texto-navegacion">Usuarios</span>
-            </span>
-
-            <span class="elemento-navegacion esta-pendiente" title="Representantes">
-                <span class="numero-navegacion">05</span>
-                <span class="texto-navegacion">Representantes</span>
-            </span>
-
-            <span class="elemento-navegacion esta-pendiente" title="Estados">
-                <span class="numero-navegacion">06</span>
-                <span class="texto-navegacion">Estados</span>
-            </span>
-        </div>
-
-        <div class="grupo-navegacion">
-            <span class="titulo-grupo">Consultas</span>
-
-            <span class="elemento-navegacion esta-pendiente" title="Reportes">
-                <span class="numero-navegacion">07</span>
-                <span class="texto-navegacion">Reportes</span>
-            </span>
-        </div>
+        <span class="elemento-navegacion esta-pendiente">
+            <i class="bi bi-bar-chart-line icono-navegacion"></i>
+            <span class="texto-navegacion">Reportes</span>
+        </span>
     </nav>
 
     <div class="pie-lateral">
-        <span>ASP.NET 8</span>
+        <span>ASP.NET 10</span>
         <span>v1.0</span>
     </div>
 </aside>

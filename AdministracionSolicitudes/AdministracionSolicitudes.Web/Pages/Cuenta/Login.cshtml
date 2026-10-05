@@ -11,24 +11,36 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Iniciar sesion - Administracion de Solicitudes</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="stylesheet" href="~/css/acceso.css" asp-append-version="true" />
 </head>
+
 <body>
     <main class="pagina-acceso">
         <section class="identidad-acceso">
             <div class="identidad-contenido">
-                <img src="~/images/application-icon.svg" class="icono-acceso" alt="" />
+                <div class="marca-acceso">
+                    <i class="bi bi-ui-checks-grid"></i>
+                </div>
+
                 <span class="organizacion-acceso">Publica S.A.</span>
+
                 <h1>Administracion de Solicitudes</h1>
-                <p>Control y seguimiento centralizado de solicitudes.</p>
+
+                <p>
+                    Control y seguimiento centralizado de solicitudes.
+                </p>
             </div>
         </section>
 
         <section class="formulario-acceso">
             <div class="formulario-contenido">
                 <span class="etiqueta-acceso">Acceso al sistema</span>
+
                 <h2>Iniciar sesion</h2>
 
                 @if (!string.IsNullOrWhiteSpace(Model.Message))
@@ -51,7 +63,9 @@
                         <span asp-validation-for="Input.Password"></span>
                     </div>
 
-                    <button type="submit" class="boton-acceso">Ingresar</button>
+                    <button type="submit" class="boton-acceso">
+                        Ingresar
+                    </button>
                 </form>
             </div>
         </section>
