@@ -10,8 +10,15 @@ namespace AdministracionSolicitudes.Repository.Interfaces
     public interface IUserRepository
     {
         Task<Usuario?> GetByUsernameAsync(string username);
-        Task UpdateFailedAttemptsAsync(int userId, int failedAttempts);
-        Task ResetFailedAttemptsAsync(int userId);
-        Task BlockAsync(int userId);
+        Task<Usuario?> GetByIdAsync(int idUsuario);
+        Task<IEnumerable<Usuario>> GetAllAsync(int pagina, int cantidad);
+        Task<int> CountAsync();
+        Task<int> CreateAsync(Usuario usuario);
+        Task UpdateAsync(Usuario usuario);
+        Task DeleteAsync(int idUsuario);
+        Task UpdateStatusAsync(int idUsuario, EstadoUsuario estado);
+        Task UpdateFailedAttemptsAsync(int idUsuario, int intentosFallidos);
+        Task ResetFailedAttemptsAsync(int idUsuario);
+        Task BlockAsync(int idUsuario);
     }
 }
