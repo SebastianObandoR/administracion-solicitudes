@@ -1,0 +1,127 @@
+﻿@page
+@using AdministracionSolicitudes.Services.Models
+@model AdministracionSolicitudes.Web.Pages.Solicitudes.IndexModel
+
+@{
+    ViewData["Title"] = "Solicitudes";
+}
+
+<h1 class="h3 mb-4">Administracion de Solicitudes</h1>
+
+@if (!string.IsNullOrEmpty(Model.MensajeExito))
+{
+    <div class="alert alert-success">@Model.MensajeExito</div>
+}
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <div class="alert alert-danger">@Model.MensajeError</div>
+}
+
+<a asp-page="./Form" class="btn btn-primary mb-3">
+    <i class="bi bi-plus-lg"></i> Nuevo
+</a>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Consecutivo</th>
+                <th>Titulo</th>
+                <th>Representante</th>
+                <th>Estado</th>
+                <th>Fecha ingreso</th>
+                <th>Fecha respuesta</th>
+                <th class="text-end">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var solicitud in Model.Solicitudes)
+            {
+                string filaClase = Model.EstadosVencimiento[solicitud.IdSolicitud] switch
+                {
+                    EstadoVencimiento.Vencida => "table-danger",
+                    EstadoVencimiento.VenceHoy => "table-warning",
+                    _ => "table-success"
+                };
+
+                <tr class="@filaClase">
+                    <td>@solicitud.ConsecutivoOficio</td>
+                    <td>@solicitud.Titulo</td>
+                    <td>@solicitud.NombreRepresentante</td>
+                    <td>@solicitud.NombreEstado</td>
+                    <td>@solicitud.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                    <td>@(solicitud.FechaRespuesta?.ToString("dd/MM/yyyy") ?? "-")</td>
+                    <td class="text-end">
+                        <a asp-page="./Form" asp-route-id="@solicitud.IdSolicitud" class="btn btn-sm btn-outline-primary" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <button type="button"
+                                class="btn btn-sm btn-outline-danger"
+                                title="Eliminar"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmarEliminar"
+                                data-id="@solicitud.IdSolicitud"
+                                data-titulo="@solicitud.Titulo">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+
+            @if (!Model.Solicitudes.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No hay solicitudes registradas.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.TotalPaginas > 1)
+{
+    <nav aria-label="Paginacion de solicitudes">
+        <ul class="pagination">
+            @for (int i = 1; i <= Model.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" asp-page="./Index" asp-route-PageNumber="@i">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+<div class="modal fade" id="confirmarEliminar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-page-handler="Eliminar" asp-route-PageNumber="@Model.PageNumber">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar eliminacion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="mensajeConfirmarEliminar">¿Realmente desea eliminar el elemento seleccionado?</p>
+                    <input type="hidden" name="idSolicitud" id="idSolicitudEliminar" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="submit" class="btn btn-danger">Si</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('confirmarEliminar').addEventListener('show.bs.modal', function (event) {
+            const boton = event.relatedTarget;
+            const id = boton.getAttribute('data-id');
+            const titulo = boton.getAttribute('data-titulo');
+            document.getElementById('idSolicitudEliminar').value = id;
+            document.getElementById('mensajeConfirmarEliminar').textContent =
+                '¿Realmente desea eliminar la solicitud "' + titulo + '"?';
+        });
+    </script>
+}
