@@ -1,0 +1,193 @@
+﻿.mantenimiento,
+.formulario-mantenimiento {
+    width: 100%;
+}
+
+.cabecera-mantenimiento,
+.acciones-formulario {
+    background: var(--superficie);
+    border-left: 4px solid var(--acento);
+    margin-bottom: 22px;
+    padding: 24px 20px;
+}
+
+    .cabecera-mantenimiento h1 {
+        color: var(--acento);
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0 0 10px;
+    }
+
+.boton-nuevo {
+    align-items: center;
+    background: var(--acento);
+    border-radius: 3px;
+    color: #ffffff;
+    display: inline-flex;
+    gap: 8px;
+    padding: 9px 14px;
+    text-decoration: none;
+}
+
+    .boton-nuevo:hover {
+        color: #ffffff;
+        opacity: 0.9;
+    }
+
+.panel-informacion,
+.panel-formulario {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+}
+
+.titulo-panel {
+    background: #f7f9f9;
+    border-bottom: 1px solid var(--borde);
+    color: var(--acento);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 13px 16px;
+}
+
+.contenedor-tabla {
+    padding: 14px;
+    overflow-x: auto;
+}
+
+.tabla-mantenimiento {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    .tabla-mantenimiento th {
+        background: #51585d;
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .tabla-mantenimiento td {
+        border-bottom: 1px solid #e5e8e9;
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .tabla-mantenimiento tbody tr:nth-child(even) {
+        background: #f5f6f6;
+    }
+
+.columna-acciones,
+.acciones {
+    text-align: center !important;
+}
+
+.acciones {
+    white-space: nowrap;
+}
+
+.boton-accion,
+.boton-formulario {
+    align-items: center;
+    background: var(--acento);
+    border: 0;
+    border-radius: 50%;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    height: 38px;
+    justify-content: center;
+    margin: 0 2px;
+    text-decoration: none;
+    width: 38px;
+}
+
+    .boton-accion:hover,
+    .boton-formulario:hover {
+        color: #ffffff;
+        opacity: 0.88;
+    }
+
+.selector-estado {
+    background: #ffffff;
+    border: 1px solid var(--borde);
+    border-radius: 3px;
+    font-size: 13px;
+    padding: 7px 9px;
+}
+
+.paginacion {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    padding: 0 14px 14px;
+}
+
+.pagina {
+    align-items: center;
+    border: 1px solid var(--borde);
+    color: var(--texto);
+    display: flex;
+    height: 34px;
+    justify-content: center;
+    text-decoration: none;
+    width: 34px;
+}
+
+.pagina-activa {
+    background: var(--acento);
+    color: #ffffff;
+}
+
+.acciones-formulario {
+    display: flex;
+    gap: 8px;
+}
+
+.campos-formulario {
+    padding: 22px;
+}
+
+.campo-formulario {
+    margin-bottom: 18px;
+}
+
+    .campo-formulario:last-child {
+        margin-bottom: 0;
+    }
+
+    .campo-formulario label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 7px;
+    }
+
+    .campo-formulario input,
+    .campo-formulario select {
+        background: #ffffff;
+        border: 1px solid var(--borde);
+        border-radius: 4px;
+        font-size: 14px;
+        min-height: 42px;
+        padding: 8px 12px;
+        width: 100%;
+    }
+
+        .campo-formulario input:focus,
+        .campo-formulario select:focus {
+            border-color: var(--acento);
+            outline: none;
+        }
+
+@media (max-width: 800px) {
+    .cabecera-mantenimiento,
+    .acciones-formulario {
+        padding: 18px;
+    }
+
+    .campos-formulario {
+        padding: 16px;
+    }
+}

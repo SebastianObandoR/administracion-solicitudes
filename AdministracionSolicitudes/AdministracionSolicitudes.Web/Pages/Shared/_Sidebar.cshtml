@@ -31,10 +31,10 @@
             <span class="texto-navegacion">Tareas</span>
         </span>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(currentPath.StartsWith("/usuarios") ? "esta-activo" : string.Empty)" asp-page="/Usuarios/Index">
             <i class="bi bi-people icono-navegacion"></i>
             <span class="texto-navegacion">Usuarios</span>
-        </span>
+        </a>
 
         <span class="elemento-navegacion esta-pendiente">
             <i class="bi bi-person-badge icono-navegacion"></i>
