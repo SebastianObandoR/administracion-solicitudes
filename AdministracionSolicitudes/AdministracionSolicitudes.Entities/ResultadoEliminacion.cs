@@ -4,7 +4,10 @@ using System.Text;
 
 namespace AdministracionSolicitudes.Entities
 {
-    internal class ResultadoEliminacion
+    public enum ResultadoEliminacion
     {
+        Eliminado = 1,
+        NoEncontrado = 2,
+        TieneRelacionados = 3
     }
 }

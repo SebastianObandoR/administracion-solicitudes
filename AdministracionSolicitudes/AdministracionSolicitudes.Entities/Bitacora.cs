@@ -4,7 +4,11 @@ using System.Text;
 
 namespace AdministracionSolicitudes.Entities
 {
-    internal class Bitacora
+    public enum AccionBitacora
     {
+        Create = 1,
+        Update = 2,
+        Delete = 3,
+        Consult = 4
     }
 }
