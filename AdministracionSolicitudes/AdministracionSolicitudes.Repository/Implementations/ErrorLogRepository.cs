@@ -17,17 +17,19 @@ namespace AdministracionSolicitudes.Repository.Implementations
         public async Task RegistrarAsync(ErrorLog errorLog)
         {
             const string sql = """
-                INSERT INTO error_log
+                INSERT INTO ErrorLog
                 (
                     id_usuario,
                     modulo,
-                    mensaje_error
+                    mensaje_error,
+                    fecha
                 )
                 VALUES
                 (
                     @IdUsuario,
                     @Modulo,
-                    @MensajeError
+                    @MensajeError,
+                    NOW()
                 );
                 """;
 

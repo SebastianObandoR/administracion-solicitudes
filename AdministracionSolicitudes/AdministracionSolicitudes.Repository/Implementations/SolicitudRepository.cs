@@ -85,7 +85,6 @@ namespace AdministracionSolicitudes.Repository.Implementations
         {
             const string sql = @"
                 UPDATE Solicitud SET
-                    consecutivo_oficio = @ConsecutivoOficio,
                     titulo = @Titulo,
                     descripcion = @Descripcion,
                     observaciones = @Observaciones,

@@ -13,8 +13,4 @@
     <ProjectReference Include="..\AdministracionSolicitudes.Services\AdministracionSolicitudes.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Pages\Solicitudes\" />
-  </ItemGroup>
-
 </Project>

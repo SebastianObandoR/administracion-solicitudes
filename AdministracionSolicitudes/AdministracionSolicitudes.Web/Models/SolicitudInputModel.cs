@@ -27,13 +27,13 @@ namespace AdministracionSolicitudes.Web.Models
         public string? DocumentoRespuesta { get; set; }
 
         [Required(ErrorMessage = "El representante es requerido")]
-        public int IdRepresentante { get; set; }
+        public int? IdRepresentante { get; set; }
 
-        public int IdEstado { get; set; }
+        public int? IdEstado { get; set; }
 
         [Required(ErrorMessage = "La fecha de ingreso es requerida")]
         [DataType(DataType.Date)]
-        public DateTime FechaIngreso { get; set; } = DateTime.Today;
+        public DateTime? FechaIngreso { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime? FechaRespuesta { get; set; }
@@ -43,14 +43,16 @@ namespace AdministracionSolicitudes.Web.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            if (FechaRespuesta.HasValue && FechaRespuesta.Value.Date < FechaIngreso.Date)
+            if (FechaRespuesta.HasValue && FechaIngreso.HasValue
+                && FechaRespuesta.Value.Date < FechaIngreso.Value.Date)
             {
                 yield return new ValidationResult(
                     "La fecha de respuesta no puede ser anterior a la fecha de ingreso.",
                     new[] { nameof(FechaRespuesta) });
             }
 
-            if (FechaInicio.HasValue && FechaInicio.Value.Date < FechaIngreso.Date)
+            if (FechaInicio.HasValue && FechaIngreso.HasValue
+                && FechaInicio.Value.Date < FechaIngreso.Value.Date)
             {
                 yield return new ValidationResult(
                     "La fecha de inicio no puede ser anterior a la fecha de ingreso.",

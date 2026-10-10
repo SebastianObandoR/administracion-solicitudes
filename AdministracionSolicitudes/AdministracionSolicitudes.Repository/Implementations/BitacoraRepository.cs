@@ -1,4 +1,3 @@
-
 using AdministracionSolicitudes.Entities;
 using AdministracionSolicitudes.Repository.Data;
 using AdministracionSolicitudes.Repository.Interfaces;
@@ -15,39 +14,13 @@ namespace AdministracionSolicitudes.Repository.Implementations
             _connectionFactory = connectionFactory;
         }
 
-        public async Task InsertAsync(
-            int? idUsuario,
-            string modulo,
-            string accion,
-            string descripcion,
-            DateTime fecha)
+        public async Task RegistrarAsync(Bitacora bitacora)
         {
             const string sql = """
                 INSERT INTO Bitacora
                     (id_usuario, modulo, accion, descripcion, fecha)
                 VALUES
-                    (@IdUsuario, @Modulo, @Accion, @Descripcion, @Fecha);
-                """;
-
-            using var connection = _connectionFactory.CreateConnection();
-
-            await connection.ExecuteAsync(sql, new
-            {
-                IdUsuario = idUsuario,
-                Modulo = modulo,
-                Accion = accion,
-                Descripcion = descripcion,
-                Fecha = fecha
-            });
-        }
-
-        public async Task RegistrarAsync(Bitacora bitacora)
-        {
-            const string sql = """
-                INSERT INTO bitacora
-                    (id_usuario, modulo, accion, descripcion)
-                VALUES
-                    (@IdUsuario, @Modulo, @Accion, @Descripcion);
+                    (@IdUsuario, @Modulo, @Accion, @Descripcion, NOW());
                 """;
 
             using var connection = _connectionFactory.CreateConnection();

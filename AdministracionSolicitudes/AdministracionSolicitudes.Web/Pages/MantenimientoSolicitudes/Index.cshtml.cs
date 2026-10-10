@@ -5,11 +5,11 @@ using AdministracionSolicitudes.Web.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace AdministracionSolicitudes.Web.Pages.Solicitudes
+namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
 {
     public class IndexModel : PageModel
     {
-        private const int PageSize = 5; // Criterio de aceptacion SOL1: maximo 5 solicitudes por pagina.
+        private const int PageSize = 5; // SOL1
 
         private readonly ISolicitudService _solicitudService;
 
@@ -25,14 +25,18 @@ namespace AdministracionSolicitudes.Web.Pages.Solicitudes
         public int PageNumber { get; set; } = 1;
 
         public int TotalPaginas { get; set; }
-        public string? MensajeExito { get; set; }
-        public string? MensajeError { get; set; }
 
-        public async Task OnGetAsync(string? mensajeExito = null, string? mensajeError = null)
+        [TempData]
+        public string? Mensaje { get; set; }
+
+        [TempData]
+        public string? TipoMensaje { get; set; }
+
+        public async Task OnGetAsync()
         {
             if (PageNumber < 1) PageNumber = 1;
 
-            int? idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId);
+            int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
 
             var (items, total) = await _solicitudService.GetPagedAsync(PageNumber, PageSize, idUsuarioActual);
             Solicitudes = items;
@@ -41,25 +45,21 @@ namespace AdministracionSolicitudes.Web.Pages.Solicitudes
 
             foreach (var solicitud in Solicitudes)
             {
-                EstadosVencimiento[solicitud.IdSolicitud] = await _solicitudService.CalcularEstadoVencimientoAsync(solicitud);
+                EstadosVencimiento[solicitud.IdSolicitud] =
+                    await _solicitudService.CalcularEstadoVencimientoAsync(solicitud);
             }
-
-            MensajeExito = mensajeExito;
-            MensajeError = mensajeError;
         }
 
         public async Task<IActionResult> OnPostEliminarAsync(int idSolicitud)
         {
-            int? idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId);
+            int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
 
             var resultado = await _solicitudService.DeleteAsync(idSolicitud, idUsuarioActual);
 
-            if (!resultado.IsSuccess)
-            {
-                return RedirectToPage(new { PageNumber, mensajeError = resultado.Message });
-            }
+            Mensaje = resultado.IsSuccess ? "Solicitud eliminada correctamente." : resultado.Message;
+            TipoMensaje = resultado.IsSuccess ? "success" : "error";
 
-            return RedirectToPage(new { PageNumber, mensajeExito = "Solicitud eliminada correctamente." });
+            return RedirectToPage(new { PageNumber });
         }
     }
 }

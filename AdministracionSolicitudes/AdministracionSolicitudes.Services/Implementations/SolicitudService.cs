@@ -15,38 +15,38 @@ namespace AdministracionSolicitudes.Services.Implementations
         private readonly ISolicitudRepository _solicitudRepository;
         private readonly IEstadoSolicitudRepository _estadoSolicitudRepository;
         private readonly IDiaFeriadoRepository _diaFeriadoRepository;
-        private readonly IBitacoraService _bitacoraService;
+        private readonly IAuditoriaService _auditoriaService;
 
         public SolicitudService(
             ISolicitudRepository solicitudRepository,
             IEstadoSolicitudRepository estadoSolicitudRepository,
             IDiaFeriadoRepository diaFeriadoRepository,
-            IBitacoraService bitacoraService)
+            IAuditoriaService auditoriaService)
         {
             _solicitudRepository = solicitudRepository;
             _estadoSolicitudRepository = estadoSolicitudRepository;
             _diaFeriadoRepository = diaFeriadoRepository;
-            _bitacoraService = bitacoraService;
+            _auditoriaService = auditoriaService;
         }
 
-        public async Task<(IEnumerable<Solicitud> Items, int TotalRegistros)> GetPagedAsync(int pageNumber, int pageSize, int? idUsuarioActual)
+        public async Task<(IEnumerable<Solicitud> Items, int TotalRegistros)> GetPagedAsync(int pageNumber, int pageSize, int idUsuarioEjecutor)
         {
             var result = await _solicitudRepository.GetPagedAsync(pageNumber, pageSize);
-            await _bitacoraService.RegistrarConsultaAsync(idUsuarioActual, Modulo, "Solicitudes");
+            await _auditoriaService.RegistrarConsultaAsync(idUsuarioEjecutor, "solicitudes");
             return result;
         }
 
-        public async Task<Solicitud?> GetByIdAsync(int idSolicitud, int? idUsuarioActual)
+        public async Task<Solicitud?> GetByIdAsync(int idSolicitud, int idUsuarioEjecutor)
         {
             var solicitud = await _solicitudRepository.GetByIdAsync(idSolicitud);
             if (solicitud != null)
             {
-                await _bitacoraService.RegistrarConsultaAsync(idUsuarioActual, Modulo, $"Solicitud #{idSolicitud}");
+                await _auditoriaService.RegistrarConsultaAsync(idUsuarioEjecutor, "solicitud");
             }
             return solicitud;
         }
 
-        public async Task<SolicitudOperationResult> CreateAsync(Solicitud solicitud, int? idUsuarioActual)
+        public async Task<SolicitudOperationResult> CreateAsync(Solicitud solicitud, int idUsuarioEjecutor)
         {
             if (await _solicitudRepository.ExistsConsecutivoAsync(solicitud.ConsecutivoOficio))
             {
@@ -60,12 +60,12 @@ namespace AdministracionSolicitudes.Services.Implementations
             int idSolicitud = await _solicitudRepository.CreateAsync(solicitud);
             solicitud.IdSolicitud = idSolicitud;
 
-            await _bitacoraService.RegistrarCreacionAsync(idUsuarioActual, Modulo, ToBitacoraPayload(solicitud));
+            await _auditoriaService.RegistrarCreacionAsync(idUsuarioEjecutor, Modulo, ToBitacoraPayload(solicitud));
 
             return SolicitudOperationResult.Success(idSolicitud);
         }
 
-        public async Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int? idUsuarioActual)
+        public async Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int idUsuarioEjecutor)
         {
             var existente = await _solicitudRepository.GetByIdAsync(solicitud.IdSolicitud);
             if (existente == null)
@@ -73,24 +73,18 @@ namespace AdministracionSolicitudes.Services.Implementations
                 return SolicitudOperationResult.Failure("La solicitud no existe.");
             }
 
-            if (await _solicitudRepository.ExistsConsecutivoAsync(solicitud.ConsecutivoOficio, solicitud.IdSolicitud))
-            {
-                return SolicitudOperationResult.Failure(MensajeConsecutivoDuplicado);
-            }
+            solicitud.ConsecutivoOficio = existente.ConsecutivoOficio;
 
             var registroAnterior = ToBitacoraPayload(existente);
-
             await _solicitudRepository.UpdateAsync(solicitud);
-
             var actualizado = await _solicitudRepository.GetByIdAsync(solicitud.IdSolicitud);
             var registroActual = ToBitacoraPayload(actualizado!);
 
-            await _bitacoraService.RegistrarActualizacionAsync(idUsuarioActual, Modulo, registroAnterior, registroActual);
-
+            await _auditoriaService.RegistrarActualizacionAsync(idUsuarioEjecutor, Modulo, registroAnterior, registroActual);
             return SolicitudOperationResult.Success(solicitud.IdSolicitud);
         }
 
-        public async Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int? idUsuarioActual)
+        public async Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int idUsuarioEjecutor)
         {
             var existente = await _solicitudRepository.GetByIdAsync(idSolicitud);
             if (existente == null)
@@ -105,7 +99,7 @@ namespace AdministracionSolicitudes.Services.Implementations
 
             await _solicitudRepository.DeleteAsync(idSolicitud);
 
-            await _bitacoraService.RegistrarEliminacionAsync(idUsuarioActual, Modulo, ToBitacoraPayload(existente));
+            await _auditoriaService.RegistrarEliminacionAsync(idUsuarioEjecutor, Modulo, ToBitacoraPayload(existente));
 
             return SolicitudOperationResult.Success();
         }

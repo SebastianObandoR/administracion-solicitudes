@@ -36,10 +36,6 @@ builder.Services.AddScoped<IEstadoSolicitudRepository, EstadoSolicitudRepository
 builder.Services.AddScoped<IDiaFeriadoRepository, DiaFeriadoRepository>();
 builder.Services.AddScoped<ISolicitudService, SolicitudService>();
 
-// Bitacora (Temporal para simular HU, luego se cambia por la existente)
-builder.Services.AddScoped<IBitacoraRepository, BitacoraRepository>();
-builder.Services.AddScoped<IBitacoraService, BitacoraService>();
-
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

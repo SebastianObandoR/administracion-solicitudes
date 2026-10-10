@@ -5,11 +5,11 @@ namespace AdministracionSolicitudes.Services.Interfaces
 {
     public interface ISolicitudService
     {
-        Task<(IEnumerable<Solicitud> Items, int TotalRegistros)> GetPagedAsync(int pageNumber, int pageSize, int? idUsuarioActual);
-        Task<Solicitud?> GetByIdAsync(int idSolicitud, int? idUsuarioActual);
-        Task<SolicitudOperationResult> CreateAsync(Solicitud solicitud, int? idUsuarioActual);
-        Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int? idUsuarioActual);
-        Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int? idUsuarioActual);
+        Task<(IEnumerable<Solicitud> Items, int TotalRegistros)> GetPagedAsync(int pageNumber, int pageSize, int idUsuarioEjecutor);
+        Task<Solicitud?> GetByIdAsync(int idSolicitud, int idUsuarioEjecutor);
+        Task<SolicitudOperationResult> CreateAsync(Solicitud solicitud, int idUsuarioEjecutor);
+        Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int idUsuarioEjecutor);
+        Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int idUsuarioEjecutor);
         Task<EstadoVencimiento> CalcularEstadoVencimientoAsync(Solicitud solicitud);
     }
 }

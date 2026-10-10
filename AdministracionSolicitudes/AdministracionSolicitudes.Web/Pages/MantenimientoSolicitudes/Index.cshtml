@@ -1,0 +1,132 @@
+﻿@page
+@using AdministracionSolicitudes.Services.Models
+@model AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes.IndexModel
+
+@{
+    ViewData["Title"] = "Solicitudes";
+}
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <h1>Administracion de Solicitudes</h1>
+
+        <a asp-page="/MantenimientoSolicitudes/Create" class="boton-nuevo">
+            <i class="bi bi-file-earmark-plus-fill"></i>
+            <span>Nuevo</span>
+        </a>
+    </div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Informacion</div>
+
+        <div class="contenedor-tabla">
+            <table class="tabla-mantenimiento">
+                <thead>
+                    <tr>
+                        <th>Consecutivo</th>
+                        <th>Titulo</th>
+                        <th>Representante</th>
+                        <th>Estado</th>
+                        <th>Fecha ingreso</th>
+                        <th>Fecha respuesta</th>
+                        <th class="columna-acciones">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var solicitud in Model.Solicitudes)
+                    {
+                        string filaClase = Model.EstadosVencimiento[solicitud.IdSolicitud] switch
+                        {
+                            EstadoVencimiento.Vencida => "fila-vencida",
+                            EstadoVencimiento.VenceHoy => "fila-vence-hoy",
+                            _ => "fila-al-dia"
+                        };
+
+                        <tr class="@filaClase">
+                            <td>@solicitud.ConsecutivoOficio</td>
+                            <td>@solicitud.Titulo</td>
+                            <td>@solicitud.NombreRepresentante</td>
+                            <td>@solicitud.NombreEstado</td>
+                            <td>@solicitud.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                            <td>@(solicitud.FechaRespuesta?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td class="acciones">
+                                <a asp-page="/MantenimientoSolicitudes/Edit"
+                                   asp-route-id="@solicitud.IdSolicitud"
+                                   class="boton-accion"
+                                   title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <button type="button"
+                                        class="boton-accion boton-eliminar"
+                                        data-id="@solicitud.IdSolicitud"
+                                        data-nombre="@solicitud.Titulo"
+                                        title="Eliminar">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!Model.Solicitudes.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="sin-registros">No hay solicitudes registradas.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPaginas > 1)
+        {
+            <div class="paginacion">
+                @for (var pagina = 1; pagina <= Model.TotalPaginas; pagina++)
+                {
+                    <a asp-page="/MantenimientoSolicitudes/Index"
+                       asp-route-PageNumber="@pagina"
+                       class="pagina @(pagina == Model.PageNumber ? "pagina-activa" : string.Empty)">
+                        @pagina
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<form method="post" asp-page-handler="Eliminar" asp-route-PageNumber="@Model.PageNumber" id="formEliminar">
+    <input type="hidden" name="idSolicitud" id="idSolicitudEliminar" />
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".boton-eliminar").forEach(boton => {
+            boton.addEventListener("click", () => {
+                Swal.fire({
+                    title: "Confirmar eliminacion",
+                    text: "¿Realmente desea eliminar el elemento seleccionado?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No"
+                }).then(resultado => {
+                    if (!resultado.isConfirmed) return;
+                    document.getElementById("idSolicitudEliminar").value = boton.dataset.id;
+                    document.getElementById("formEliminar").submit();
+                });
+            });
+        });
+
+        @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+        {
+            <text>
+                Swal.fire({
+                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                    icon: '@Model.TipoMensaje',
+                    confirmButtonText: 'Aceptar'
+                });
+            </text>
+        }
+    </script>
+}

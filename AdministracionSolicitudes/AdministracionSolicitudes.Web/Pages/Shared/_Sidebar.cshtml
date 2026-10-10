@@ -1,7 +1,7 @@
 ﻿@{
     var currentPath = Context.Request.Path.Value?.ToLowerInvariant() ?? "/";
     var isHome = currentPath == "/" || currentPath == "/index";
-    var isSolicitudes = currentPath.StartsWith("/solicitudes");
+    var isSolicitudes = currentPath.StartsWith("/mantenimientosolicitudes");
 }
 
 <aside class="panel-lateral">
@@ -22,7 +22,7 @@
             <span class="texto-navegacion">Inicio</span>
         </a>
 
-        <a class="elemento-navegacion @(isSolicitudes ? "esta-activo" : string.Empty)" asp-page="/Solicitudes/Index">
+        <a class="elemento-navegacion @(isSolicitudes ? "esta-activo" : string.Empty)" asp-page="/MantenimientoSolicitudes/Index">
             <i class="bi bi-file-earmark-text icono-navegacion"></i>
             <span class="texto-navegacion">Solicitudes</span>
         </a>
