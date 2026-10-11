@@ -38,7 +38,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             await RegistrarBitacoraAsync(idUsuario, modulo, "CREAR", $"CREAR {json}");
         }
 
-        public async Task RegistrarActualizacionAsync(int idUsuario, string modulo, object registroAnterior, object registroActual)
+        public async Task RegistrarActualizacionAsync(int? idUsuario, string modulo, object registroAnterior, object registroActual)
         {
             var datos = new
             {
@@ -58,7 +58,6 @@ namespace AdministracionSolicitudes.Services.Implementations
 
         public async Task RegistrarConsultaAsync(int idUsuario, string elemento)
         {
-            // Comportamiento original: el modulo es el mismo elemento consultado
             await RegistrarConsultaAsync(idUsuario, elemento, elemento);
         }
 
@@ -79,7 +78,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             await _errorLogRepository.RegistrarAsync(errorLog);
         }
 
-        private async Task RegistrarBitacoraAsync(int idUsuario, string modulo, string accion, string descripcion)
+        private async Task RegistrarBitacoraAsync(int? idUsuario, string modulo, string accion, string descripcion)
         {
             var bitacora = new Bitacora
             {
