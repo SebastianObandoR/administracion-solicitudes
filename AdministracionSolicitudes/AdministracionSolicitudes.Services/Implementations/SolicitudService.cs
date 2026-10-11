@@ -31,97 +31,178 @@ namespace AdministracionSolicitudes.Services.Implementations
 
         public async Task<(IEnumerable<Solicitud> Items, int TotalRegistros)> GetPagedAsync(int pageNumber, int pageSize, int idUsuarioEjecutor)
         {
-            var result = await _solicitudRepository.GetPagedAsync(pageNumber, pageSize);
-            await _auditoriaService.RegistrarConsultaAsync(idUsuarioEjecutor, "solicitudes");
-            return result;
+            try
+            {
+                var result = await _solicitudRepository.GetPagedAsync(pageNumber, pageSize);
+                await _auditoriaService.RegistrarConsultaAsync(idUsuarioEjecutor, Modulo, "solicitudes");
+                return result;
+            }
+            catch (Exception exception)
+            {
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                throw;
+            }
         }
 
         public async Task<Solicitud?> GetByIdAsync(int idSolicitud, int idUsuarioEjecutor)
         {
-            var solicitud = await _solicitudRepository.GetByIdAsync(idSolicitud);
-            if (solicitud != null)
+            try
             {
-                await _auditoriaService.RegistrarConsultaAsync(idUsuarioEjecutor, "solicitud");
+                var solicitud = await _solicitudRepository.GetByIdAsync(idSolicitud);
+                if (solicitud != null)
+                {
+                    await _auditoriaService.RegistrarConsultaAsync(idUsuarioEjecutor, Modulo, "solicitud");
+                }
+                return solicitud;
             }
-            return solicitud;
+            catch (Exception exception)
+            {
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                throw;
+            }
         }
 
         public async Task<SolicitudOperationResult> CreateAsync(Solicitud solicitud, int idUsuarioEjecutor)
         {
-            if (await _solicitudRepository.ExistsConsecutivoAsync(solicitud.ConsecutivoOficio))
+            try
             {
-                return SolicitudOperationResult.Failure(MensajeConsecutivoDuplicado);
+                if (await _solicitudRepository.ExistsConsecutivoAsync(solicitud.ConsecutivoOficio))
+                {
+                    return SolicitudOperationResult.Failure(MensajeConsecutivoDuplicado);
+                }
+
+                // Por defecto: nueva
+                var estadoNueva = await ObtenerEstadoPorNombreAsync(EstadoSolicitudNombre.Nueva);
+                solicitud.IdEstado = estadoNueva.IdEstado;
+
+                int idSolicitud = await _solicitudRepository.CreateAsync(solicitud);
+                solicitud.IdSolicitud = idSolicitud;
+
+                await _auditoriaService.RegistrarCreacionAsync(idUsuarioEjecutor, Modulo, ToBitacoraPayload(solicitud));
+
+                return SolicitudOperationResult.Success(idSolicitud);
             }
-
-            // Las solicitudes se crean por defecto en estado "Nueva"
-            var estadoNueva = await ObtenerEstadoPorNombreAsync(EstadoSolicitudNombre.Nueva);
-            solicitud.IdEstado = estadoNueva.IdEstado;
-
-            int idSolicitud = await _solicitudRepository.CreateAsync(solicitud);
-            solicitud.IdSolicitud = idSolicitud;
-
-            await _auditoriaService.RegistrarCreacionAsync(idUsuarioEjecutor, Modulo, ToBitacoraPayload(solicitud));
-
-            return SolicitudOperationResult.Success(idSolicitud);
+            catch (Exception exception)
+            {
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                return SolicitudOperationResult.Failure("Ocurrio un error al crear la solicitud.");
+            }
         }
 
         public async Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int idUsuarioEjecutor)
         {
-            var existente = await _solicitudRepository.GetByIdAsync(solicitud.IdSolicitud);
-            if (existente == null)
+            try
             {
-                return SolicitudOperationResult.Failure("La solicitud no existe.");
+                var existente = await _solicitudRepository.GetByIdAsync(solicitud.IdSolicitud);
+                if (existente == null)
+                {
+                    return SolicitudOperationResult.Failure("La solicitud no existe.");
+                }
+
+                solicitud.ConsecutivoOficio = existente.ConsecutivoOficio;
+
+                var registroAnterior = ToBitacoraPayload(existente);
+                await _solicitudRepository.UpdateAsync(solicitud);
+                var actualizado = await _solicitudRepository.GetByIdAsync(solicitud.IdSolicitud);
+                var registroActual = ToBitacoraPayload(actualizado!);
+
+                await _auditoriaService.RegistrarActualizacionAsync(idUsuarioEjecutor, Modulo, registroAnterior, registroActual);
+                return SolicitudOperationResult.Success(solicitud.IdSolicitud);
             }
-
-            solicitud.ConsecutivoOficio = existente.ConsecutivoOficio;
-
-            var registroAnterior = ToBitacoraPayload(existente);
-            await _solicitudRepository.UpdateAsync(solicitud);
-            var actualizado = await _solicitudRepository.GetByIdAsync(solicitud.IdSolicitud);
-            var registroActual = ToBitacoraPayload(actualizado!);
-
-            await _auditoriaService.RegistrarActualizacionAsync(idUsuarioEjecutor, Modulo, registroAnterior, registroActual);
-            return SolicitudOperationResult.Success(solicitud.IdSolicitud);
+            catch (Exception exception)
+            {
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                return SolicitudOperationResult.Failure("Ocurrio un error al actualizar la solicitud.");
+            }
         }
 
         public async Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int idUsuarioEjecutor)
         {
-            var existente = await _solicitudRepository.GetByIdAsync(idSolicitud);
-            if (existente == null)
+            try
             {
-                return SolicitudOperationResult.Failure("La solicitud no existe.");
-            }
+                var existente = await _solicitudRepository.GetByIdAsync(idSolicitud);
+                if (existente == null)
+                {
+                    return SolicitudOperationResult.Failure("La solicitud no existe.");
+                }
 
-            if (await _solicitudRepository.TieneRegistrosRelacionadosAsync(idSolicitud))
+                if (await _solicitudRepository.TieneRegistrosRelacionadosAsync(idSolicitud))
+                {
+                    return SolicitudOperationResult.Failure(MensajeNoEliminar);
+                }
+
+                await _solicitudRepository.DeleteAsync(idSolicitud);
+
+                await _auditoriaService.RegistrarEliminacionAsync(idUsuarioEjecutor, Modulo, ToBitacoraPayload(existente));
+
+                return SolicitudOperationResult.Success();
+            }
+            catch (Exception exception)
             {
-                return SolicitudOperationResult.Failure(MensajeNoEliminar);
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                return SolicitudOperationResult.Failure("Ocurrio un error al eliminar la solicitud.");
             }
-
-            await _solicitudRepository.DeleteAsync(idSolicitud);
-
-            await _auditoriaService.RegistrarEliminacionAsync(idUsuarioEjecutor, Modulo, ToBitacoraPayload(existente));
-
-            return SolicitudOperationResult.Success();
         }
 
-        public async Task<EstadoVencimiento> CalcularEstadoVencimientoAsync(Solicitud solicitud)
+        public async Task<Dictionary<int, EstadoVencimiento>> CalcularEstadosVencimientoAsync(IEnumerable<Solicitud> solicitudes, int idUsuarioEjecutor)
         {
-            // Si ya tiene respuesta, no se considera vencida ni pendiente
-            if (solicitud.FechaRespuesta.HasValue)
+            try
             {
-                return EstadoVencimiento.Nueva;
+                // 1 sola lectura
+                var feriados = (await _diaFeriadoRepository.GetFechasAsync())
+                    .Select(f => f.Date)
+                    .ToHashSet();
+
+                DateTime hoy = DateTime.Today;
+
+                return solicitudes.ToDictionary(
+                    s => s.IdSolicitud,
+                    s => EvaluarVencimiento(s, feriados, hoy));
+            }
+            catch (Exception exception)
+            {
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                throw;
+            }
+        }
+
+        public static EstadoVencimiento EvaluarVencimiento(Solicitud solicitud, HashSet<DateTime> feriados, DateTime hoy)
+        {
+            if (solicitud.IdEstado == (int)EstadoSolicitudNombre.Vencida)
+            {
+                return EstadoVencimiento.Vencida;
             }
 
-            var feriados = (await _diaFeriadoRepository.GetFechasAsync())
-                .Select(f => f.Date)
-                .ToHashSet();
+            // Con fecha de respuesta: no se avisa
+            if (solicitud.FechaRespuesta.HasValue || solicitud.IdEstado == (int)EstadoSolicitudNombre.Finalizada)
+            {
+                return EstadoVencimiento.SinAlerta;
+            }
 
-            DateTime fechaLimite = SumarDiasHabiles(solicitud.FechaIngreso, DiasHabilesVencimiento, feriados);
-            DateTime hoy = DateTime.Today;
+            DateTime fechaLimite = CalcularFechaLimite(solicitud.FechaIngreso, feriados);
 
-            if (hoy > fechaLimite) return EstadoVencimiento.Vencida;
-            if (hoy == fechaLimite) return EstadoVencimiento.VenceHoy;
-            return EstadoVencimiento.Nueva;
+            if (hoy.Date > fechaLimite) return EstadoVencimiento.Vencida;
+            if (hoy.Date == fechaLimite) return EstadoVencimiento.VenceHoy;
+
+            return solicitud.IdEstado == (int)EstadoSolicitudNombre.Nueva
+                ? EstadoVencimiento.Nueva
+                : EstadoVencimiento.SinAlerta;
+        }
+
+        public static DateTime CalcularFechaLimite(DateTime fechaIngreso, HashSet<DateTime> feriados)
+            => SumarDiasHabiles(fechaIngreso.Date, DiasHabilesVencimiento, feriados);
+
+        private async Task RegistrarErrorAsync(int idUsuarioEjecutor, Exception exception)
+        {
+            try
+            {
+                int? idUsuario = idUsuarioEjecutor > 0 ? idUsuarioEjecutor : null;
+                await _auditoriaService.RegistrarErrorAsync(idUsuario, Modulo, exception);
+            }
+            catch
+            {
+
+            }
         }
 
         private async Task<EstadoSolicitud> ObtenerEstadoPorNombreAsync(EstadoSolicitudNombre nombre)

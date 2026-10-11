@@ -10,6 +10,6 @@ namespace AdministracionSolicitudes.Services.Interfaces
         Task<SolicitudOperationResult> CreateAsync(Solicitud solicitud, int idUsuarioEjecutor);
         Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int idUsuarioEjecutor);
         Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int idUsuarioEjecutor);
-        Task<EstadoVencimiento> CalcularEstadoVencimientoAsync(Solicitud solicitud);
+        Task<Dictionary<int, EstadoVencimiento>> CalcularEstadosVencimientoAsync(IEnumerable<Solicitud> solicitudes, int idUsuarioEjecutor);
     }
 }

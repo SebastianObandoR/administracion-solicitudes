@@ -199,19 +199,19 @@
 /* --Solicitudes-- */
 
 .tabla-mantenimiento tbody tr.fila-al-dia {
-    background: #e9f4f1;
+    background: #d4efd9;
 }
 
 .tabla-mantenimiento tbody tr.fila-vence-hoy {
-    background: #fff5d9;
+    background: #fff1a8;
 }
 
 .tabla-mantenimiento tbody tr.fila-vencida {
-    background: #fbe9e7;
+    background: #f7c6c1;
 }
 
 .tabla-mantenimiento tbody tr.fila-al-dia td:first-child {
-    box-shadow: inset 4px 0 0 var(--acento);
+    box-shadow: inset 4px 0 0 #2e9e4f;
 }
 
 .tabla-mantenimiento tbody tr.fila-vence-hoy td:first-child {
@@ -313,4 +313,82 @@
 
 .mensaje-validacion {
     display: none !important;
+}
+
+.tabla-mantenimiento tbody tr.fila-sin-color {
+    background: #ffffff;
+}
+
+.paginacion.paginacion-centrada {
+    justify-content: center;
+}
+
+.tabla-mantenimiento tbody tr.fila-vacia {
+    background: transparent;
+}
+
+    .tabla-mantenimiento tbody tr.fila-vacia td {
+        border-bottom: 0;
+        height: 59px;
+        padding: 0;
+    }
+
+/* Modal "Ver" */
+.modal-solicitud .modal-content {
+    border: 1px solid var(--borde);
+    border-radius: 4px;
+}
+
+.modal-solicitud .modal-header {
+    background: #f7f9f9;
+    border-bottom: 1px solid var(--borde);
+}
+
+.modal-solicitud .modal-title {
+    color: var(--acento);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.detalle-solicitud {
+    display: grid;
+    gap: 16px 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+}
+
+    .detalle-solicitud dt {
+        color: var(--texto-suave);
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+
+    .detalle-solicitud dd {
+        font-size: 14px;
+        margin: 0;
+        overflow-wrap: anywhere;
+        white-space: pre-line;
+    }
+
+.detalle-completo {
+    grid-column: 1 / -1;
+}
+
+.boton-cerrar-modal {
+    background: var(--acento);
+    border: 0;
+    border-radius: 3px;
+    color: #ffffff;
+    padding: 9px 18px;
+}
+
+    .boton-cerrar-modal:hover {
+        opacity: 0.9;
+    }
+
+@media (max-width: 576px) {
+    .detalle-solicitud {
+        grid-template-columns: 1fr;
+    }
 }
