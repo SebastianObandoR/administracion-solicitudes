@@ -315,17 +315,14 @@
     display: none !important;
 }
 
-/* Solicitudes sin color de semaforo: siempre blancas (anula el rayado gris de las filas pares) */
 .tabla-mantenimiento tbody tr.fila-sin-color {
     background: #ffffff;
 }
 
-/* Paginacion de Solicitudes: centrada y siempre debajo de la tabla */
 .paginacion.paginacion-centrada {
     justify-content: center;
 }
 
-/* Filas de relleno: mantienen la altura de 5 filas (38px del boton + 20px de padding + 1px de borde) */
 .tabla-mantenimiento tbody tr.fila-vacia {
     background: transparent;
 }

@@ -78,8 +78,7 @@
                         </tr>
                     }
 
-                    @{
-                        // Si no hay registros se muestra 1 fila ("No hay solicitudes"), el resto se rellena
+                    @{                   
                         int filasVacias = Model.TamanoPagina - Math.Max(Model.Solicitudes.Count(), 1);
                     }
                     @for (var i = 0; i < filasVacias; i++)
