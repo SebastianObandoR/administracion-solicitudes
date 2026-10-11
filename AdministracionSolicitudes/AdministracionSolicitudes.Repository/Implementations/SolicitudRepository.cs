@@ -39,7 +39,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
             int offset = (pageNumber - 1) * pageSize;
 
             const string countSql = "SELECT COUNT(*) FROM Solicitud;";
-            string pagedSql = $"{SelectBase} ORDER BY s.fecha_ingreso DESC, s.id_solicitud DESC LIMIT @PageSize OFFSET @Offset;";
+            string pagedSql = $"{SelectBase} ORDER BY s.id_solicitud DESC LIMIT @PageSize OFFSET @Offset;";
 
             using var connection = _connectionFactory.CreateConnection();
 
@@ -113,7 +113,8 @@ namespace AdministracionSolicitudes.Repository.Implementations
             const string sql = @"
                 SELECT
                     (SELECT COUNT(*) FROM DesgloseSolicitud WHERE id_solicitud = @IdSolicitud) +
-                    (SELECT COUNT(*) FROM Tarea WHERE id_solicitud = @IdSolicitud);";
+                    (SELECT COUNT(*) FROM Tarea WHERE id_solicitud = @IdSolicitud) +
+                    (SELECT COUNT(*) FROM HistorialEstadoSolicitud WHERE id_solicitud = @IdSolicitud);";
 
             using var connection = _connectionFactory.CreateConnection();
             int relacionados = await connection.ExecuteScalarAsync<int>(sql, new { IdSolicitud = idSolicitud });
