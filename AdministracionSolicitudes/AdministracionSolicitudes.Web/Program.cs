@@ -4,6 +4,7 @@ using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Implementations;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Web.Middleware;
+using AdministracionSolicitudes.Web.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +20,32 @@ builder.Services.AddSession(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("No se encontro la cadena de conexion DefaultConnection");
 var encryptionKey = builder.Configuration["SecuritySettings:EncryptionKey"] ?? throw new InvalidOperationException("No se encontro la clave de cifrado");
+var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<AdministracionSolicitudes.Services.Models.EmailSettings>()
+    ?? new AdministracionSolicitudes.Services.Models.EmailSettings();
 
 builder.Services.AddSingleton<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBitacoraRepository, BitacoraRepository>();
+builder.Services.AddScoped<IErrorLogRepository, ErrorLogRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddSingleton<IPasswordEncryptionService>(_ => new PasswordEncryptionService(encryptionKey));
+builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddSingleton(emailSettings);
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<INotificacionEstadoRepository, NotificacionEstadoRepository>();
+builder.Services.AddScoped<INotificacionEstadoService, NotificacionEstadoService>();
+
+// SOL1
+builder.Services.AddScoped<ISolicitudRepository, SolicitudRepository>();
+builder.Services.AddScoped<IRepresentanteRepository, RepresentanteRepository>();
+builder.Services.AddScoped<IEstadoSolicitudRepository, EstadoSolicitudRepository>();
+builder.Services.AddScoped<IDiaFeriadoRepository, DiaFeriadoRepository>();
+builder.Services.AddScoped<ISolicitudService, SolicitudService>();
+builder.Services.AddScoped<IVencimientoService, VencimientoService>();
+
+// SOL5
+builder.Services.AddHostedService<VencimientoSolicitudesWorker>();
 
 var app = builder.Build();
 
