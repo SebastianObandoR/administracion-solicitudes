@@ -1,0 +1,118 @@
+﻿@page
+@model AdministracionSolicitudes.Web.Pages.Reportes.TareasPorSolicitudModel
+@using AdministracionSolicitudes.Web.Constants
+
+@{
+    ViewData["Title"] = "Tareas por solicitud";
+}
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <h1>Reporte de tareas de una solicitud por mes</h1>
+    </div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Parámetros</div>
+
+        <form method="get" class="filtros-reporte">
+            <input type="hidden" name="generar" value="true" />
+
+            <div class="campo-formulario">
+                <label for="IdSolicitud">Solicitud</label>
+                <select id="IdSolicitud" name="IdSolicitud">
+                    <option value="">Seleccione una solicitud</option>
+                    @foreach (var solicitud in Model.Solicitudes)
+                    {
+                        <option value="@solicitud.IdSolicitud" selected="@(Model.IdSolicitud == solicitud.IdSolicitud)">@solicitud.ConsecutivoOficio - @solicitud.Titulo</option>
+                    }
+                </select>
+            </div>
+
+            <div class="campo-formulario">
+                <label for="Mes">Mes</label>
+                <select id="Mes" name="Mes">
+                    @for (int i = 1; i <= 12; i++)
+                    {
+                        <option value="@i" selected="@(Model.Mes == i)">@Meses.Nombres[i - 1]</option>
+                    }
+                </select>
+            </div>
+
+            <div class="campo-formulario">
+                <label for="Anio">Año</label>
+                <input type="number" id="Anio" name="Anio" min="2000" max="2100" value="@Model.Anio" />
+            </div>
+
+            <div class="campo-formulario">
+                <button type="submit" class="boton-generar">
+                    <i class="bi bi-search"></i>
+                    <span>Generar</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @if (Model.Reporte != null)
+    {
+        <div class="panel-informacion panel-resultado">
+            <div class="titulo-panel">Resultado</div>
+
+            <div class="contenedor-tabla">
+                <table class="tabla-mantenimiento">
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Fecha</th>
+                            <th>Descripción de la tarea</th>
+                            <th class="columna-numerica">Horas invertidas</th>
+                            <th>Consecutivo del oficio</th>
+                            <th>Título de la solicitud</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Reporte.Filas.Count == 0)
+                        {
+                            <tr>
+                                <td colspan="6" class="tabla-vacia">No hay tareas para los parámetros seleccionados.</td>
+                            </tr>
+                        }
+
+                        @foreach (var fila in Model.Reporte.Filas)
+                        {
+                            <tr>
+                                <td>@fila.NombreUsuario</td>
+                                <td>@fila.Fecha.ToString("yyyy-MM-dd")</td>
+                                <td>@fila.Descripcion</td>
+                                <td class="columna-numerica">@fila.HorasInvertidas.ToString("0.00")</td>
+                                <td>@fila.ConsecutivoOficio</td>
+                                <td>@fila.TituloSolicitud</td>
+                            </tr>
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <td colspan="3">Total de horas invertidas en la solicitud por todos los usuarios</td>
+                            <td class="columna-numerica">@Model.Reporte.TotalHoras.ToString("0.00")</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    }
+</section>
+
+@section Scripts {
+    @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+    {
+        <script>
+            Swal.fire({
+                text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                icon: '@Model.TipoMensaje',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    }
+}

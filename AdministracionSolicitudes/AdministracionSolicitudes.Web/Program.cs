@@ -4,8 +4,12 @@ using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Implementations;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Web.Middleware;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("en-US");
 
 builder.Services.AddRazorPages();
 builder.Services.AddDistributedMemoryCache();
@@ -24,6 +28,12 @@ builder.Services.AddSingleton<IDbConnectionFactory>(_ => new DbConnectionFactory
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IPasswordEncryptionService>(_ => new PasswordEncryptionService(encryptionKey));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IBitacoraRepository, BitacoraRepository>();
+builder.Services.AddScoped<IErrorLogRepository, ErrorLogRepository>();
+builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
+
+builder.Services.AddScoped<IReporteTareasSolicitudRepository, ReporteTareasSolicitudRepository>();
+builder.Services.AddScoped<IReporteTareasSolicitudService, ReporteTareasSolicitudService>();
 
 var app = builder.Build();
 
