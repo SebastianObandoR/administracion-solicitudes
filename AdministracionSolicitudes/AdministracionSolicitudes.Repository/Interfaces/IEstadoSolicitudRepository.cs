@@ -2,7 +2,7 @@
 
 namespace AdministracionSolicitudes.Repository.Interfaces
 {
-    // Repositorio minimo de solo lectura para SOL1 (combo de estados)
+    // // SIMULACION SOL4: repositorio minimo de solo lectura (combo de estados). Reemplazar por el de SOL4 al integrar
     public interface IEstadoSolicitudRepository
     {
         Task<IEnumerable<EstadoSolicitud>> GetAllAsync();
