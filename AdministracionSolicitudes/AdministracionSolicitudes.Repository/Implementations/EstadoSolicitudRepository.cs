@@ -5,6 +5,7 @@ using Dapper;
 
 namespace AdministracionSolicitudes.Repository.Implementations
 {
+    // SIMULACION SOL4
     public class EstadoSolicitudRepository : IEstadoSolicitudRepository
     {
         private readonly IDbConnectionFactory _connectionFactory;

@@ -5,6 +5,7 @@ using Dapper;
 
 namespace AdministracionSolicitudes.Repository.Implementations
 {
+    // SIMULACION SOL3
     public class RepresentanteRepository : IRepresentanteRepository
     {
         private readonly IDbConnectionFactory _connectionFactory;
