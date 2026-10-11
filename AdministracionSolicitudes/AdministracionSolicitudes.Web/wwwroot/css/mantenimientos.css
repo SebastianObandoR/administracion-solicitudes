@@ -315,14 +315,17 @@
     display: none !important;
 }
 
+/* Solicitudes sin color de semaforo: siempre blancas (anula el rayado gris de las filas pares) */
 .tabla-mantenimiento tbody tr.fila-sin-color {
     background: #ffffff;
 }
 
+/* Paginacion de Solicitudes: centrada y siempre debajo de la tabla */
 .paginacion.paginacion-centrada {
     justify-content: center;
 }
 
+/* Filas de relleno: mantienen la altura de 5 filas (38px del boton + 20px de padding + 1px de borde) */
 .tabla-mantenimiento tbody tr.fila-vacia {
     background: transparent;
 }
@@ -332,63 +335,3 @@
         height: 59px;
         padding: 0;
     }
-
-/* Modal "Ver" */
-.modal-solicitud .modal-content {
-    border: 1px solid var(--borde);
-    border-radius: 4px;
-}
-
-.modal-solicitud .modal-header {
-    background: #f7f9f9;
-    border-bottom: 1px solid var(--borde);
-}
-
-.modal-solicitud .modal-title {
-    color: var(--acento);
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.detalle-solicitud {
-    display: grid;
-    gap: 16px 24px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin: 0;
-}
-
-    .detalle-solicitud dt {
-        color: var(--texto-suave);
-        font-size: 12px;
-        font-weight: 600;
-        margin-bottom: 3px;
-    }
-
-    .detalle-solicitud dd {
-        font-size: 14px;
-        margin: 0;
-        overflow-wrap: anywhere;
-        white-space: pre-line;
-    }
-
-.detalle-completo {
-    grid-column: 1 / -1;
-}
-
-.boton-cerrar-modal {
-    background: var(--acento);
-    border: 0;
-    border-radius: 3px;
-    color: #ffffff;
-    padding: 9px 18px;
-}
-
-    .boton-cerrar-modal:hover {
-        opacity: 0.9;
-    }
-
-@media (max-width: 576px) {
-    .detalle-solicitud {
-        grid-template-columns: 1fr;
-    }
-}

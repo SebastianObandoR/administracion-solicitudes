@@ -23,6 +23,7 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
         public IEnumerable<Solicitud> Solicitudes { get; set; } = Enumerable.Empty<Solicitud>();
         public Dictionary<int, EstadoVencimiento> EstadosVencimiento { get; set; } = new();
 
+        // Expuesto a la vista para mantener fija la altura de la tabla (5 filas)
         public int TamanoPagina => PageSize;
 
         [BindProperty(SupportsGet = true)]
@@ -48,29 +49,6 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
             if (TotalPaginas == 0) TotalPaginas = 1;
 
             EstadosVencimiento = await _vencimientoService.CalcularEstadosAsync(Solicitudes, idUsuarioActual);
-        }
-
-        public async Task<IActionResult> OnGetDetalleAsync(int id)
-        {
-            int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
-       
-            var solicitud = await _solicitudService.GetByIdAsync(id, idUsuarioActual);
-            if (solicitud == null) return NotFound();
-
-            return new JsonResult(new
-            {
-                consecutivo = solicitud.ConsecutivoOficio,
-                estado = solicitud.NombreEstado,
-                titulo = solicitud.Titulo,
-                representante = solicitud.NombreRepresentante,
-                ingreso = solicitud.FechaIngreso.ToString("dd/MM/yyyy"),
-                inicio = solicitud.FechaInicio?.ToString("dd/MM/yyyy"),
-                respuesta = solicitud.FechaRespuesta?.ToString("dd/MM/yyyy"),
-                docInicio = solicitud.DocumentoInicio,
-                docRespuesta = solicitud.DocumentoRespuesta,
-                descripcion = solicitud.Descripcion,
-                observaciones = solicitud.Observaciones
-            });
         }
 
         public async Task<IActionResult> OnPostEliminarAsync(int idSolicitud)
