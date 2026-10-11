@@ -4,6 +4,7 @@ using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Implementations;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Web.Middleware;
+using AdministracionSolicitudes.Web.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +23,26 @@ var encryptionKey = builder.Configuration["SecuritySettings:EncryptionKey"] ?? t
 
 builder.Services.AddSingleton<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IBitacoraRepository, BitacoraRepository>();
+builder.Services.AddScoped<IErrorLogRepository, ErrorLogRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddSingleton<IPasswordEncryptionService>(_ => new PasswordEncryptionService(encryptionKey));
+builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// SOL1
+builder.Services.AddScoped<ISolicitudRepository, SolicitudRepository>();
+builder.Services.AddScoped<IRepresentanteRepository, RepresentanteRepository>();
+builder.Services.AddScoped<IEstadoSolicitudRepository, EstadoSolicitudRepository>();
+builder.Services.AddScoped<IDiaFeriadoRepository, DiaFeriadoRepository>();
+builder.Services.AddScoped<ISolicitudService, SolicitudService>();
+builder.Services.AddScoped<IVencimientoService, VencimientoService>();
+
+builder.Services.AddScoped<IDesgloseSolicitudRepository, DesgloseSolicitudRepository>();
+builder.Services.AddScoped<IDesgloseSolicitudService, DesgloseSolicitudService>();
+
+// SOL5
+builder.Services.AddHostedService<VencimientoSolicitudesWorker>();
 
 var app = builder.Build();
 

@@ -1,0 +1,221 @@
+﻿@page
+@using AdministracionSolicitudes.Services.Models
+@model AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes.IndexModel
+
+@{
+    ViewData["Title"] = "Solicitudes";
+}
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <h1>Administracion de Solicitudes</h1>
+
+        <a asp-page="/MantenimientoSolicitudes/Create" class="boton-nuevo">
+            <i class="bi bi-file-earmark-plus-fill"></i>
+            <span>Nuevo</span>
+        </a>
+    </div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Informacion</div>
+
+        <div class="contenedor-tabla">
+            <table class="tabla-mantenimiento">
+                <thead>
+                    <tr>
+                        <th>Consecutivo</th>
+                        <th>Titulo</th>
+                        <th>Representante</th>
+                        <th>Estado</th>
+                        <th>Fecha ingreso</th>
+                        <th>Fecha respuesta</th>
+                        <th class="columna-acciones">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var solicitud in Model.Solicitudes)
+                    {
+                        var vencimiento = Model.EstadosVencimiento[solicitud.IdSolicitud];
+                        string filaClase = vencimiento switch
+                        {
+                            EstadoVencimiento.Vencida => "fila-vencida",
+                            EstadoVencimiento.VenceHoy => "fila-vence-hoy",
+                            EstadoVencimiento.Nueva => "fila-al-dia",
+                            _ => "fila-sin-color"
+                        };
+
+                        <tr class="@filaClase">
+                            <td>@solicitud.ConsecutivoOficio</td>
+                            <td>@solicitud.Titulo</td>
+                            <td>@solicitud.NombreRepresentante</td>
+                            <td>@solicitud.NombreEstado</td>
+                            <td>@solicitud.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                            <td>@(solicitud.FechaRespuesta?.ToString("dd/MM/yyyy") ?? "-")</td>
+                            <td class="acciones">
+                                <a asp-page="/Desgloses/Index"
+                                   asp-route-idSolicitud="@solicitud.IdSolicitud"
+                                   class="boton-accion"
+                                   title="Desglose">
+                                    <i class="bi bi-receipt"></i>
+                                    <span class="visually-hidden">Desglose</span>
+                                </a>
+
+                                <button type="button"
+                                        class="boton-accion boton-ver"
+                                        title="Ver detalle"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalDetalleSolicitud"
+                                        data-id="@solicitud.IdSolicitud">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
+
+                                <a asp-page="/MantenimientoSolicitudes/Edit"
+                                   asp-route-id="@solicitud.IdSolicitud"
+                                   class="boton-accion"
+                                   title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <button type="button"
+                                        class="boton-accion boton-eliminar"
+                                        data-id="@solicitud.IdSolicitud"
+                                        data-nombre="@solicitud.Titulo"
+                                        title="Eliminar">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!Model.Solicitudes.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="sin-registros">No hay solicitudes registradas.</td>
+                        </tr>
+                    }
+
+                    @{
+                        // Llenar filas vacias
+                        int filasVacias = Model.TamanoPagina - Math.Max(Model.Solicitudes.Count(), 1);
+                    }
+                    @for (var i = 0; i < filasVacias; i++)
+                    {
+                        <tr class="fila-vacia" aria-hidden="true">
+                            <td colspan="7"></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPaginas > 1)
+        {
+            <div class="paginacion paginacion-centrada">
+                @for (var pagina = 1; pagina <= Model.TotalPaginas; pagina++)
+                {
+                    <a asp-page="/MantenimientoSolicitudes/Index"
+                       asp-route-PageNumber="@pagina"
+                       class="pagina @(pagina == Model.PageNumber ? "pagina-activa" : string.Empty)">
+                        @pagina
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<form method="post" asp-page-handler="Eliminar" asp-route-PageNumber="@Model.PageNumber" id="formEliminar">
+    <input type="hidden" name="idSolicitud" id="idSolicitudEliminar" />
+</form>
+
+<div class="modal fade modal-solicitud" id="modalDetalleSolicitud" tabindex="-1" aria-labelledby="tituloDetalleSolicitud" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloDetalleSolicitud">Detalle de la solicitud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                <dl class="detalle-solicitud">
+                    <div><dt>Consecutivo de oficio</dt><dd data-campo="consecutivo"></dd></div>
+                    <div><dt>Estado</dt><dd data-campo="estado"></dd></div>
+                    <div class="detalle-completo"><dt>Titulo</dt><dd data-campo="titulo"></dd></div>
+                    <div><dt>Representante</dt><dd data-campo="representante"></dd></div>
+                    <div><dt>Fecha de ingreso</dt><dd data-campo="ingreso"></dd></div>
+                    <div><dt>Fecha de inicio</dt><dd data-campo="inicio"></dd></div>
+                    <div><dt>Fecha de respuesta</dt><dd data-campo="respuesta"></dd></div>
+                    <div><dt>Documento de inicio</dt><dd data-campo="docInicio"></dd></div>
+                    <div><dt>Documento de respuesta</dt><dd data-campo="docRespuesta"></dd></div>
+                    <div class="detalle-completo"><dt>Descripcion</dt><dd data-campo="descripcion"></dd></div>
+                    <div class="detalle-completo"><dt>Observaciones</dt><dd data-campo="observaciones"></dd></div>
+                </dl>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="boton-cerrar-modal" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".boton-eliminar").forEach(boton => {
+            boton.addEventListener("click", () => {
+                Swal.fire({
+                    title: "Confirmar eliminacion",
+                    text: "¿Realmente desea eliminar el elemento seleccionado?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No"
+                }).then(resultado => {
+                    if (!resultado.isConfirmed) return;
+                    document.getElementById("idSolicitudEliminar").value = boton.dataset.id;
+                    document.getElementById("formEliminar").submit();
+                });
+            });
+        });
+
+        // Modal "Ver"
+        const modalDetalle = document.getElementById("modalDetalleSolicitud");
+        const camposDetalle = modalDetalle.querySelectorAll("[data-campo]");
+        const urlDetalle = '@Url.Page("/MantenimientoSolicitudes/Index", "Detalle")';
+
+        modalDetalle.addEventListener("show.bs.modal", async evento => {
+            const idSolicitud = evento.relatedTarget.dataset.id;
+            camposDetalle.forEach(campo => campo.textContent = "...");
+
+            try {
+                const respuesta = await fetch(urlDetalle + "&id=" + encodeURIComponent(idSolicitud));
+                if (!respuesta.ok) throw new Error("Respuesta no valida");
+
+                const datos = await respuesta.json();
+                camposDetalle.forEach(campo => {
+                    const valor = datos[campo.dataset.campo];
+                    campo.textContent = valor && String(valor).trim() ? valor : "-";
+                });
+            } catch {
+                camposDetalle.forEach(campo => campo.textContent = "-");
+                Swal.fire({
+                    text: "No se pudo cargar el detalle de la solicitud.",
+                    icon: "error",
+                    confirmButtonText: "Aceptar"
+                });
+            }
+        });
+
+        @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+        {
+            <text>
+                Swal.fire({
+                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                    icon: '@Model.TipoMensaje',
+                    confirmButtonText: 'Aceptar'
+                });
+            </text>
+        }
+    </script>
+}
