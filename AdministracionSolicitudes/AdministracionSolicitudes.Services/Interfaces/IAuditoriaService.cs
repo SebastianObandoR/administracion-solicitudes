@@ -30,6 +30,12 @@ namespace AdministracionSolicitudes.Services.Interfaces
             string elemento
         );
 
+        Task RegistrarConsultaAsync(
+            int idUsuario,
+            string modulo,
+            string elemento
+        );
+
         Task RegistrarErrorAsync(
             int? idUsuario,
             string modulo,

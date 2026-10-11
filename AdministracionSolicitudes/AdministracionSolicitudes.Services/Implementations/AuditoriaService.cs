@@ -58,7 +58,13 @@ namespace AdministracionSolicitudes.Services.Implementations
 
         public async Task RegistrarConsultaAsync(int idUsuario, string elemento)
         {
-            await RegistrarBitacoraAsync(idUsuario, elemento, "CONSULTAR", $"El usuario consulta {elemento}");
+            // Comportamiento original: el modulo es el mismo elemento consultado
+            await RegistrarConsultaAsync(idUsuario, elemento, elemento);
+        }
+
+        public async Task RegistrarConsultaAsync(int idUsuario, string modulo, string elemento)
+        {
+            await RegistrarBitacoraAsync(idUsuario, modulo, "CONSULTAR", $"El usuario consulta {elemento}");
         }
 
         public async Task RegistrarErrorAsync(int? idUsuario, string modulo, Exception exception)
