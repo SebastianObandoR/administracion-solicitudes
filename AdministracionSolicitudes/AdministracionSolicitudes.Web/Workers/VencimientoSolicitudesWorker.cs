@@ -53,12 +53,12 @@ namespace AdministracionSolicitudes.Web.Workers
 
                 if (marcadas > 0)
                 {
-                    _logger.LogInformation("SOL5: {Cantidad} solicitud(es) marcada(s) como vencida(s).", marcadas);
+                    _logger.LogInformation("Worker: {Cantidad} solicitud(es) marcada(s) como vencida(s).", marcadas);
                 }
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "SOL5: fallo el proceso de vencimiento de solicitudes.");
+                _logger.LogError(exception, "Worker: fallo el proceso de vencimiento de solicitudes.");
             }
         }
     }
