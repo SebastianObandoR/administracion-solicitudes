@@ -65,17 +65,10 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
         }
 
         public async Task<IActionResult> OnPostAsync()
-        {          
+        {
             int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
-            var original = await _solicitudService.GetByIdAsync(Input.IdSolicitud, idUsuarioActual);
 
-            if (original == null)
-            {
-                return RedirectToPage("./Index");
-            }
-
-            ModelState.Remove(nameof(Input.ConsecutivoOficio));
-            Input.ConsecutivoOficio = original.ConsecutivoOficio;
+            ModelState.Remove("Input.ConsecutivoOficio");
 
             if (!ModelState.IsValid)
             {
