@@ -22,8 +22,11 @@ var encryptionKey = builder.Configuration["SecuritySettings:EncryptionKey"] ?? t
 
 builder.Services.AddSingleton<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRepresentanteRepository, RepresentanteRepository>();
+builder.Services.AddScoped<IErrorLogRepository, ErrorLogRepository>();
 builder.Services.AddSingleton<IPasswordEncryptionService>(_ => new PasswordEncryptionService(encryptionKey));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IRepresentanteService, RepresentanteService>();
 
 var app = builder.Build();
 
