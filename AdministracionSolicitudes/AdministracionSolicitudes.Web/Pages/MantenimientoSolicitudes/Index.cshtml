@@ -53,15 +53,6 @@
                             <td>@solicitud.FechaIngreso.ToString("dd/MM/yyyy")</td>
                             <td>@(solicitud.FechaRespuesta?.ToString("dd/MM/yyyy") ?? "-")</td>
                             <td class="acciones">
-                                <button type="button"
-                                        class="boton-accion boton-ver"
-                                        title="Ver detalle"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalDetalleSolicitud"
-                                        data-id="@solicitud.IdSolicitud">
-                                    <i class="bi bi-eye-fill"></i>
-                                </button>
-
                                 <a asp-page="/MantenimientoSolicitudes/Edit"
                                    asp-route-id="@solicitud.IdSolicitud"
                                    class="boton-accion"
@@ -88,7 +79,7 @@
                     }
 
                     @{
-                        // Llenar filas vacias
+                        // Si no hay registros se muestra 1 fila ("No hay solicitudes"), el resto se rellena
                         int filasVacias = Model.TamanoPagina - Math.Max(Model.Solicitudes.Count(), 1);
                     }
                     @for (var i = 0; i < filasVacias; i++)
@@ -121,37 +112,6 @@
     <input type="hidden" name="idSolicitud" id="idSolicitudEliminar" />
 </form>
 
-<div class="modal fade modal-solicitud" id="modalDetalleSolicitud" tabindex="-1" aria-labelledby="tituloDetalleSolicitud" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tituloDetalleSolicitud">Detalle de la solicitud</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-
-            <div class="modal-body">
-                <dl class="detalle-solicitud">
-                    <div><dt>Consecutivo de oficio</dt><dd data-campo="consecutivo"></dd></div>
-                    <div><dt>Estado</dt><dd data-campo="estado"></dd></div>
-                    <div class="detalle-completo"><dt>Titulo</dt><dd data-campo="titulo"></dd></div>
-                    <div><dt>Representante</dt><dd data-campo="representante"></dd></div>
-                    <div><dt>Fecha de ingreso</dt><dd data-campo="ingreso"></dd></div>
-                    <div><dt>Fecha de inicio</dt><dd data-campo="inicio"></dd></div>
-                    <div><dt>Fecha de respuesta</dt><dd data-campo="respuesta"></dd></div>
-                    <div><dt>Documento de inicio</dt><dd data-campo="docInicio"></dd></div>
-                    <div><dt>Documento de respuesta</dt><dd data-campo="docRespuesta"></dd></div>
-                    <div class="detalle-completo"><dt>Descripcion</dt><dd data-campo="descripcion"></dd></div>
-                    <div class="detalle-completo"><dt>Observaciones</dt><dd data-campo="observaciones"></dd></div>
-                </dl>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="boton-cerrar-modal" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
     <script>
         document.querySelectorAll(".boton-eliminar").forEach(boton => {
@@ -169,34 +129,6 @@
                     document.getElementById("formEliminar").submit();
                 });
             });
-        });
-
-        // Modal "Ver"
-        const modalDetalle = document.getElementById("modalDetalleSolicitud");
-        const camposDetalle = modalDetalle.querySelectorAll("[data-campo]");
-        const urlDetalle = '@Url.Page("/MantenimientoSolicitudes/Index", "Detalle")';
-
-        modalDetalle.addEventListener("show.bs.modal", async evento => {
-            const idSolicitud = evento.relatedTarget.dataset.id;
-            camposDetalle.forEach(campo => campo.textContent = "...");
-
-            try {
-                const respuesta = await fetch(urlDetalle + "&id=" + encodeURIComponent(idSolicitud));
-                if (!respuesta.ok) throw new Error("Respuesta no valida");
-
-                const datos = await respuesta.json();
-                camposDetalle.forEach(campo => {
-                    const valor = datos[campo.dataset.campo];
-                    campo.textContent = valor && String(valor).trim() ? valor : "-";
-                });
-            } catch {
-                camposDetalle.forEach(campo => campo.textContent = "-");
-                Swal.fire({
-                    text: "No se pudo cargar el detalle de la solicitud.",
-                    icon: "error",
-                    confirmButtonText: "Aceptar"
-                });
-            }
         });
 
         @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
