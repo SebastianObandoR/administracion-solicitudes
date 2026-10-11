@@ -1,5 +1,4 @@
 ﻿using AdministracionSolicitudes.Entities;
-using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Web.Constants;
 using AdministracionSolicitudes.Web.Models;
@@ -12,14 +11,10 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
     public class CreateModel : PageModel
     {
         private readonly ISolicitudService _solicitudService;
-        private readonly IRepresentanteRepository _representanteRepository;
 
-        public CreateModel(
-            ISolicitudService solicitudService,
-            IRepresentanteRepository representanteRepository)
+        public CreateModel(ISolicitudService solicitudService)
         {
             _solicitudService = solicitudService;
-            _representanteRepository = representanteRepository;
         }
 
         [BindProperty]
@@ -88,7 +83,8 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
 
         private async Task CargarRepresentantesAsync()
         {
-            var representantes = await _representanteRepository.GetAllAsync();
+            int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
+            var representantes = await _solicitudService.GetRepresentantesAsync(idUsuarioActual);
             Representantes = representantes
                 .Select(r => new SelectListItem(r.Nombre, r.IdRepresentante.ToString()))
                 .ToList();

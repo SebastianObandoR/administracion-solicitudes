@@ -10,22 +10,21 @@ namespace AdministracionSolicitudes.Services.Implementations
         private const string Modulo = "Solicitudes";
         private const string MensajeNoEliminar = "No se puede eliminar un registro con datos relacionados.";
         private const string MensajeConsecutivoDuplicado = "Ya existe una solicitud con ese consecutivo de oficio.";
-        private const int DiasHabilesVencimiento = 5;
 
         private readonly ISolicitudRepository _solicitudRepository;
+        private readonly IRepresentanteRepository _representanteRepository;
         private readonly IEstadoSolicitudRepository _estadoSolicitudRepository;
-        private readonly IDiaFeriadoRepository _diaFeriadoRepository;
         private readonly IAuditoriaService _auditoriaService;
 
         public SolicitudService(
             ISolicitudRepository solicitudRepository,
+            IRepresentanteRepository representanteRepository,
             IEstadoSolicitudRepository estadoSolicitudRepository,
-            IDiaFeriadoRepository diaFeriadoRepository,
             IAuditoriaService auditoriaService)
         {
             _solicitudRepository = solicitudRepository;
+            _representanteRepository = representanteRepository;
             _estadoSolicitudRepository = estadoSolicitudRepository;
-            _diaFeriadoRepository = diaFeriadoRepository;
             _auditoriaService = auditoriaService;
         }
 
@@ -62,6 +61,32 @@ namespace AdministracionSolicitudes.Services.Implementations
             }
         }
 
+        public async Task<IEnumerable<Representante>> GetRepresentantesAsync(int idUsuarioEjecutor)
+        {
+            try
+            {
+                return await _representanteRepository.GetAllAsync();
+            }
+            catch (Exception exception)
+            {
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                throw;
+            }
+        }
+
+        public async Task<IEnumerable<EstadoSolicitud>> GetEstadosAsync(int idUsuarioEjecutor)
+        {
+            try
+            {
+                return await _estadoSolicitudRepository.GetAllAsync();
+            }
+            catch (Exception exception)
+            {
+                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+                throw;
+            }
+        }
+
         public async Task<SolicitudOperationResult> CreateAsync(Solicitud solicitud, int idUsuarioEjecutor)
         {
             try
@@ -71,7 +96,7 @@ namespace AdministracionSolicitudes.Services.Implementations
                     return SolicitudOperationResult.Failure(MensajeConsecutivoDuplicado);
                 }
 
-                // Por defecto: nueva
+                // Las solicitudes se crean por defecto en estado "Nueva"
                 var estadoNueva = await ObtenerEstadoPorNombreAsync(EstadoSolicitudNombre.Nueva);
                 solicitud.IdEstado = estadoNueva.IdEstado;
 
@@ -144,66 +169,8 @@ namespace AdministracionSolicitudes.Services.Implementations
             }
         }
 
-        public async Task<Dictionary<int, EstadoVencimiento>> CalcularEstadosVencimientoAsync(IEnumerable<Solicitud> solicitudes, int idUsuarioEjecutor)
-        {
-            try
-            {
-                // 1 sola lectura
-                var feriados = (await _diaFeriadoRepository.GetFechasAsync())
-                    .Select(f => f.Date)
-                    .ToHashSet();
-
-                DateTime hoy = DateTime.Today;
-
-                return solicitudes.ToDictionary(
-                    s => s.IdSolicitud,
-                    s => EvaluarVencimiento(s, feriados, hoy));
-            }
-            catch (Exception exception)
-            {
-                await RegistrarErrorAsync(idUsuarioEjecutor, exception);
-                throw;
-            }
-        }
-
-        public static EstadoVencimiento EvaluarVencimiento(Solicitud solicitud, HashSet<DateTime> feriados, DateTime hoy)
-        {
-            if (solicitud.IdEstado == (int)EstadoSolicitudNombre.Vencida)
-            {
-                return EstadoVencimiento.Vencida;
-            }
-
-            // Con fecha de respuesta: no se avisa
-            if (solicitud.FechaRespuesta.HasValue || solicitud.IdEstado == (int)EstadoSolicitudNombre.Finalizada)
-            {
-                return EstadoVencimiento.SinAlerta;
-            }
-
-            DateTime fechaLimite = CalcularFechaLimite(solicitud.FechaIngreso, feriados);
-
-            if (hoy.Date > fechaLimite) return EstadoVencimiento.Vencida;
-            if (hoy.Date == fechaLimite) return EstadoVencimiento.VenceHoy;
-
-            return solicitud.IdEstado == (int)EstadoSolicitudNombre.Nueva
-                ? EstadoVencimiento.Nueva
-                : EstadoVencimiento.SinAlerta;
-        }
-
-        public static DateTime CalcularFechaLimite(DateTime fechaIngreso, HashSet<DateTime> feriados)
-            => SumarDiasHabiles(fechaIngreso.Date, DiasHabilesVencimiento, feriados);
-
-        private async Task RegistrarErrorAsync(int idUsuarioEjecutor, Exception exception)
-        {
-            try
-            {
-                int? idUsuario = idUsuarioEjecutor > 0 ? idUsuarioEjecutor : null;
-                await _auditoriaService.RegistrarErrorAsync(idUsuario, Modulo, exception);
-            }
-            catch
-            {
-
-            }
-        }
+        private Task RegistrarErrorAsync(int idUsuarioEjecutor, Exception exception)
+            => _auditoriaService.RegistrarErrorSeguroAsync(idUsuarioEjecutor, Modulo, exception);
 
         private async Task<EstadoSolicitud> ObtenerEstadoPorNombreAsync(EstadoSolicitudNombre nombre)
         {
@@ -214,27 +181,6 @@ namespace AdministracionSolicitudes.Services.Implementations
                     $"No se encontro el estado '{nombre}' en EstadoSolicitud.");
             }
             return estado;
-        }
-
-        // Excluye sabados, domingos y dias en DiaFeriado
-        private static DateTime SumarDiasHabiles(DateTime fechaInicio, int diasHabiles, HashSet<DateTime> feriados)
-        {
-            DateTime fecha = fechaInicio;
-            int sumados = 0;
-
-            while (sumados < diasHabiles)
-            {
-                fecha = fecha.AddDays(1);
-                bool esFinDeSemana = fecha.DayOfWeek == DayOfWeek.Saturday || fecha.DayOfWeek == DayOfWeek.Sunday;
-                bool esFeriado = feriados.Contains(fecha.Date);
-
-                if (!esFinDeSemana && !esFeriado)
-                {
-                    sumados++;
-                }
-            }
-
-            return fecha.Date;
         }
 
         private static object ToBitacoraPayload(Solicitud s) => new

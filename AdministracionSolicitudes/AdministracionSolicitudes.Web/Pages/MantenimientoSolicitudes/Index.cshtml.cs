@@ -12,16 +12,17 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
         private const int PageSize = 5; // SOL1
 
         private readonly ISolicitudService _solicitudService;
+        private readonly IVencimientoService _vencimientoService;
 
-        public IndexModel(ISolicitudService solicitudService)
+        public IndexModel(ISolicitudService solicitudService, IVencimientoService vencimientoService)
         {
             _solicitudService = solicitudService;
+            _vencimientoService = vencimientoService;
         }
 
         public IEnumerable<Solicitud> Solicitudes { get; set; } = Enumerable.Empty<Solicitud>();
         public Dictionary<int, EstadoVencimiento> EstadosVencimiento { get; set; } = new();
 
-        // Expuesto a la vista para mantener fija la altura de la tabla (5 filas)
         public int TamanoPagina => PageSize;
 
         [BindProperty(SupportsGet = true)]
@@ -46,14 +47,13 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
             TotalPaginas = (int)Math.Ceiling(total / (double)PageSize);
             if (TotalPaginas == 0) TotalPaginas = 1;
 
-            EstadosVencimiento = await _solicitudService.CalcularEstadosVencimientoAsync(Solicitudes, idUsuarioActual);
+            EstadosVencimiento = await _vencimientoService.CalcularEstadosAsync(Solicitudes, idUsuarioActual);
         }
 
         public async Task<IActionResult> OnGetDetalleAsync(int id)
         {
             int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
-
-            // GetByIdAsync registra en bitacora "El usuario consulta solicitud"
+       
             var solicitud = await _solicitudService.GetByIdAsync(id, idUsuarioActual);
             if (solicitud == null) return NotFound();
 
