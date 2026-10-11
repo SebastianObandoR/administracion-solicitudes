@@ -4,11 +4,18 @@ using System.Text;
 
 namespace AdministracionSolicitudes.Entities
 {
-    public enum AccionBitacora
+    public class Bitacora
     {
-        Create = 1,
-        Update = 2,
-        Delete = 3,
-        Consult = 4
+        public int IdBitacora { get; set; }
+
+        public int? IdUsuario { get; set; }
+
+        public string Modulo { get; set; } = string.Empty;
+
+        public string Accion { get; set; } = string.Empty;
+
+        public string Descripcion { get; set; } = string.Empty;
+
+        public DateTime Fecha { get; set; }
     }
 }

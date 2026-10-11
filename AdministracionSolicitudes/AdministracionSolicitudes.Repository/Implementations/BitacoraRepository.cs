@@ -14,30 +14,45 @@ namespace AdministracionSolicitudes.Repository.Implementations
             _connectionFactory = connectionFactory;
         }
 
-        public async Task InsertarBitacoraAsync(int idUsuario, string modulo, AccionBitacora accion, string descripcion)
+        public async Task RegistrarAsync(Bitacora bitacora)
         {
-            const string sql = @"
-                INSERT INTO Bitacora (id_usuario, modulo, accion, descripcion, fecha)
-                VALUES (@IdUsuario, @Modulo, @Accion, @Descripcion, CURRENT_TIMESTAMP);";
+            const string sql = """
+                INSERT INTO Bitacora
+                (
+                    id_usuario,
+                    modulo,
+                    accion,
+                    descripcion,
+                    fecha
+                )
+                VALUES
+                (
+                    @IdUsuario,
+                    @Modulo,
+                    @Accion,
+                    @Descripcion,
+                    NOW()
+                );
+                """;
+
+            string accion = bitacora.Accion switch
+            {
+                "CREAR" => "CREATE",
+                "ACTUALIZAR" => "UPDATE",
+                "ELIMINAR" => "DELETE",
+                "CONSULTAR" => "CONSULT",
+                _ => bitacora.Accion
+            };
 
             using var connection = _connectionFactory.CreateConnection();
+
             await connection.ExecuteAsync(sql, new
             {
-                IdUsuario = idUsuario,
-                Modulo = modulo,
-                Accion = accion.ToString().ToUpperInvariant(),
-                Descripcion = descripcion
+                bitacora.IdUsuario,
+                bitacora.Modulo,
+                Accion = accion,
+                bitacora.Descripcion
             });
-        }
-
-        public async Task InsertarErrorAsync(int idUsuario, string modulo, string mensajeError)
-        {
-            const string sql = @"
-                INSERT INTO ErrorLog (id_usuario, modulo, mensaje_error, fecha)
-                VALUES (@IdUsuario, @Modulo, @MensajeError, CURRENT_TIMESTAMP);";
-
-            using var connection = _connectionFactory.CreateConnection();
-            await connection.ExecuteAsync(sql, new { IdUsuario = idUsuario, Modulo = modulo, MensajeError = mensajeError });
         }
     }
 }

@@ -27,7 +27,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
                        t.fecha AS Fecha,
                        t.horas_invertidas AS HorasInvertidas
                 FROM Tarea t
-                INNER JOIN Usuario u ON u.id_usuario = t.id_usuario
+                INNER JOIN usuarios u ON u.id_usuario = t.id_usuario
                 WHERE t.id_solicitud = @IdSolicitud
                 ORDER BY t.fecha DESC, t.id_tarea DESC
                 LIMIT @TamanoPagina OFFSET @Desplazamiento;";
@@ -63,7 +63,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
                        t.fecha AS Fecha,
                        t.horas_invertidas AS HorasInvertidas
                 FROM Tarea t
-                INNER JOIN Usuario u ON u.id_usuario = t.id_usuario
+                INNER JOIN usuarios u ON u.id_usuario = t.id_usuario
                 WHERE t.id_tarea = @IdTarea
                 LIMIT 1;";
 
@@ -123,7 +123,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
                 SELECT id_usuario AS IdUsuario,
                        nombre_usuario  AS NombreUsuario,
                        nombre_completo AS NombreCompleto
-                FROM Usuario
+                FROM usuarios
                 ORDER BY nombre_completo;";
 
             using var connection = _connectionFactory.CreateConnection();

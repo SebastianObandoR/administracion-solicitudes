@@ -2,8 +2,6 @@
 using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Services.Models;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 
 namespace AdministracionSolicitudes.Services.Implementations
 {
@@ -15,14 +13,13 @@ namespace AdministracionSolicitudes.Services.Implementations
         private const string MensajeDatosRelacionados = "No se puede eliminar un registro con datos relacionados.";
         private const string MensajeSolicitudNoExiste = "La solicitud indicada no existe.";
         private const string MensajeTareaNoExiste = "La tarea indicada no existe.";
-        private static readonly JsonSerializerOptions OpcionesJson = new() { Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping };
         private readonly ITareaRepository _tareaRepository;
-        private readonly IBitacoraService _bitacoraService;
+        private readonly IAuditoriaService _auditoriaService;
 
-        public TareaService(ITareaRepository tareaRepository, IBitacoraService bitacoraService)
+        public TareaService(ITareaRepository tareaRepository, IAuditoriaService auditoriaService)
         {
             _tareaRepository = tareaRepository;
-            _bitacoraService = bitacoraService;
+            _auditoriaService = auditoriaService;
         }
 
         public async Task<ServiceResult<TareasListado>> ObtenerTareasPorSolicitudAsync(int idSolicitud, int pagina, int idUsuarioSesion)
@@ -38,7 +35,7 @@ namespace AdministracionSolicitudes.Services.Implementations
                 int paginaActual = Math.Clamp(pagina, 1, totalPaginas);
                 var elementos = (await _tareaRepository.ObtenerSolicitudPaginacionAsync(idSolicitud, paginaActual, TamanoPagina)).ToList();
 
-                await _bitacoraService.RegistrarAsync(idUsuarioSesion, Modulo, AccionBitacora.Consult, "El usuario consulta tareas");
+                await _auditoriaService.RegistrarConsultaAsync(idUsuarioSesion, Modulo);
 
                 return new ServiceResult<TareasListado>
                 {
@@ -59,7 +56,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             }
             catch (Exception ex)
             {
-                await _bitacoraService.RegistrarErrorAsync(idUsuarioSesion, Modulo, "consulta de tareas", ex);
+                await RegistrarErrorSeguroAsync(idUsuarioSesion, ex);
                 return new ServiceResult<TareasListado> { IsSuccess = false, Message = MensajeErrorInesperado };
             }
         }
@@ -91,7 +88,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             }
             catch (Exception ex)
             {
-                await _bitacoraService.RegistrarErrorAsync(idUsuarioSesion, Modulo, "formulario de tarea", ex);
+                await RegistrarErrorSeguroAsync(idUsuarioSesion, ex);
                 return new ServiceResult<TareaFormulario> { IsSuccess = false, Message = MensajeErrorInesperado };
             }
         }
@@ -103,13 +100,13 @@ namespace AdministracionSolicitudes.Services.Implementations
                 tarea.Descripcion = tarea.Descripcion.Trim();
                 tarea.IdTarea = await _tareaRepository.InsertarAsync(tarea);
 
-                await _bitacoraService.RegistrarAsync(idUsuarioSesion, Modulo, AccionBitacora.Create, $"Crear tarea: {ConvertirAJson(tarea)}");
+                await _auditoriaService.RegistrarCreacionAsync(idUsuarioSesion, Modulo, tarea);
 
                 return new ServiceResult { IsSuccess = true, Message = "Tarea creada correctamente." };
             }
             catch (Exception ex)
             {
-                await _bitacoraService.RegistrarErrorAsync(idUsuarioSesion, Modulo, "creación de tarea", ex);
+                await RegistrarErrorSeguroAsync(idUsuarioSesion, ex);
                 return new ServiceResult { IsSuccess = false, Message = MensajeErrorInesperado };
             }
         }
@@ -129,14 +126,13 @@ namespace AdministracionSolicitudes.Services.Implementations
 
                 if (!actualizada) return new ServiceResult { IsSuccess = false, Message = MensajeTareaNoExiste };
 
-                string json = JsonSerializer.Serialize(new { anterior = ConvertirAInstantanea(anterior), actual = ConvertirAInstantanea(tarea) }, OpcionesJson);
-                await _bitacoraService.RegistrarAsync(idUsuarioSesion, Modulo, AccionBitacora.Update, $"Actualizar tarea: {json}");
+                await _auditoriaService.RegistrarActualizacionAsync(idUsuarioSesion, Modulo, anterior, tarea);
 
                 return new ServiceResult { IsSuccess = true, Message = "Tarea actualizada correctamente." };
             }
             catch (Exception ex)
             {
-                await _bitacoraService.RegistrarErrorAsync(idUsuarioSesion, Modulo, "actualización de tarea", ex);
+                await RegistrarErrorSeguroAsync(idUsuarioSesion, ex);
                 return new ServiceResult { IsSuccess = false, Message = MensajeErrorInesperado };
             }
         }
@@ -155,33 +151,31 @@ namespace AdministracionSolicitudes.Services.Implementations
 
                 if (resultado == ResultadoEliminacion.NoEncontrado) return new ServiceResult { IsSuccess = false, Message = MensajeTareaNoExiste };
 
-                await _bitacoraService.RegistrarAsync(idUsuarioSesion, Modulo, AccionBitacora.Delete, $"Eliminar tarea: {ConvertirAJson(tarea)}");
+                await _auditoriaService.RegistrarEliminacionAsync(idUsuarioSesion, Modulo, tarea);
 
                 return new ServiceResult { IsSuccess = true, Message = "Tarea eliminada correctamente." };
             }
             catch (Exception ex)
             {
-                await _bitacoraService.RegistrarErrorAsync(idUsuarioSesion, Modulo, "eliminación de tarea", ex);
+                await RegistrarErrorSeguroAsync(idUsuarioSesion, ex);
                 return new ServiceResult { IsSuccess = false, Message = MensajeErrorInesperado };
             }
         }
 
-        private static string ConvertirAJson(Tarea tarea)
+        private async Task RegistrarErrorSeguroAsync(int idUsuarioSesion, Exception ex)
         {
-            return JsonSerializer.Serialize(ConvertirAInstantanea(tarea), OpcionesJson);
-        }
+            Console.WriteLine("=== ERROR TAREAS ===");
+            Console.WriteLine(ex.ToString());
 
-        private static object ConvertirAInstantanea(Tarea tarea)
-        {
-            return new
+            try
             {
-                tarea.IdTarea,
-                tarea.IdSolicitud,
-                tarea.IdUsuario,
-                tarea.Descripcion,
-                Fecha = tarea.Fecha.ToString("yyyy-MM-dd"),
-                tarea.HorasInvertidas
-            };
+                await _auditoriaService.RegistrarErrorAsync(idUsuarioSesion, Modulo, ex);
+            }
+            catch (Exception exLog)
+            {
+                Console.WriteLine("=== FALLO EL REGISTRO DEL ERROR ===");
+                Console.WriteLine(exLog.Message);
+            }
         }
     }
 }
