@@ -23,7 +23,6 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
         public IEnumerable<Solicitud> Solicitudes { get; set; } = Enumerable.Empty<Solicitud>();
         public Dictionary<int, EstadoVencimiento> EstadosVencimiento { get; set; } = new();
 
-        // Expuesto a la vista para mantener fija la altura de la tabla (5 filas)
         public int TamanoPagina => PageSize;
 
         [BindProperty(SupportsGet = true)]
