@@ -13,7 +13,7 @@ namespace AdministracionSolicitudes.Repository.Interfaces
         Task<bool> TieneRegistrosRelacionadosAsync(int idSolicitud);
 
         // Usado por SOL5 (proceso automatico de vencimiento)
-        Task<IEnumerable<Solicitud>> GetVencibleCandidatesAsync();
-        Task MarcarComoVencidaAsync(int idSolicitud, int idEstadoVencida);
+        Task<IEnumerable<Solicitud>> GetVencibleCandidatesAsync(int idEstadoVencida, int idEstadoFinalizada);
+        Task<bool> MarcarComoVencidaAsync(int idSolicitud, int idEstadoAnterior, int idEstadoVencida);
     }
 }

@@ -4,6 +4,7 @@ using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Implementations;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Web.Middleware;
+using AdministracionSolicitudes.Web.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +37,9 @@ builder.Services.AddScoped<IEstadoSolicitudRepository, EstadoSolicitudRepository
 builder.Services.AddScoped<IDiaFeriadoRepository, DiaFeriadoRepository>();
 builder.Services.AddScoped<ISolicitudService, SolicitudService>();
 builder.Services.AddScoped<IVencimientoService, VencimientoService>();
+
+// SOL5
+builder.Services.AddHostedService<VencimientoSolicitudesWorker>();
 
 var app = builder.Build();
 
