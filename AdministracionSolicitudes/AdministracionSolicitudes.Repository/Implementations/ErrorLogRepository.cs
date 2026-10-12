@@ -17,12 +17,11 @@ namespace AdministracionSolicitudes.Repository.Implementations
         public async Task RegistrarAsync(ErrorLog errorLog)
         {
             const string sql = """
-                INSERT INTO errorlog (id_usuario, modulo, mensaje_error, fecha)
-                VALUES (@IdUsuario, @Modulo, @MensajeError, NOW());
-                """;
+            INSERT INTO errorlog (id_usuario, modulo, mensaje_error, fecha)
+            VALUES (@IdUsuario, @Modulo, @MensajeError, NOW());
+            """;
 
             using var connection = _connectionFactory.CreateConnection();
-
             await connection.ExecuteAsync(sql, errorLog);
         }
     }

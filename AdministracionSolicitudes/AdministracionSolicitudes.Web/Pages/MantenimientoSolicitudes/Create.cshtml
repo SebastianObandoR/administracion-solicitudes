@@ -1,0 +1,104 @@
+﻿@page
+@model AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes.CreateModel
+
+@{
+    ViewData["Title"] = "Nueva Solicitud";
+
+    var erroresGenerales = ViewData.ModelState.TryGetValue(string.Empty, out var entradaGeneral)
+        ? entradaGeneral.Errors.Select(error => error.ErrorMessage)
+            .Where(mensaje => !string.IsNullOrWhiteSpace(mensaje)).ToList()
+        : new List<string>();
+}
+
+<section class="formulario-mantenimiento">
+    <div class="acciones-formulario">
+        <a asp-page="/MantenimientoSolicitudes/Index" class="boton-formulario" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+        <button type="submit" form="formSolicitud" class="boton-formulario" title="Guardar">
+            <i class="bi bi-floppy-fill"></i>
+        </button>
+    </div>
+
+    <div class="panel-formulario">
+        <div class="titulo-panel">Formulario Solicitud</div>
+
+        <form method="post" id="formSolicitud" class="campos-formulario rejilla-campos" novalidate>
+            <div class="campo-formulario">
+                <label asp-for="Input.ConsecutivoOficio">Consecutivo de oficio</label>
+                <input asp-for="Input.ConsecutivoOficio" autocomplete="off" />
+                <span asp-validation-for="Input.ConsecutivoOficio" class="mensaje-validacion"></span>
+            </div>
+
+            <div class="campo-formulario">
+                <label asp-for="Input.Titulo">Titulo</label>
+                <input asp-for="Input.Titulo" autocomplete="off" />
+                <span asp-validation-for="Input.Titulo" class="mensaje-validacion"></span>
+            </div>
+
+            <div class="campo-formulario">
+                <label asp-for="Input.IdRepresentante">Representante</label>
+                <select asp-for="Input.IdRepresentante" asp-items="Model.Representantes">
+                    <option value="">-- Seleccione --</option>
+                </select>
+                <span asp-validation-for="Input.IdRepresentante" class="mensaje-validacion"></span>
+            </div>
+
+            <div class="campo-formulario">
+                <label>Estado</label>
+                <input type="text" value="Nueva" disabled />
+                <small class="ayuda-campo">Las solicitudes se crean por defecto en estado "Nueva".</small>
+            </div>
+
+            <div class="campo-formulario campo-completo campo-fecha-ingreso">
+                <label asp-for="Input.FechaIngreso">Fecha de ingreso</label>
+                <input asp-for="Input.FechaIngreso" type="date" />
+                <span asp-validation-for="Input.FechaIngreso" class="mensaje-validacion"></span>
+            </div>
+
+            <div class="campo-formulario">
+                <label asp-for="Input.FechaInicio">Fecha de inicio</label>
+                <input asp-for="Input.FechaInicio" type="date" />
+                <span asp-validation-for="Input.FechaInicio" class="mensaje-validacion"></span>
+            </div>
+
+            <div class="campo-formulario">
+                <label asp-for="Input.FechaRespuesta">Fecha de respuesta</label>
+                <input asp-for="Input.FechaRespuesta" type="date" />
+                <span asp-validation-for="Input.FechaRespuesta" class="mensaje-validacion"></span>
+            </div>
+
+            <div class="campo-formulario">
+                <label asp-for="Input.DocumentoInicio">Documento de inicio</label>
+                <input asp-for="Input.DocumentoInicio" autocomplete="off" />
+            </div>
+
+            <div class="campo-formulario">
+                <label asp-for="Input.DocumentoRespuesta">Documento de respuesta</label>
+                <input asp-for="Input.DocumentoRespuesta" autocomplete="off" />
+            </div>
+
+            <div class="campo-formulario campo-completo">
+                <label asp-for="Input.Descripcion">Descripcion</label>
+                <textarea asp-for="Input.Descripcion" rows="3"></textarea>
+            </div>
+
+            <div class="campo-formulario campo-completo">
+                <label asp-for="Input.Observaciones">Observaciones</label>
+                <textarea asp-for="Input.Observaciones" rows="2"></textarea>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        window.__erroresValidacion = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(Model.ErroresValidacion)
+        );
+        window.__erroresGenerales = @Html.Raw(
+            System.Text.Json.JsonSerializer.Serialize(erroresGenerales)
+        );
+    </script>
+}

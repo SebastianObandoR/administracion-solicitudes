@@ -149,6 +149,10 @@
     padding: 22px;
 }
 
+.campo-completo {
+    grid-column: 1 / -1;
+}
+
 .campo-formulario {
     margin-bottom: 18px;
 }
@@ -191,3 +195,140 @@
         padding: 16px;
     }
 }
+
+/* --Solicitudes-- */
+
+.tabla-mantenimiento tbody tr.fila-al-dia {
+    background: #d4efd9;
+}
+
+.tabla-mantenimiento tbody tr.fila-vence-hoy {
+    background: #fff1a8;
+}
+
+.tabla-mantenimiento tbody tr.fila-vencida {
+    background: #f7c6c1;
+}
+
+.tabla-mantenimiento tbody tr.fila-al-dia td:first-child {
+    box-shadow: inset 4px 0 0 #2e9e4f;
+}
+
+.tabla-mantenimiento tbody tr.fila-vence-hoy td:first-child {
+    box-shadow: inset 4px 0 0 #e0a100;
+}
+
+.tabla-mantenimiento tbody tr.fila-vencida td:first-child {
+    box-shadow: inset 4px 0 0 #c0392b;
+}
+
+.sin-registros {
+    color: var(--texto-suave);
+    padding: 24px 10px !important;
+    text-align: center;
+}
+
+.rejilla-campos {
+    display: grid;
+    gap: 0 18px;
+    grid-template-columns: repeat(2, minmax(0, 300px));
+    justify-content: start;
+}
+
+.rejilla-campos .campo-formulario:last-child {
+    margin-bottom: 18px;
+}
+
+.rejilla-campos .campo-completo {
+    grid-column: 1 / -1;
+}
+
+.rejilla-campos .campo-formulario:last-child {
+    margin-bottom: 18px;
+}
+
+.rejilla-campos .campo-completo {
+    grid-column: 1 / -1;
+}
+
+.rejilla-campos .campo-completo.campo-fecha-ingreso {
+    max-width: 300px;
+}
+
+@media (max-width: 800px) {
+    .rejilla-campos {
+        grid-template-columns: 1fr;
+    }
+}
+
+.campo-formulario textarea {
+    background: #ffffff;
+    border: 1px solid var(--borde);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    padding: 8px 12px;
+    resize: none;
+    width: 100%;
+}
+
+  .campo-formulario textarea:focus {
+        border-color: var(--acento);
+        outline: none;
+    }
+
+.campo-formulario input:disabled {
+    background: #f5f6f6;
+    color: var(--texto-suave);
+}
+
+.ayuda-campo {
+    color: var(--texto-suave);
+    display: block;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.mensaje-validacion {
+    color: #c0392b;
+    display: block;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+    .mensaje-validacion:empty {
+        display: none;
+     }
+
+.campo-formulario input[readonly] {
+    background: #f5f6f6;
+    color: var(--texto-suave);
+    cursor: not-allowed;
+}
+
+.campo-formulario input[readonly]:focus {
+    border-color: var(--borde);
+    outline: none;
+}
+
+.mensaje-validacion {
+    display: none !important;
+}
+
+.tabla-mantenimiento tbody tr.fila-sin-color {
+    background: #ffffff;
+}
+
+.paginacion.paginacion-centrada {
+    justify-content: center;
+}
+
+.tabla-mantenimiento tbody tr.fila-vacia {
+    background: transparent;
+}
+
+    .tabla-mantenimiento tbody tr.fila-vacia td {
+        border-bottom: 0;
+        height: 59px;
+        padding: 0;
+    }

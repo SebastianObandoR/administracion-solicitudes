@@ -17,32 +17,14 @@
 
     <title>@ViewData["Title"] - @systemName</title>
 
-    <link rel="stylesheet"
-          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-
-    <link rel="stylesheet"
-          href="~/css/sitio.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/css/estructura.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/css/navegacion.css"
-          asp-append-version="true" />
-
-    <link rel="stylesheet"
-          href="~/css/paginas.css"
-          asp-append-version="true" />
-    
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/sitio.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/estructura.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navegacion.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/paginas.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/mantenimientos.css" asp-append-version="true" />
 </head>
-
-
 
 <body>
     <div class="espacio-trabajo" id="espacioTrabajo">
@@ -61,6 +43,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/estructura.js" asp-append-version="true"></script>
+    <script src="~/js/validacion-modal.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

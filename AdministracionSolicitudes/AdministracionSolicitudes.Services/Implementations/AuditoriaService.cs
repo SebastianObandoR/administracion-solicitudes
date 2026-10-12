@@ -13,11 +13,7 @@ namespace AdministracionSolicitudes.Services.Implementations
 
         private static readonly HashSet<string> PropiedadesSensibles = new(StringComparer.OrdinalIgnoreCase)
         {
-            "Contrasena",
-            "ContrasenaCifrada",
-            "NonceContrasena",
-            "TagContrasena",
-            "Password"
+            "Contrasena", "ContrasenaCifrada", "NonceContrasena", "TagContrasena", "Password"
         };
 
         private static readonly JsonSerializerOptions JsonOptions = new()
@@ -40,12 +36,7 @@ namespace AdministracionSolicitudes.Services.Implementations
 
         public async Task RegistrarActualizacionAsync(int idUsuario, string modulo, object registroAnterior, object registroActual)
         {
-            var datos = new
-            {
-                anterior = ObtenerNodoSeguro(registroAnterior),
-                actual = ObtenerNodoSeguro(registroActual)
-            };
-
+            var datos = new { anterior = ObtenerNodoSeguro(registroAnterior), actual = ObtenerNodoSeguro(registroActual) };
             var json = JsonSerializer.Serialize(datos, JsonOptions);
             await RegistrarBitacoraAsync(idUsuario, modulo, "UPDATE", $"UPDATE {json}");
         }
@@ -58,7 +49,12 @@ namespace AdministracionSolicitudes.Services.Implementations
 
         public async Task RegistrarConsultaAsync(int idUsuario, string elemento)
         {
-            await RegistrarBitacoraAsync(idUsuario, elemento, "CONSULT", $"El usuario consulta {elemento}");
+            await RegistrarConsultaAsync(idUsuario, elemento, elemento);
+        }
+
+        public async Task RegistrarConsultaAsync(int idUsuario, string modulo, string elemento)
+        {
+            await RegistrarBitacoraAsync(idUsuario, modulo, "CONSULT", $"El usuario consulta {elemento}");
         }
 
         public async Task RegistrarErrorAsync(int? idUsuario, string modulo, Exception exception)
@@ -69,7 +65,6 @@ namespace AdministracionSolicitudes.Services.Implementations
                 Modulo = modulo,
                 MensajeError = exception.Message
             };
-
             await _errorLogRepository.RegistrarAsync(errorLog);
         }
 
@@ -82,7 +77,6 @@ namespace AdministracionSolicitudes.Services.Implementations
                 Accion = accion,
                 Descripcion = descripcion
             };
-
             await _bitacoraRepository.RegistrarAsync(bitacora);
         }
 
@@ -104,7 +98,6 @@ namespace AdministracionSolicitudes.Services.Implementations
             if (nodo is JsonObject objeto)
             {
                 var propiedades = objeto.Select(propiedad => propiedad.Key).ToList();
-
                 foreach (var propiedad in propiedades)
                 {
                     if (PropiedadesSensibles.Contains(propiedad))
@@ -112,10 +105,8 @@ namespace AdministracionSolicitudes.Services.Implementations
                         objeto.Remove(propiedad);
                         continue;
                     }
-
                     EliminarPropiedadesSensibles(objeto[propiedad]);
                 }
-
                 return;
             }
 

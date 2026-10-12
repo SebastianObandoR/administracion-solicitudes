@@ -29,6 +29,14 @@ builder.Services.AddSingleton<IPasswordEncryptionService>(_ => new PasswordEncry
 builder.Services.AddScoped<IAuditoriaService, AuditoriaService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
+// SOL1
+builder.Services.AddScoped<ISolicitudRepository, SolicitudRepository>();
+builder.Services.AddScoped<IRepresentanteRepository, RepresentanteRepository>();
+builder.Services.AddScoped<IEstadoSolicitudRepository, EstadoSolicitudRepository>();
+builder.Services.AddScoped<IDiaFeriadoRepository, DiaFeriadoRepository>();
+builder.Services.AddScoped<ISolicitudService, SolicitudService>();
+builder.Services.AddScoped<IVencimientoService, VencimientoService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
