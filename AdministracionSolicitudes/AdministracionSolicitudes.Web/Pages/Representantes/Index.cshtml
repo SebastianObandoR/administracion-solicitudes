@@ -16,15 +16,6 @@
         </a>
     </div>
 
-    @if (!string.IsNullOrWhiteSpace(Model.MensajeExito))
-    {
-        <div class="representantes-mensaje representantes-mensaje--exito" role="status">@Model.MensajeExito</div>
-    }
-    @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
-    {
-        <div class="representantes-mensaje representantes-mensaje--error" role="alert">@Model.MensajeError</div>
-    }
-
     <div class="representantes-tarjeta">
         <div class="table-responsive">
             <table class="table representantes-tabla align-middle mb-0">
@@ -106,3 +97,28 @@
         </nav>
     }
 </section>
+
+@section Scripts {
+    <script>
+        @if (!string.IsNullOrWhiteSpace(Model.MensajeExito))
+        {
+            <text>
+                Swal.fire({
+                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MensajeExito)),
+                    icon: "success",
+                    confirmButtonText: "Aceptar"
+                });
+            </text>
+        }
+        else if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+        {
+            <text>
+                Swal.fire({
+                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MensajeError)),
+                    icon: "error",
+                    confirmButtonText: "Aceptar"
+                });
+            </text>
+        }
+    </script>
+}
