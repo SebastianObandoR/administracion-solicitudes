@@ -144,6 +144,11 @@ namespace AdministracionSolicitudes.Services.Implementations
                 var usuario = await _userRepository.GetByIdAsync(idUsuario);
                 if (usuario == null) return ResultadoOperacion.Error("Usuario no encontrado.");
 
+                if (await _userRepository.HasRelatedDataAsync(idUsuario))
+                {
+                    return ResultadoOperacion.Error("No se puede eliminar un registro con datos relacionados.");
+                }
+
                 await _userRepository.DeleteAsync(idUsuario);
                 await _auditoriaService.RegistrarEliminacionAsync(idUsuarioEjecutor, Modulo, usuario);
 
@@ -152,7 +157,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             catch (Exception exception)
             {
                 await _auditoriaService.RegistrarErrorAsync(idUsuarioEjecutor, Modulo, exception);
-                return ResultadoOperacion.Error("No se puede eliminar un registro con datos relacionados.");
+                return ResultadoOperacion.Error("Ocurrio un error al eliminar el usuario.");
             }
         }
 

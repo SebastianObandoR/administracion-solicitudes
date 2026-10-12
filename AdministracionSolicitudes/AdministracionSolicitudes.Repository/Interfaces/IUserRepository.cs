@@ -20,5 +20,7 @@ namespace AdministracionSolicitudes.Repository.Interfaces
         Task UpdateFailedAttemptsAsync(int idUsuario, int intentosFallidos);
         Task ResetFailedAttemptsAsync(int idUsuario);
         Task BlockAsync(int idUsuario);
+
+        Task<bool> HasRelatedDataAsync(int idUsuario);
     }
 }

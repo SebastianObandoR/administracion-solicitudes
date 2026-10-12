@@ -35,7 +35,7 @@ namespace AdministracionSolicitudes.Services.Implementations
         public async Task RegistrarCreacionAsync(int idUsuario, string modulo, object registro)
         {
             var json = SerializarSeguro(registro);
-            await RegistrarBitacoraAsync(idUsuario, modulo, "CREAR", $"CREAR {json}");
+            await RegistrarBitacoraAsync(idUsuario, modulo, "CREATE", $"CREATE {json}");
         }
 
         public async Task RegistrarActualizacionAsync(int idUsuario, string modulo, object registroAnterior, object registroActual)
@@ -47,18 +47,18 @@ namespace AdministracionSolicitudes.Services.Implementations
             };
 
             var json = JsonSerializer.Serialize(datos, JsonOptions);
-            await RegistrarBitacoraAsync(idUsuario, modulo, "ACTUALIZAR", $"ACTUALIZAR {json}");
+            await RegistrarBitacoraAsync(idUsuario, modulo, "UPDATE", $"UPDATE {json}");
         }
 
         public async Task RegistrarEliminacionAsync(int idUsuario, string modulo, object registroEliminado)
         {
             var json = SerializarSeguro(registroEliminado);
-            await RegistrarBitacoraAsync(idUsuario, modulo, "ELIMINAR", $"ELIMINAR {json}");
+            await RegistrarBitacoraAsync(idUsuario, modulo, "DELETE", $"DELETE {json}");
         }
 
         public async Task RegistrarConsultaAsync(int idUsuario, string elemento)
         {
-            await RegistrarBitacoraAsync(idUsuario, elemento, "CONSULTAR", $"El usuario consulta {elemento}");
+            await RegistrarBitacoraAsync(idUsuario, elemento, "CONSULT", $"El usuario consulta {elemento}");
         }
 
         public async Task RegistrarErrorAsync(int? idUsuario, string modulo, Exception exception)

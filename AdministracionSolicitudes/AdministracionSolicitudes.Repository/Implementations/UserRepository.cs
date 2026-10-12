@@ -205,5 +205,17 @@ namespace AdministracionSolicitudes.Repository.Implementations
             using var connection = _connectionFactory.CreateConnection();
             await connection.ExecuteAsync(sql, new { IdUsuario = idUsuario, Estado = EstadoUsuario.Bloqueado });
         }
+
+        public async Task<bool> HasRelatedDataAsync(int idUsuario)
+        {
+            const string sql = """
+            SELECT
+                EXISTS(SELECT 1 FROM tarea WHERE id_usuario = @IdUsuario)
+                OR EXISTS(SELECT 1 FROM historialestadosolicitud WHERE id_usuario = @IdUsuario);
+            """;
+
+            using var connection = _connectionFactory.CreateConnection();
+            return await connection.ExecuteScalarAsync<bool>(sql, new { IdUsuario = idUsuario });
+        }
     }
 }

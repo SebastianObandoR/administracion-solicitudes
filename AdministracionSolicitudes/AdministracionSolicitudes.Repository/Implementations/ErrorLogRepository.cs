@@ -17,18 +17,8 @@ namespace AdministracionSolicitudes.Repository.Implementations
         public async Task RegistrarAsync(ErrorLog errorLog)
         {
             const string sql = """
-                INSERT INTO error_log
-                (
-                    id_usuario,
-                    modulo,
-                    mensaje_error
-                )
-                VALUES
-                (
-                    @IdUsuario,
-                    @Modulo,
-                    @MensajeError
-                );
+                INSERT INTO errorlog (id_usuario, modulo, mensaje_error, fecha)
+                VALUES (@IdUsuario, @Modulo, @MensajeError, NOW());
                 """;
 
             using var connection = _connectionFactory.CreateConnection();
