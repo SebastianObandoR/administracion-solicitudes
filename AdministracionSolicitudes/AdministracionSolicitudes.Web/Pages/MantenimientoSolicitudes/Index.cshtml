@@ -60,7 +60,13 @@
                                     <i class="bi bi-receipt"></i>
                                     <span class="visually-hidden">Desglose</span>
                                 </a>
-
+                                <a asp-page="/Tareas/Index"
+                                   asp-route-idSolicitud="@solicitud.IdSolicitud"
+                                   class="boton-accion"
+                                   title="Tareas">
+                                    <i class="bi bi-list-task"></i>
+                                    <span class="visually-hidden">Tareas</span>
+                                </a>
                                 <a asp-page="/MantenimientoSolicitudes/Edit"
                                    asp-route-id="@solicitud.IdSolicitud"
                                    class="boton-accion"
@@ -141,13 +147,13 @@
 
         @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
         {
-            <text>
-                Swal.fire({
-                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
-                    icon: '@Model.TipoMensaje',
-                    confirmButtonText: 'Aceptar'
-                });
-            </text>
+                <text>
+                        Swal.fire({
+                            text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                            icon: '@Model.TipoMensaje',
+                            confirmButtonText: 'Aceptar'
+                        });
+                </text>
         }
     </script>
 }

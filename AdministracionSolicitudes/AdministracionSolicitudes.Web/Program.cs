@@ -62,6 +62,10 @@ builder.Services.AddScoped<INotificacionEstadoService, NotificacionEstadoService
 builder.Services.AddScoped<IReporteFacturacionRepository, ReporteFacturacionRepository>();
 builder.Services.AddScoped<IReporteFacturacionService, ReporteFacturacionService>();
 
+// TAR1
+builder.Services.AddScoped<ITareaRepository, TareaRepository>();
+builder.Services.AddScoped<ITareaService, TareaService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
