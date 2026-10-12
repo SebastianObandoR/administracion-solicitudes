@@ -1,0 +1,51 @@
+﻿.filtros-reporte {
+    align-items: end;
+    display: grid;
+    gap: 0 20px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    padding: 22px;
+}
+
+    .filtros-reporte .campo-formulario {
+        margin-bottom: 0;
+    }
+
+.boton-generar {
+    align-items: center;
+    background: var(--acento);
+    border: 0;
+    border-radius: 3px;
+    color: #ffffff;
+    cursor: pointer;
+    display: inline-flex;
+    gap: 8px;
+    min-height: 42px;
+    padding: 9px 14px;
+}
+
+    .boton-generar:hover {
+        opacity: 0.9;
+    }
+
+.panel-resultado {
+    margin-top: 22px;
+}
+
+.tabla-mantenimiento .columna-numerica {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.tabla-mantenimiento tfoot td {
+    background: var(--acento-suave);
+    border-top: 2px solid var(--acento);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px;
+}
+
+.tabla-vacia {
+    color: var(--texto-suave);
+    padding: 24px 10px !important;
+    text-align: center;
+}
