@@ -17,17 +17,20 @@ namespace AdministracionSolicitudes.Services.Implementations
         private readonly IEstadoSolicitudRepository _estadoSolicitudRepository;
         private readonly IDiaFeriadoRepository _diaFeriadoRepository;
         private readonly IAuditoriaService _auditoriaService;
+        private readonly INotificacionEstadoService _notificacionEstadoService;
 
         public VencimientoService(
             ISolicitudRepository solicitudRepository,
             IEstadoSolicitudRepository estadoSolicitudRepository,
             IDiaFeriadoRepository diaFeriadoRepository,
-            IAuditoriaService auditoriaService)
+            IAuditoriaService auditoriaService,
+            INotificacionEstadoService notificacionEstadoService)
         {
             _solicitudRepository = solicitudRepository;
             _estadoSolicitudRepository = estadoSolicitudRepository;
             _diaFeriadoRepository = diaFeriadoRepository;
             _auditoriaService = auditoriaService;
+            _notificacionEstadoService = notificacionEstadoService;
         }
 
         public async Task<Dictionary<int, EstadoVencimiento>> CalcularEstadosAsync(IEnumerable<Solicitud> solicitudes, int idUsuarioEjecutor)
@@ -88,6 +91,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             try
             {
                 var registroAnterior = SolicitudBitacoraPayload.Crear(solicitud);
+                int idEstadoAnterior = solicitud.IdEstado;
 
                 bool actualizada = await _solicitudRepository.MarcarComoVencidaAsync(
                     solicitud.IdSolicitud, solicitud.IdEstado, idEstadoVencida);
@@ -97,6 +101,9 @@ namespace AdministracionSolicitudes.Services.Implementations
                 solicitud.IdEstado = idEstadoVencida;
                 await _auditoriaService.RegistrarActualizacionAsync(
                     null, Modulo, registroAnterior, SolicitudBitacoraPayload.Crear(solicitud));
+
+                await _notificacionEstadoService.NotificarCambioEstadoAsync(
+                    solicitud.IdSolicitud, idEstadoAnterior, idEstadoVencida, "Proceso automatico");
 
                 return true;
             }

@@ -20,6 +20,7 @@ builder.Services.AddSession(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("No se encontro la cadena de conexion DefaultConnection");
 var encryptionKey = builder.Configuration["SecuritySettings:EncryptionKey"] ?? throw new InvalidOperationException("No se encontro la clave de cifrado");
+var emailSettings = builder.Configuration.GetSection("EmailSettings").Get<AdministracionSolicitudes.Services.Models.EmailSettings>() ?? new AdministracionSolicitudes.Services.Models.EmailSettings();
 
 builder.Services.AddSingleton<IDbConnectionFactory>(_ => new DbConnectionFactory(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -50,6 +51,12 @@ builder.Services.AddScoped<IEstadoSolicitudService, EstadoSolicitudService>();
 
 // SOL5
 builder.Services.AddHostedService<VencimientoSolicitudesWorker>();
+
+// SOL6
+builder.Services.AddSingleton(emailSettings);
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<INotificacionEstadoRepository, NotificacionEstadoRepository>();
+builder.Services.AddScoped<INotificacionEstadoService, NotificacionEstadoService>();
 
 var app = builder.Build();
 

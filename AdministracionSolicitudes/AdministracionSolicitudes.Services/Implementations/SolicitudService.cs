@@ -15,17 +15,23 @@ namespace AdministracionSolicitudes.Services.Implementations
         private readonly IRepresentanteRepository _representanteRepository;
         private readonly IEstadoSolicitudRepository _estadoSolicitudRepository;
         private readonly IAuditoriaService _auditoriaService;
+        private readonly INotificacionEstadoService _notificacionEstadoService;
+        private readonly IUserRepository _userRepository;
 
         public SolicitudService(
             ISolicitudRepository solicitudRepository,
             IRepresentanteRepository representanteRepository,
             IEstadoSolicitudRepository estadoSolicitudRepository,
-            IAuditoriaService auditoriaService)
+            IAuditoriaService auditoriaService,
+            INotificacionEstadoService notificacionEstadoService,
+            IUserRepository userRepository)
         {
             _solicitudRepository = solicitudRepository;
             _representanteRepository = representanteRepository;
             _estadoSolicitudRepository = estadoSolicitudRepository;
             _auditoriaService = auditoriaService;
+            _notificacionEstadoService = notificacionEstadoService;
+            _userRepository = userRepository;
         }
 
         public async Task<(IEnumerable<Solicitud> Items, int TotalRegistros)> GetPagedAsync(int pageNumber, int pageSize, int idUsuarioEjecutor)
@@ -132,6 +138,16 @@ namespace AdministracionSolicitudes.Services.Implementations
                 var registroActual = ToBitacoraPayload(actualizado!);
 
                 await _auditoriaService.RegistrarActualizacionAsync(idUsuarioEjecutor, Modulo, registroAnterior, registroActual);
+
+                if (existente.IdEstado != solicitud.IdEstado)
+                {
+                    var usuario = await _userRepository.GetByIdAsync(idUsuarioEjecutor);
+                    await _notificacionEstadoService.NotificarCambioEstadoAsync(
+                        solicitud.IdSolicitud,
+                        existente.IdEstado,
+                        solicitud.IdEstado,
+                        usuario?.NombreUsuario ?? $"Usuario #{idUsuarioEjecutor}");
+                }
                 return SolicitudOperationResult.Success(solicitud.IdSolicitud);
             }
             catch (Exception exception)
