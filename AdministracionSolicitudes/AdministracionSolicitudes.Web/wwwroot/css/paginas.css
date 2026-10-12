@@ -37,6 +37,233 @@
     max-width: 650px;
 }
 
+.estados-pagina {
+    color: var(--texto);
+    max-width: 1180px;
+}
+
+.estados-encabezado {
+    margin-bottom: 28px;
+}
+
+.estados-titulo {
+    color: var(--texto);
+    font-size: clamp(30px, 3.2vw, 38px);
+    font-weight: 400;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    margin: 0 0 8px;
+}
+
+.estados-descripcion {
+    color: var(--texto-suave);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.estados-tarjeta {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.estados-formulario-tarjeta {
+    max-width: 760px;
+    padding: 32px;
+}
+
+.estados-formulario {
+    display: grid;
+    gap: 22px;
+}
+
+.estados-campo {
+    display: grid;
+    gap: 8px;
+}
+
+.estados-campo label {
+    color: var(--texto);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.estados-campo input {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 5px;
+    color: var(--texto);
+    font: inherit;
+    min-height: 44px;
+    padding: 9px 12px;
+    width: 100%;
+}
+
+.estados-campo input:focus {
+    border-color: var(--acento);
+    box-shadow: 0 0 0 3px var(--acento-suave);
+    outline: none;
+}
+
+.estados-campo input[readonly] {
+    background: var(--fondo);
+    color: var(--texto-suave);
+}
+
+.estados-ayuda {
+    color: var(--texto-suave);
+    font-size: 12px;
+    margin-top: -14px;
+}
+
+.estados-error-validacion,
+.estados-validacion {
+    color: #8e3b46;
+    font-size: 12px;
+}
+
+.estados-acciones-formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.estados-boton {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    gap: 7px;
+    justify-content: center;
+    line-height: 1.2;
+    min-height: 38px;
+    padding: 8px 13px;
+    text-decoration: none;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.estados-boton:focus-visible,
+.estados-paginacion .page-link:focus-visible {
+    box-shadow: 0 0 0 3px var(--acento-suave);
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+}
+
+.estados-boton--principal {
+    background: var(--acento);
+    border-color: var(--acento);
+    color: #ffffff;
+}
+
+.estados-boton--principal:hover {
+    background: var(--navegacion);
+    border-color: var(--navegacion);
+    color: #ffffff;
+}
+
+.estados-boton--secundario,
+.estados-boton--eliminar {
+    background: var(--superficie);
+    border-color: var(--borde);
+    color: var(--texto);
+}
+
+.estados-boton--secundario:hover,
+.estados-boton--eliminar:hover {
+    background: var(--acento-suave);
+    border-color: var(--acento);
+    color: var(--navegacion);
+}
+
+.estados-tabla {
+    color: var(--texto);
+}
+
+.estados-tabla thead th {
+    background: var(--acento-suave);
+    border-bottom: 1px solid var(--borde);
+    color: var(--navegacion);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 15px 18px;
+    text-transform: uppercase;
+}
+
+.estados-tabla tbody td {
+    border-color: var(--borde);
+    font-size: 14px;
+    padding: 14px 18px;
+}
+
+.estados-tabla tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.estados-tabla tbody tr:hover > * {
+    --bs-table-bg-state: var(--fondo);
+}
+
+.estados-vacio {
+    color: var(--texto-suave);
+    padding: 32px 18px !important;
+    text-align: center;
+}
+
+.estados-mensaje {
+    border: 1px solid var(--borde);
+    border-radius: 5px;
+    font-size: 13px;
+    margin-bottom: 18px;
+    padding: 12px 15px;
+}
+
+.estados-mensaje--exito {
+    background: var(--acento-suave);
+    border-left: 3px solid var(--acento);
+    color: var(--navegacion);
+}
+
+.estados-mensaje--error {
+    background: var(--superficie);
+    border-left: 3px solid var(--navegacion);
+    color: var(--texto);
+}
+
+.estados-paginacion {
+    margin-top: 22px;
+}
+
+.estados-paginacion .pagination {
+    gap: 5px;
+}
+
+.estados-paginacion .page-link {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: 5px;
+    color: var(--navegacion);
+    font-size: 13px;
+}
+
+.estados-paginacion .page-item.active .page-link {
+    background: var(--acento);
+    border-color: var(--acento);
+    color: #ffffff;
+}
+
+.estados-paginacion .page-item.disabled .page-link {
+    background: var(--fondo);
+    color: var(--texto-suave);
+}
+
 .area-logo-bienvenida {
     align-items: center;
     display: flex;
@@ -83,5 +310,17 @@
 
     .logo-bienvenida i {
         font-size: 82px;
+    }
+}
+
+@media (max-width: 600px) {
+    .estados-formulario-tarjeta {
+        padding: 22px 18px;
+    }
+
+    .estados-tabla thead th,
+    .estados-tabla tbody td {
+        padding-left: 12px;
+        padding-right: 12px;
     }
 }

@@ -1,0 +1,39 @@
+@page "{id:int}"
+@model AdministracionSolicitudes.Web.Pages.Estados.EditarModel
+
+@{
+    ViewData["Title"] = "Editar estado";
+}
+
+<section class="container-fluid px-0 estados-pagina">
+    <div class="estados-encabezado">
+        <h1 class="estados-titulo">Editar estado</h1>
+        <p class="estados-descripcion">Actualice el nombre del estado seleccionado.</p>
+    </div>
+
+    <div class="estados-tarjeta estados-formulario-tarjeta">
+        <form method="post" class="estados-formulario">
+            <div asp-validation-summary="ModelOnly" class="estados-validacion" role="alert"></div>
+
+            <div class="estados-campo">
+                <label asp-for="Id">Identificador</label>
+                <input asp-for="Id" readonly />
+            </div>
+
+            <div class="estados-campo">
+                <label asp-for="Input.Nombre">Nombre</label>
+                <input asp-for="Input.Nombre" autocomplete="off" />
+                <span asp-validation-for="Input.Nombre" class="estados-error-validacion"></span>
+            </div>
+
+            <div class="estados-acciones-formulario">
+                <button type="submit" class="estados-boton estados-boton--principal">Guardar cambios</button>
+                <a class="estados-boton estados-boton--secundario" asp-page="Index">Regresar al listado</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

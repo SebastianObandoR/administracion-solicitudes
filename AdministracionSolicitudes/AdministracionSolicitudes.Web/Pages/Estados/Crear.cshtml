@@ -1,0 +1,36 @@
+@page
+@model AdministracionSolicitudes.Web.Pages.Estados.CrearModel
+
+@{
+    ViewData["Title"] = "Nuevo estado";
+}
+
+<section class="container-fluid px-0 estados-pagina">
+    <div class="estados-encabezado">
+        <h1 class="estados-titulo">Nuevo estado</h1>
+        <p class="estados-descripcion">Ingrese el nombre del estado de solicitud.</p>
+    </div>
+
+    <div class="estados-tarjeta estados-formulario-tarjeta">
+        <form method="post" class="estados-formulario">
+            <div asp-validation-summary="ModelOnly" class="estados-validacion" role="alert"></div>
+
+            <div class="estados-campo">
+                <label asp-for="Input.Nombre">Nombre</label>
+                <input asp-for="Input.Nombre" autocomplete="off" />
+                <span asp-validation-for="Input.Nombre" class="estados-error-validacion"></span>
+            </div>
+
+            <div class="estados-ayuda">El identificador se asignará automáticamente.</div>
+
+            <div class="estados-acciones-formulario">
+                <button type="submit" class="estados-boton estados-boton--principal">Guardar</button>
+                <a class="estados-boton estados-boton--secundario" asp-page="Index">Regresar al listado</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
