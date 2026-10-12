@@ -97,8 +97,10 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
                 return Page();
             }
 
-            TempData["Mensaje"] = "Solicitud actualizada correctamente.";
-            TempData["TipoMensaje"] = "success";
+            TempData["Mensaje"] = string.IsNullOrWhiteSpace(resultado.Message)
+                ? "Solicitud actualizada correctamente."
+                : resultado.Message;
+            TempData["TipoMensaje"] = resultado.HasWarning ? "warning" : "success";
             return RedirectToPage("./Index");
         }
 
