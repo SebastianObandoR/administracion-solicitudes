@@ -42,6 +42,8 @@ builder.Services.AddScoped<IDesgloseSolicitudService, DesgloseSolicitudService>(
 
 builder.Services.AddScoped<IRepresentanteService, RepresentanteService>();
 
+builder.Services.AddScoped<IEstadoSolicitudService, EstadoSolicitudService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
