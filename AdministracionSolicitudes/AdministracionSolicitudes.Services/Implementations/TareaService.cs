@@ -22,6 +22,25 @@ namespace AdministracionSolicitudes.Services.Implementations
             _auditoriaService = auditoriaService;
         }
 
+        public async Task<ServiceResult<IReadOnlyList<SolicitudResumen>>> ObtenerSolicitudesAsync(int idUsuarioSesion)
+        {
+            try
+            {
+                var solicitudes = (await _tareaRepository.ObtenerSolicitudesAsync()).ToList();
+
+                return new ServiceResult<IReadOnlyList<SolicitudResumen>>
+                {
+                    IsSuccess = true,
+                    Data = solicitudes
+                };
+            }
+            catch (Exception ex)
+            {
+                await RegistrarErrorSeguroAsync(idUsuarioSesion, ex);
+                return new ServiceResult<IReadOnlyList<SolicitudResumen>> { IsSuccess = false, Message = MensajeErrorInesperado };
+            }
+        }
+
         public async Task<ServiceResult<TareasListado>> ObtenerTareasPorSolicitudAsync(int idSolicitud, int pagina, int idUsuarioSesion)
         {
             try

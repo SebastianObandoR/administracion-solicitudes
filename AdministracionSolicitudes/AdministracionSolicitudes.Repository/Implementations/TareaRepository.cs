@@ -143,5 +143,18 @@ namespace AdministracionSolicitudes.Repository.Implementations
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QuerySingleOrDefaultAsync<SolicitudResumen>(sql, new { IdSolicitud = idSolicitud });
         }
+
+        public async Task<IEnumerable<SolicitudResumen>> ObtenerSolicitudesAsync()
+        {
+            const string sql = @"
+                SELECT id_solicitud AS IdSolicitud,
+                       consecutivo_oficio AS ConsecutivoOficio,
+                       titulo AS Titulo
+                FROM Solicitud
+                ORDER BY consecutivo_oficio;";
+
+            using var connection = _connectionFactory.CreateConnection();
+            return await connection.QueryAsync<SolicitudResumen>(sql);
+        }
     }
 }

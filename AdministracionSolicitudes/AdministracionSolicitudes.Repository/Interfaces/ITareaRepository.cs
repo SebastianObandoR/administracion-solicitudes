@@ -12,5 +12,6 @@ namespace AdministracionSolicitudes.Repository.Interfaces
         Task<ResultadoEliminacion> EliminarAsync(int idTarea);
         Task<IEnumerable<Usuario>> ObtenerUsuariosAsync();
         Task<SolicitudResumen?> ObtenerSolicitudAsync(int idSolicitud);
+        Task<IEnumerable<SolicitudResumen>> ObtenerSolicitudesAsync();
     }
 }
