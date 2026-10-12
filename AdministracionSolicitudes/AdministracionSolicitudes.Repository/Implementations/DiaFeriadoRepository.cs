@@ -15,7 +15,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
 
         public async Task<IEnumerable<DateTime>> GetFechasAsync()
         {
-            const string sql = "SELECT fecha FROM DiaFeriado;";
+            const string sql = "SELECT fecha FROM diaferiado;";
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QueryAsync<DateTime>(sql);
         }

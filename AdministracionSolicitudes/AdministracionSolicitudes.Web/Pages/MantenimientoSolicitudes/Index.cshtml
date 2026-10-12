@@ -53,6 +53,14 @@
                             <td>@solicitud.FechaIngreso.ToString("dd/MM/yyyy")</td>
                             <td>@(solicitud.FechaRespuesta?.ToString("dd/MM/yyyy") ?? "-")</td>
                             <td class="acciones">
+                                <a asp-page="/Desgloses/Index"
+                                   asp-route-idSolicitud="@solicitud.IdSolicitud"
+                                   class="boton-accion"
+                                   title="Desglose">
+                                    <i class="bi bi-receipt"></i>
+                                    <span class="visually-hidden">Desglose</span>
+                                </a>
+
                                 <a asp-page="/MantenimientoSolicitudes/Edit"
                                    asp-route-id="@solicitud.IdSolicitud"
                                    class="boton-accion"
@@ -78,9 +86,10 @@
                         </tr>
                     }
 
-                    @{                   
+                    @{
                         int filasVacias = Model.TamanoPagina - Math.Max(Model.Solicitudes.Count(), 1);
                     }
+
                     @for (var i = 0; i < filasVacias; i++)
                     {
                         <tr class="fila-vacia" aria-hidden="true">

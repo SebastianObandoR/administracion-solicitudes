@@ -18,7 +18,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
         public async Task<IEnumerable<Representante>> GetAllAsync()
         {
             const string sql = @"SELECT id_representante AS IdRepresentante, nombre AS Nombre, correo AS Correo
-                                  FROM Representante
+                                  FROM representante
                                   ORDER BY nombre;";
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QueryAsync<Representante>(sql);

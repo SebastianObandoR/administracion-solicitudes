@@ -105,8 +105,8 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
         private List<string> ObtenerErroresDeValidacion()
         {
             return ModelState
-                .Where(kv => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value.Errors.Count > 0)
-                .SelectMany(kv => kv.Value.Errors)
+                .Where(kv => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value?.Errors.Count > 0)
+                .SelectMany(kv => kv.Value!.Errors)
                 .Select(e => e.ErrorMessage)
                 .Where(m => !string.IsNullOrWhiteSpace(m))
                 .Distinct()

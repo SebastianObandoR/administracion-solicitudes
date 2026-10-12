@@ -37,6 +37,9 @@ builder.Services.AddScoped<IDiaFeriadoRepository, DiaFeriadoRepository>();
 builder.Services.AddScoped<ISolicitudService, SolicitudService>();
 builder.Services.AddScoped<IVencimientoService, VencimientoService>();
 
+builder.Services.AddScoped<IDesgloseSolicitudRepository, DesgloseSolicitudRepository>();
+builder.Services.AddScoped<IDesgloseSolicitudService, DesgloseSolicitudService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

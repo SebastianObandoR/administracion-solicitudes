@@ -1,0 +1,80 @@
+@page
+@model AdministracionSolicitudes.Web.Pages.Desgloses.IndexModel
+@{
+    ViewData["Title"] = "Desgloses";
+}
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <div>
+            <h1>Administracion de Desgloses</h1>
+            <p class="mb-0">@Model.Solicitud?.ConsecutivoOficio - @Model.Solicitud?.Titulo</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-page="/MantenimientoSolicitudes/Index" class="boton-nuevo" title="Regresar">
+                <i class="bi bi-arrow-left"></i><span>Regresar</span>
+            </a>
+            <a asp-page="./Create" asp-route-idSolicitud="@Model.IdSolicitud" class="boton-nuevo">
+                <i class="bi bi-file-earmark-plus-fill"></i><span>Nuevo</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Informacion</div>
+        <div class="contenedor-tabla">
+            <table class="tabla-mantenimiento">
+                <thead><tr><th>Mes</th><th>Año</th><th>Horas</th><th>Monto</th><th>IVA</th><th>Total</th><th>% cobro</th><th class="columna-acciones">Acciones</th></tr></thead>
+                <tbody>
+                @foreach (var desglose in Model.Desgloses)
+                {
+                    <tr>
+                        <td>@desglose.Mes</td><td>@desglose.Anio</td><td>@desglose.Horas.ToString("N2")</td>
+                        <td>@desglose.Monto.ToString("N2")</td><td>@desglose.Iva.ToString("N2")</td>
+                        <td>@desglose.Total.ToString("N2")</td><td>@desglose.PorcentajeCobro.ToString("N2")%</td>
+                        <td class="acciones">
+                            <a asp-page="./Edit" asp-route-idSolicitud="@desglose.IdSolicitud" asp-route-mes="@desglose.Mes" asp-route-anio="@desglose.Anio" class="boton-accion" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                            <button type="button" class="boton-accion boton-eliminar" data-solicitud="@desglose.IdSolicitud" data-mes="@desglose.Mes" data-anio="@desglose.Anio" title="Eliminar"><i class="bi bi-trash-fill"></i></button>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Desgloses.Any()) { <tr><td colspan="8" class="sin-registros">No hay desgloses registrados.</td></tr> }
+                @{ int filasVacias = Model.TamanoPagina - Math.Max(Model.Desgloses.Count(), 1); }
+                @for (var i = 0; i < filasVacias; i++) { <tr class="fila-vacia" aria-hidden="true"><td colspan="8"></td></tr> }
+                </tbody>
+            </table>
+        </div>
+        @if (Model.TotalPaginas > 1)
+        {
+            <div class="paginacion paginacion-centrada">
+            @for (var pagina = 1; pagina <= Model.TotalPaginas; pagina++)
+            {
+                <a asp-page="./Index" asp-route-idSolicitud="@Model.IdSolicitud" asp-route-pageNumber="@pagina" class="pagina @(pagina == Model.PageNumber ? "pagina-activa" : "")">@pagina</a>
+            }
+            </div>
+        }
+    </div>
+</section>
+
+<form method="post" asp-page-handler="Eliminar" id="formEliminar">
+    <input type="hidden" name="idSolicitud" id="eliminarSolicitud" />
+    <input type="hidden" name="mes" id="eliminarMes" />
+    <input type="hidden" name="anio" id="eliminarAnio" />
+    <input type="hidden" name="pageNumber" value="@Model.PageNumber" />
+</form>
+
+@section Scripts {
+<script>
+document.querySelectorAll(".boton-eliminar").forEach(boton => boton.addEventListener("click", () => {
+    Swal.fire({ title: "Confirmar eliminacion", text: "¿Realmente desea eliminar el elemento seleccionado?", icon: "warning", showCancelButton: true, confirmButtonText: "Si", cancelButtonText: "No" })
+        .then(resultado => {
+            if (!resultado.isConfirmed) return;
+            document.getElementById("eliminarSolicitud").value = boton.dataset.solicitud;
+            document.getElementById("eliminarMes").value = boton.dataset.mes;
+            document.getElementById("eliminarAnio").value = boton.dataset.anio;
+            document.getElementById("formEliminar").submit();
+        });
+}));
+@if (!string.IsNullOrWhiteSpace(Model.Mensaje)) { <text>Swal.fire({ text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)), icon: '@Model.TipoMensaje', confirmButtonText: 'Aceptar' });</text> }
+</script>
+}

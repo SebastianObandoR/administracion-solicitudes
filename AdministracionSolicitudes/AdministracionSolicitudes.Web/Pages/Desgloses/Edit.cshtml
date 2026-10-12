@@ -1,0 +1,32 @@
+@page
+@model AdministracionSolicitudes.Web.Pages.Desgloses.EditModel
+@{ ViewData["Title"] = "Editar Desglose"; }
+<section class="formulario-mantenimiento">
+    <div class="acciones-formulario">
+        <a asp-page="./Index" asp-route-idSolicitud="@Model.Input.IdSolicitud" class="boton-formulario" title="Regresar"><i class="bi bi-arrow-left"></i></a>
+        <button type="submit" form="formDesglose" class="boton-formulario" title="Guardar"><i class="bi bi-floppy-fill"></i></button>
+    </div>
+    <div class="panel-formulario">
+        <div class="titulo-panel">Formulario Desglose</div>
+        <form method="post" id="formDesglose" class="campos-formulario rejilla-campos" novalidate>
+            <input asp-for="Input.IdSolicitud" type="hidden" /><input asp-for="Input.OriginalMes" type="hidden" /><input asp-for="Input.OriginalAnio" type="hidden" />
+            <div class="campo-formulario"><label asp-for="Input.Mes">Mes</label><input asp-for="Input.Mes" type="number" min="1" max="12" /><span asp-validation-for="Input.Mes" class="mensaje-validacion"></span></div>
+            <div class="campo-formulario"><label asp-for="Input.Anio">Año</label><input asp-for="Input.Anio" type="number" min="1" max="9999" /><span asp-validation-for="Input.Anio" class="mensaje-validacion"></span></div>
+            <div class="campo-formulario"><label asp-for="Input.Horas">Horas</label><input asp-for="Input.Horas" type="number" min="0" max="999.99" step="0.01" /><span asp-validation-for="Input.Horas" class="mensaje-validacion"></span></div>
+            <div class="campo-formulario"><label asp-for="Input.Monto">Monto</label><input asp-for="Input.Monto" class="campo-monto" type="number" min="0" max="88495575.21" step="0.01" /><span asp-validation-for="Input.Monto" class="mensaje-validacion"></span></div>
+            <div class="campo-formulario"><label>IVA (13%)</label><input class="campo-iva" readonly /></div>
+            <div class="campo-formulario"><label>Total</label><input class="campo-total" readonly /></div>
+            <div class="campo-formulario"><label asp-for="Input.PorcentajeCobro">Porcentaje de cobro</label><input asp-for="Input.PorcentajeCobro" type="number" min="0" max="100" step="0.01" /><span asp-validation-for="Input.PorcentajeCobro" class="mensaje-validacion"></span></div>
+            <div class="campo-formulario campo-completo"><label asp-for="Input.Observaciones">Observaciones</label><textarea asp-for="Input.Observaciones" rows="3" maxlength="500"></textarea><span asp-validation-for="Input.Observaciones" class="mensaje-validacion"></span></div>
+        </form>
+    </div>
+</section>
+@section Scripts {
+<script>
+window.__erroresValidacion = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ErroresValidacion));
+window.__erroresGenerales = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewData.ModelState.TryGetValue(string.Empty, out var e) ? e.Errors.Select(x => x.ErrorMessage).ToList() : new List<string>()));
+const monto = document.querySelector('.campo-monto'), iva = document.querySelector('.campo-iva'), total = document.querySelector('.campo-total');
+function calcular(){ const valor = Number(String(monto.value).replace(',', '.')) || 0; const impuesto = Math.round(valor * 13) / 100; iva.value = impuesto.toFixed(2); total.value = (valor + impuesto).toFixed(2); }
+monto.addEventListener('input', calcular); calcular();
+</script>
+}

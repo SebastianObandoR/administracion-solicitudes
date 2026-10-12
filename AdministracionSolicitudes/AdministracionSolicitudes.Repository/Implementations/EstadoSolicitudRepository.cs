@@ -18,7 +18,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
         public async Task<IEnumerable<EstadoSolicitud>> GetAllAsync()
         {
             const string sql = @"SELECT id_estado AS IdEstado, nombre AS Nombre
-                                  FROM EstadoSolicitud
+                                  FROM estadosolicitud
                                   ORDER BY id_estado;";
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QueryAsync<EstadoSolicitud>(sql);
@@ -27,7 +27,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
         public async Task<EstadoSolicitud?> GetByIdAsync(int idEstado)
         {
             const string sql = @"SELECT id_estado AS IdEstado, nombre AS Nombre
-                                  FROM EstadoSolicitud
+                                  FROM estadosolicitud
                                   WHERE id_estado = @IdEstado;";
             using var connection = _connectionFactory.CreateConnection();
             return await connection.QuerySingleOrDefaultAsync<EstadoSolicitud>(sql, new { IdEstado = idEstado });
