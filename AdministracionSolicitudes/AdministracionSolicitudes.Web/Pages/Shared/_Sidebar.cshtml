@@ -4,6 +4,7 @@
     var isSolicitudes = currentPath.StartsWith("/mantenimientosolicitudes");
     var isRepresentantes = currentPath == "/representantes" || currentPath.StartsWith("/representantes/", StringComparison.Ordinal);
     var isEstados = currentPath == "/estados" || currentPath.StartsWith("/estados/", StringComparison.Ordinal);
+    var isReportes = currentPath.StartsWith("/reportes");
 }
 
 <aside class="panel-lateral">
@@ -49,10 +50,10 @@
             <span class="texto-navegacion">Estados</span>
         </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(isReportes ? "esta-activo" : string.Empty)" asp-page="/Reportes/FacturacionMensual">
             <i class="bi bi-bar-chart-line icono-navegacion"></i>
             <span class="texto-navegacion">Reportes</span>
-        </span>
+        </a>
     </nav>
 
     <div class="pie-lateral">

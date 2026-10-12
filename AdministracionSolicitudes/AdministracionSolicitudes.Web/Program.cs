@@ -58,6 +58,10 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<INotificacionEstadoRepository, NotificacionEstadoRepository>();
 builder.Services.AddScoped<INotificacionEstadoService, NotificacionEstadoService>();
 
+// SOL7
+builder.Services.AddScoped<IReporteFacturacionRepository, ReporteFacturacionRepository>();
+builder.Services.AddScoped<IReporteFacturacionService, ReporteFacturacionService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
