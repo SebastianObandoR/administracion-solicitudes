@@ -1,10 +1,28 @@
-﻿using AdministracionSolicitudes.Entities;
+using AdministracionSolicitudes.Entities;
 
 namespace AdministracionSolicitudes.Repository.Interfaces
 {
-    // // SIMULACION SOL3: repositorio minimo de solo lectura (combo de representantes). Reemplazar por el de SOL3 al integrar
     public interface IRepresentanteRepository
     {
         Task<IEnumerable<Representante>> GetAllAsync();
+        Task<(IReadOnlyList<Representante> Representantes, int Total)> ObtenerPaginaAsync(int pagina, int tamanoPagina, int usuarioId);
+        Task<Representante?> ObtenerPorIdAsync(int id, int usuarioId);
+        Task<bool> CrearAsync(Representante representante, int usuarioId);
+        Task<ActualizarRepresentanteResultado> ActualizarAsync(Representante representante, int usuarioId);
+        Task<EliminarRepresentanteResultado> EliminarAsync(int id, int usuarioId);
+    }
+
+    public enum ActualizarRepresentanteResultado
+    {
+        Actualizado,
+        NoEncontrado,
+        CorreoDuplicado
+    }
+
+    public enum EliminarRepresentanteResultado
+    {
+        Eliminado,
+        NoEncontrado,
+        TieneSolicitudes
     }
 }

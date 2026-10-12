@@ -40,6 +40,8 @@ builder.Services.AddScoped<IVencimientoService, VencimientoService>();
 builder.Services.AddScoped<IDesgloseSolicitudRepository, DesgloseSolicitudRepository>();
 builder.Services.AddScoped<IDesgloseSolicitudService, DesgloseSolicitudService>();
 
+builder.Services.AddScoped<IRepresentanteService, RepresentanteService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
