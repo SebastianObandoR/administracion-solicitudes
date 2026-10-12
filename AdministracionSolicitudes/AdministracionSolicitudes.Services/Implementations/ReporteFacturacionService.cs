@@ -20,7 +20,9 @@ namespace AdministracionSolicitudes.Services.Implementations
         {
             try
             {
-                return await _repository.GetMensualAsync(mes, anio);
+                var registros = await _repository.GetMensualAsync(mes, anio);
+                await _auditoria.RegistrarConsultaAsync(idUsuario, Modulo, "reporte de facturacion mensual");
+                return registros;
             }
             catch (Exception ex)
             {
