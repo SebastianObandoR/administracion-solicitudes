@@ -1,5 +1,6 @@
 ﻿@page "{id:int}"
 @model AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes.EditModel
+@using AdministracionSolicitudes.Web.Models
 
 @{
     ViewData["Title"] = "Editar Solicitud";
@@ -55,19 +56,19 @@
 
             <div class="campo-formulario campo-completo campo-fecha-ingreso">
                 <label asp-for="Input.FechaIngreso">Fecha de ingreso</label>
-                <input asp-for="Input.FechaIngreso" type="date" />
+                <input asp-for="Input.FechaIngreso" type="date" min="@SolicitudInputModel.FechaMinimaHtml" max="@SolicitudInputModel.HoyHtml" />
                 <span asp-validation-for="Input.FechaIngreso" class="mensaje-validacion"></span>
             </div>
 
             <div class="campo-formulario">
                 <label asp-for="Input.FechaInicio">Fecha de inicio</label>
-                <input asp-for="Input.FechaInicio" type="date" />
+                <input asp-for="Input.FechaInicio" type="date" min="@SolicitudInputModel.FechaMinimaHtml" max="@SolicitudInputModel.FechaMaximaHtml" />
                 <span asp-validation-for="Input.FechaInicio" class="mensaje-validacion"></span>
             </div>
 
             <div class="campo-formulario">
                 <label asp-for="Input.FechaRespuesta">Fecha de respuesta</label>
-                <input asp-for="Input.FechaRespuesta" type="date" />
+                <input asp-for="Input.FechaRespuesta" type="date" min="@SolicitudInputModel.FechaMinimaHtml" max="@SolicitudInputModel.HoyHtml" />
                 <span asp-validation-for="Input.FechaRespuesta" class="mensaje-validacion"></span>
             </div>
 
