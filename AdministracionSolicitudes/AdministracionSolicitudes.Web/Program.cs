@@ -4,6 +4,7 @@ using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Implementations;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Web.Middleware;
+using AdministracionSolicitudes.Web.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,12 +38,18 @@ builder.Services.AddScoped<IDiaFeriadoRepository, DiaFeriadoRepository>();
 builder.Services.AddScoped<ISolicitudService, SolicitudService>();
 builder.Services.AddScoped<IVencimientoService, VencimientoService>();
 
+// SOL2
 builder.Services.AddScoped<IDesgloseSolicitudRepository, DesgloseSolicitudRepository>();
 builder.Services.AddScoped<IDesgloseSolicitudService, DesgloseSolicitudService>();
 
+// SOL3
 builder.Services.AddScoped<IRepresentanteService, RepresentanteService>();
 
+// SOL4
 builder.Services.AddScoped<IEstadoSolicitudService, EstadoSolicitudService>();
+
+// SOL5
+builder.Services.AddHostedService<VencimientoSolicitudesWorker>();
 
 var app = builder.Build();
 

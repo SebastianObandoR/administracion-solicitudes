@@ -13,7 +13,7 @@ namespace AdministracionSolicitudes.Services.Interfaces
         );
 
         Task RegistrarActualizacionAsync(
-            int idUsuario,
+            int? idUsuario,
             string modulo,
             object registroAnterior,
             object registroActual

@@ -34,7 +34,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             await RegistrarBitacoraAsync(idUsuario, modulo, "CREATE", $"CREATE {json}");
         }
 
-        public async Task RegistrarActualizacionAsync(int idUsuario, string modulo, object registroAnterior, object registroActual)
+        public async Task RegistrarActualizacionAsync(int? idUsuario, string modulo, object registroAnterior, object registroActual)
         {
             var datos = new { anterior = ObtenerNodoSeguro(registroAnterior), actual = ObtenerNodoSeguro(registroActual) };
             var json = JsonSerializer.Serialize(datos, JsonOptions);
@@ -68,7 +68,7 @@ namespace AdministracionSolicitudes.Services.Implementations
             await _errorLogRepository.RegistrarAsync(errorLog);
         }
 
-        private async Task RegistrarBitacoraAsync(int idUsuario, string modulo, string accion, string descripcion)
+        private async Task RegistrarBitacoraAsync(int? idUsuario, string modulo, string accion, string descripcion)
         {
             var bitacora = new Bitacora
             {

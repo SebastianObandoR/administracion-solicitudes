@@ -10,13 +10,22 @@ namespace AdministracionSolicitudes.Services.Implementations
         private const string Modulo = "Solicitudes";
         private const int DiasHabilesVencimiento = 5;
 
+        // El "usuario" del worker equivale a null
+        private const int SinUsuario = 0;
+
+        private readonly ISolicitudRepository _solicitudRepository;
+        private readonly IEstadoSolicitudRepository _estadoSolicitudRepository;
         private readonly IDiaFeriadoRepository _diaFeriadoRepository;
         private readonly IAuditoriaService _auditoriaService;
 
         public VencimientoService(
+            ISolicitudRepository solicitudRepository,
+            IEstadoSolicitudRepository estadoSolicitudRepository,
             IDiaFeriadoRepository diaFeriadoRepository,
             IAuditoriaService auditoriaService)
         {
+            _solicitudRepository = solicitudRepository;
+            _estadoSolicitudRepository = estadoSolicitudRepository;
             _diaFeriadoRepository = diaFeriadoRepository;
             _auditoriaService = auditoriaService;
         }
@@ -25,11 +34,8 @@ namespace AdministracionSolicitudes.Services.Implementations
         {
             try
             {
-                // 1 sola lectura
-                var feriados = (await _diaFeriadoRepository.GetFechasAsync())
-                    .Select(f => f.Date)
-                    .ToHashSet();
-
+                // Feriados en una sola consulta
+                var feriados = await ObtenerFeriadosAsync();
                 DateTime hoy = DateTime.Today;
 
                 return solicitudes.ToDictionary(
@@ -41,6 +47,82 @@ namespace AdministracionSolicitudes.Services.Implementations
                 await _auditoriaService.RegistrarErrorSeguroAsync(idUsuarioEjecutor, Modulo, exception);
                 throw;
             }
+        }
+
+        public async Task<int> ProcesarVencimientosAsync()
+        {
+            try
+            {
+                var candidatas = await _solicitudRepository.GetVencibleCandidatesAsync(
+                    (int)EstadoSolicitudNombre.Vencida,
+                    (int)EstadoSolicitudNombre.Finalizada);
+
+                var feriados = await ObtenerFeriadosAsync();
+                DateTime hoy = DateTime.Today;
+           
+                var vencidas = candidatas
+                    .Where(s => Evaluar(s, feriados, hoy) == EstadoVencimiento.Vencida)
+                    .ToList();
+
+                if (vencidas.Count == 0) return 0;
+
+                var estadoVencida = await ObtenerEstadoVencidaAsync();
+
+                int marcadas = 0;
+                foreach (var solicitud in vencidas)
+                {
+                    if (await MarcarComoVencidaAsync(solicitud, estadoVencida.IdEstado)) marcadas++;
+                }
+
+                return marcadas;
+            }
+            catch (Exception exception)
+            {
+                await _auditoriaService.RegistrarErrorSeguroAsync(SinUsuario, Modulo, exception);
+                throw;
+            }
+        }
+
+        private async Task<bool> MarcarComoVencidaAsync(Solicitud solicitud, int idEstadoVencida)
+        {
+            try
+            {
+                var registroAnterior = SolicitudBitacoraPayload.Crear(solicitud);
+
+                bool actualizada = await _solicitudRepository.MarcarComoVencidaAsync(
+                    solicitud.IdSolicitud, solicitud.IdEstado, idEstadoVencida);
+
+                if (!actualizada) return false;
+
+                solicitud.IdEstado = idEstadoVencida;
+                await _auditoriaService.RegistrarActualizacionAsync(
+                    null, Modulo, registroAnterior, SolicitudBitacoraPayload.Crear(solicitud));
+
+                return true;
+            }
+            catch (Exception exception)
+            {          
+                await _auditoriaService.RegistrarErrorSeguroAsync(SinUsuario, Modulo, exception);
+                return false;
+            }
+        }
+
+        private async Task<EstadoSolicitud> ObtenerEstadoVencidaAsync()
+        {
+            var estado = await _estadoSolicitudRepository.GetByIdAsync((int)EstadoSolicitudNombre.Vencida);
+            if (estado == null)
+            {
+                throw new InvalidOperationException(
+                    $"No se encontro el estado '{EstadoSolicitudNombre.Vencida}' en EstadoSolicitud.");
+            }
+            return estado;
+        }
+
+        private async Task<HashSet<DateTime>> ObtenerFeriadosAsync()
+        {
+            return (await _diaFeriadoRepository.GetFechasAsync())
+                .Select(f => f.Date)
+                .ToHashSet();
         }
 
         private static EstadoVencimiento Evaluar(Solicitud solicitud, HashSet<DateTime> feriados, DateTime hoy)

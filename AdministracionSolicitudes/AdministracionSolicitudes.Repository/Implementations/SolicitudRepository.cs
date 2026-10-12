@@ -2,6 +2,7 @@
 using AdministracionSolicitudes.Repository.Data;
 using AdministracionSolicitudes.Repository.Interfaces;
 using Dapper;
+using System.Data.Common;
 
 namespace AdministracionSolicitudes.Repository.Implementations
 {
@@ -120,18 +121,60 @@ namespace AdministracionSolicitudes.Repository.Implementations
             return relacionados > 0;
         }
 
-        public async Task<IEnumerable<Solicitud>> GetVencibleCandidatesAsync()
+        public async Task<IEnumerable<Solicitud>> GetVencibleCandidatesAsync(int idEstadoVencida, int idEstadoFinalizada)
         {
-            string sql = $"{SelectBase} WHERE s.fecha_respuesta IS NULL;";
+            string sql = $@"{SelectBase}
+        WHERE s.fecha_respuesta IS NULL
+          AND s.id_estado NOT IN (@IdEstadoVencida, @IdEstadoFinalizada);";
+
             using var connection = _connectionFactory.CreateConnection();
-            return await connection.QueryAsync<Solicitud>(sql);
+            return await connection.QueryAsync<Solicitud>(sql, new
+            {
+                IdEstadoVencida = idEstadoVencida,
+                IdEstadoFinalizada = idEstadoFinalizada
+            });
         }
 
-        public async Task MarcarComoVencidaAsync(int idSolicitud, int idEstadoVencida)
+        public async Task<bool> MarcarComoVencidaAsync(int idSolicitud, int idEstadoAnterior, int idEstadoVencida)
         {
-            const string sql = "UPDATE solicitud SET id_estado = @IdEstadoVencida WHERE id_solicitud = @IdSolicitud;";
+            const string updateSql = """
+        UPDATE solicitud
+        SET id_estado = @IdEstadoVencida
+        WHERE id_solicitud = @IdSolicitud
+          AND id_estado = @IdEstadoAnterior
+          AND fecha_respuesta IS NULL;
+        """;
+
+            const string historialSql = """
+        INSERT INTO historialestadosolicitud
+            (id_solicitud, id_estado_anterior, id_estado_nuevo, id_usuario, fecha_cambio)
+        VALUES
+            (@IdSolicitud, @IdEstadoAnterior, @IdEstadoVencida, NULL, NOW());
+        """;
+
+            var parametros = new
+            {
+                IdSolicitud = idSolicitud,
+                IdEstadoAnterior = idEstadoAnterior,
+                IdEstadoVencida = idEstadoVencida
+            };
+
             using var connection = _connectionFactory.CreateConnection();
-            await connection.ExecuteAsync(sql, new { IdSolicitud = idSolicitud, IdEstadoVencida = idEstadoVencida });
+            if (connection is DbConnection dbConnection) await dbConnection.OpenAsync();
+            else connection.Open();
+
+            using var transaction = connection.BeginTransaction();
+
+            int filas = await connection.ExecuteAsync(updateSql, parametros, transaction);
+            if (filas == 0)
+            {
+                transaction.Rollback();
+                return false;
+            }
+
+            await connection.ExecuteAsync(historialSql, parametros, transaction);
+            transaction.Commit();
+            return true;
         }
     }
 }
