@@ -1,6 +1,7 @@
 ﻿@{
     var currentPath = Context.Request.Path.Value?.ToLowerInvariant() ?? "/";
     var isHome = currentPath == "/" || currentPath == "/index";
+        var isReporteTareasUsuario = currentPath.StartsWith("/reportes/tareasporusuario");
 }
 
 <aside class="panel-lateral">
@@ -50,6 +51,11 @@
             <i class="bi bi-bar-chart-line icono-navegacion"></i>
             <span class="texto-navegacion">Reportes</span>
         </span>
+
+        <a class="elemento-navegacion @(isReporteTareasUsuario ? "esta-activo" : string.Empty)" asp-page="/Reportes/TareasPorUsuario">
+            <i class="bi bi-person-lines-fill icono-navegacion"></i>
+            <span class="texto-navegacion">Tareas por usuario</span>
+        </a>
     </nav>
 
     <div class="pie-lateral">

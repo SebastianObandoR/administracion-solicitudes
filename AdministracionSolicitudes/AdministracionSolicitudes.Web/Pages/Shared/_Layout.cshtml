@@ -5,6 +5,7 @@
     var systemName = Configuration["ConfiguracionSistema:Nombre"] ?? "Administracion de Solicitudes";
     var userName = Context.Session.GetString(SessionKeys.FullName) ?? "Usuario";
 
+
     ViewData["SystemName"] = systemName;
     ViewData["LayoutUserName"] = userName;
 }
@@ -38,6 +39,10 @@
     <link rel="stylesheet"
           href="~/css/paginas.css"
           asp-append-version="true" />
+
+     <link rel="stylesheet" href="~/css/mantenimientos.css" asp-append-version="true" />
+
+     <link rel="stylesheet" href="~/css/reportes.css" asp-append-version="true" />
 </head>
 
 <body>
@@ -55,6 +60,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/estructura.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
