@@ -16,7 +16,7 @@ namespace AdministracionSolicitudes.Web.Models
         public int? IdUsuario { get; set; }
 
         [Required(ErrorMessage = "Las horas invertidas son requeridas")]
-        [Range(typeof(decimal), "0.01", "999.99", ErrorMessage = "Las horas deben ser mayores a 0")]
+        [Range(0.01, 999.99, ErrorMessage = "Las horas deben ser mayores a 0")]
         public decimal? HorasInvertidas { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

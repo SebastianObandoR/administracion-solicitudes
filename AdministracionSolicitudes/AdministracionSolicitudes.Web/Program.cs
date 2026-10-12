@@ -70,6 +70,10 @@ builder.Services.AddScoped<ITareaService, TareaService>();
 // TAR2
 builder.Services.AddScoped<IReporteTareasUsuarioRepository, ReporteTareasUsuarioRepository>();
 builder.Services.AddScoped<IReporteTareasUsuarioService, ReporteTareasUsuarioService>();
+
+// TAR3
+builder.Services.AddScoped<IReporteTareasSolicitudRepository, ReporteTareasSolicitudRepository>();
+builder.Services.AddScoped<IReporteTareasSolicitudService, ReporteTareasSolicitudService>();
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
