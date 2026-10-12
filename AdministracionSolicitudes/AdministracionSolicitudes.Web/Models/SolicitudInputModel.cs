@@ -1,9 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace AdministracionSolicitudes.Web.Models
 {
     public class SolicitudInputModel : IValidatableObject
     {
+        public const int AnioMinimo = 2000;
+        public const int AnioMaximo = 2100;
+
+        private const string FormatoHtml = "yyyy-MM-dd";
+
+        public static string FechaMinimaHtml => new DateTime(AnioMinimo, 1, 1).ToString(FormatoHtml, CultureInfo.InvariantCulture);
+        public static string FechaMaximaHtml => new DateTime(AnioMaximo, 12, 31).ToString(FormatoHtml, CultureInfo.InvariantCulture);
+        public static string HoyHtml => DateTime.Today.ToString(FormatoHtml, CultureInfo.InvariantCulture);
+
         public int IdSolicitud { get; set; }
 
         [Required(ErrorMessage = "El consecutivo de oficio es requerido")]
@@ -43,6 +53,48 @@ namespace AdministracionSolicitudes.Web.Models
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
+            string mensajeRango = $"debe estar entre el 01/01/{AnioMinimo} y el 31/12/{AnioMaximo}.";
+            DateTime hoy = DateTime.Today;
+
+            if (FechaIngreso.HasValue)
+            {
+                if (!EstaEnRango(FechaIngreso.Value))
+                {
+                    yield return new ValidationResult(
+                        $"La fecha de ingreso {mensajeRango}",
+                        new[] { nameof(FechaIngreso) });
+                }
+                else if (FechaIngreso.Value.Date > hoy)
+                {
+                    yield return new ValidationResult(
+                        "La fecha de ingreso no puede ser futura.",
+                        new[] { nameof(FechaIngreso) });
+                }
+            }
+
+            if (FechaRespuesta.HasValue)
+            {
+                if (!EstaEnRango(FechaRespuesta.Value))
+                {
+                    yield return new ValidationResult(
+                        $"La fecha de respuesta {mensajeRango}",
+                        new[] { nameof(FechaRespuesta) });
+                }
+                else if (FechaRespuesta.Value.Date > hoy)
+                {
+                    yield return new ValidationResult(
+                        "La fecha de respuesta no puede ser futura.",
+                        new[] { nameof(FechaRespuesta) });
+                }
+            }
+
+            if (FechaInicio.HasValue && !EstaEnRango(FechaInicio.Value))
+            {
+                yield return new ValidationResult(
+                    $"La fecha de inicio {mensajeRango}",
+                    new[] { nameof(FechaInicio) });
+            }
+
             if (FechaRespuesta.HasValue && FechaIngreso.HasValue
                 && FechaRespuesta.Value.Date < FechaIngreso.Value.Date)
             {
@@ -59,5 +111,8 @@ namespace AdministracionSolicitudes.Web.Models
                     new[] { nameof(FechaInicio) });
             }
         }
+
+        private static bool EstaEnRango(DateTime fecha)
+            => fecha.Year >= AnioMinimo && fecha.Year <= AnioMaximo;
     }
 }
