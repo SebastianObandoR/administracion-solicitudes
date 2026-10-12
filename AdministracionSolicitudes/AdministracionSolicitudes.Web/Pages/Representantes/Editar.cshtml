@@ -1,0 +1,41 @@
+@page "{id:int}"
+@model AdministracionSolicitudes.Web.Pages.Representantes.EditarModel
+
+@{
+    ViewData["Title"] = "Editar representante";
+}
+
+<section class="container-fluid px-0 representantes-pagina">
+    <div class="representantes-encabezado">
+        <h1 class="representantes-titulo">Editar representante</h1>
+        <p class="representantes-descripcion">Actualice los datos del representante seleccionado.</p>
+    </div>
+
+    <div class="representantes-tarjeta representantes-formulario-tarjeta">
+        <form method="post" class="representantes-formulario">
+            <input asp-for="Id" type="hidden" />
+            <div asp-validation-summary="ModelOnly" class="representantes-validacion" role="alert"></div>
+
+            <div class="representantes-campo">
+                <label asp-for="Input.Nombre">Nombre</label>
+                <input asp-for="Input.Nombre" autocomplete="name" />
+                <span asp-validation-for="Input.Nombre" class="representantes-error-validacion"></span>
+            </div>
+
+            <div class="representantes-campo">
+                <label asp-for="Input.Correo">Email</label>
+                <input asp-for="Input.Correo" type="email" autocomplete="email" inputmode="email" />
+                <span asp-validation-for="Input.Correo" class="representantes-error-validacion"></span>
+            </div>
+
+            <div class="representantes-acciones-formulario">
+                <button type="submit" class="representantes-boton representantes-boton--principal">Guardar cambios</button>
+                <a class="representantes-boton representantes-boton--secundario" asp-page="Index">Regresar al listado</a>
+            </div>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

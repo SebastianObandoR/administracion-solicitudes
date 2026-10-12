@@ -1,0 +1,145 @@
+﻿@page
+@model AdministracionSolicitudes.Web.Pages.Tareas.IndexModel
+
+@{
+    ViewData["Title"] = "Tareas";
+}
+
+<link rel="stylesheet" href="~/css/tareas.css" asp-append-version="true" />
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <h1>Administración de Tareas</h1>
+
+        <form method="get" class="campo-formulario">
+            <label for="idSolicitud">Solicitud</label>
+            <select id="idSolicitud" name="idSolicitud" onchange="this.form.submit()">
+                <option value="">Seleccione una solicitud</option>
+                @foreach (var s in Model.Solicitudes)
+                {
+                    <option value="@s.IdSolicitud" selected="@(s.IdSolicitud == Model.Solicitud.IdSolicitud)">
+                        @s.ConsecutivoOficio - @s.Titulo
+                    </option>
+                }
+            </select>
+        </form>
+
+        @if (Model.HaySolicitudSeleccionada)
+        {
+            <a asp-page="/Tareas/Formulario" asp-route-idSolicitud="@Model.Solicitud.IdSolicitud" class="boton-nuevo">
+                <i class="bi bi-file-earmark-plus-fill"></i>
+                <span>Nuevo</span>
+            </a>
+        }
+    </div>
+
+    @if (!Model.HaySolicitudSeleccionada)
+    {
+        <div class="panel-informacion">
+            <div class="titulo-panel">Información</div>
+            <div class="contenedor-tabla">
+                <p>Seleccione una solicitud para ver sus tareas.</p>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="panel-informacion">
+            <div class="titulo-panel">Tareas de @Model.Solicitud.ConsecutivoOficio - @Model.Solicitud.Titulo</div>
+
+            <div class="contenedor-tabla tareas-compacto">
+                <table class="tabla-mantenimiento">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Usuario</th>
+                            <th>Descripción</th>
+                            <th>Horas invertidas</th>
+                            <th class="columna-acciones">Acciones</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var tarea in Model.Tareas.Items)
+                        {
+                            <tr>
+                                <td>@tarea.Fecha.ToString("yyyy-MM-dd")</td>
+                                <td>@tarea.NombreUsuario</td>
+                                <td>@tarea.Descripcion</td>
+                                <td>@tarea.HorasInvertidas</td>
+                                <td class="acciones">
+                                    <a asp-page="/Tareas/Formulario"
+                                       asp-route-idSolicitud="@Model.Solicitud.IdSolicitud"
+                                       asp-route-idTarea="@tarea.IdTarea"
+                                       class="boton-accion"
+                                       title="Editar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+
+                                    <button type="button"
+                                            class="boton-accion boton-eliminar"
+                                            data-id="@tarea.IdTarea"
+                                            title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            @if (Model.Tareas.TotalPages > 1)
+            {
+                <div class="paginacion">
+                    @for (var pagina = 1; pagina <= Model.Tareas.TotalPages; pagina++)
+                    {
+                        <a asp-page="/Tareas/Index"
+                           asp-route-idSolicitud="@Model.Solicitud.IdSolicitud"
+                           asp-route-pagina="@pagina"
+                           class="pagina @(pagina == Model.Tareas.Page ? "pagina-activa" : string.Empty)">
+                            @pagina
+                        </a>
+                    }
+                </div>
+            }
+        </div>
+    }
+</section>
+
+<form method="post" asp-page-handler="Eliminar" id="formEliminar">
+    <input type="hidden" name="idTarea" id="idTareaEliminar" />
+    <input type="hidden" name="idSolicitud" value="@Model.Solicitud.IdSolicitud" />
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".boton-eliminar").forEach(boton => {
+            boton.addEventListener("click", () => {
+                Swal.fire({
+                    title: "Confirmar eliminación",
+                    text: "¿Realmente desea eliminar el elemento seleccionado?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No"
+                }).then(resultado => {
+                    if (!resultado.isConfirmed) return;
+                    document.getElementById("idTareaEliminar").value = boton.dataset.id;
+                    document.getElementById("formEliminar").submit();
+                });
+            });
+        });
+
+        @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+        {
+            <text>
+                Swal.fire({
+                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                    icon: '@Model.TipoMensaje',
+                    confirmButtonText: 'Aceptar'
+                });
+            </text>
+        }
+    </script>
+}
