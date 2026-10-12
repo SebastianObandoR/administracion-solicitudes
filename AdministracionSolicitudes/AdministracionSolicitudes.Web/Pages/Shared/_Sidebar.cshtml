@@ -32,10 +32,10 @@
             <span class="texto-navegacion">Solicitudes</span>
         </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(currentPath.StartsWith("/tareas") ? "esta-activo" : string.Empty)" asp-page="/Tareas/Index">
             <i class="bi bi-list-task icono-navegacion"></i>
             <span class="texto-navegacion">Tareas</span>
-        </span>
+        </a>
 
         <a class="elemento-navegacion @(currentPath.StartsWith("/usuarios") ? "esta-activo" : string.Empty)" asp-page="/Usuarios/Index">
             <i class="bi bi-people icono-navegacion"></i>

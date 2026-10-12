@@ -4,6 +4,11 @@
 
 @{
     ViewData["Title"] = Model.IdTarea.HasValue ? "Editar Tarea" : "Nueva Tarea";
+
+    var erroresGenerales = ViewData.ModelState.TryGetValue(string.Empty, out var entradaGeneral)
+        ? entradaGeneral.Errors.Select(error => error.ErrorMessage)
+            .Where(mensaje => !string.IsNullOrWhiteSpace(mensaje)).ToList()
+        : new List<string>();
 }
 
 <section class="formulario-mantenimiento">
@@ -20,17 +25,15 @@
     <div class="panel-formulario">
         <div class="titulo-panel">Formulario Tarea - @Model.Solicitud.ConsecutivoOficio</div>
 
-        <form method="post" id="formTarea" class="campos-formulario">
+        <form method="post" id="formTarea" class="campos-formulario" novalidate>
             <div class="campo-formulario">
                 <label asp-for="Entrada.Descripcion">Descripción de la tarea</label>
                 <input asp-for="Entrada.Descripcion" autocomplete="off" />
-                <span asp-validation-for="Entrada.Descripcion" class="text-danger"></span>
             </div>
 
             <div class="campo-formulario">
                 <label asp-for="Entrada.Fecha">Fecha</label>
                 <input asp-for="Entrada.Fecha" type="date" asp-format="{0:yyyy-MM-dd}" />
-                <span asp-validation-for="Entrada.Fecha" class="text-danger"></span>
             </div>
 
             <div class="campo-formulario">
@@ -39,27 +42,23 @@
                         asp-items="@(new SelectList(Model.Usuarios, "IdUsuario", "NombreCompleto"))">
                     <option value="">Seleccione un usuario</option>
                 </select>
-                <span asp-validation-for="Entrada.IdUsuario" class="text-danger"></span>
             </div>
 
             <div class="campo-formulario">
                 <label asp-for="Entrada.HorasInvertidas">Horas invertidas</label>
-                <input asp-for="Entrada.HorasInvertidas" type="number" step="0.25" min="0.01" />
-                <span asp-validation-for="Entrada.HorasInvertidas" class="text-danger"></span>
+                <input asp-for="Entrada.HorasInvertidas" type="number" step="0.01" min="0.01" />
             </div>
         </form>
     </div>
 </section>
 
 @section Scripts {
-    @if (!string.IsNullOrWhiteSpace(Model.MensajeError))
-    {
-        <script>
-            Swal.fire({
-                text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MensajeError)),
-                icon: "error",
-                confirmButtonText: "Aceptar"
-            });
-        </script>
-    }
+    <script>
+        window.__erroresValidacion = @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(Model.ErroresValidacion)
+            );
+        window.__erroresGenerales = @Html.Raw(
+                    System.Text.Json.JsonSerializer.Serialize(erroresGenerales)
+            );
+    </script>
 }

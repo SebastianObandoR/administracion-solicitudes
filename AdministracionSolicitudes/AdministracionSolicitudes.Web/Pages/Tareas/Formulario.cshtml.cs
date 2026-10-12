@@ -27,7 +27,7 @@ namespace AdministracionSolicitudes.Web.Pages.Tareas
 
         public Solicitud Solicitud { get; private set; } = new();
         public IReadOnlyList<Usuario> Usuarios { get; private set; } = new List<Usuario>();
-        public string? MensajeError { get; private set; }
+        public List<string> ErroresValidacion { get; private set; } = new();
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -67,7 +67,11 @@ namespace AdministracionSolicitudes.Web.Pages.Tareas
             Solicitud = formulario.Data.Solicitud;
             Usuarios = formulario.Data.Usuarios;
 
-            if (!ModelState.IsValid) return Page();
+            if (!ModelState.IsValid)
+            {
+                ErroresValidacion = ObtenerErroresDeValidacion();
+                return Page();
+            }
 
             var tarea = new Tarea
             {
@@ -85,13 +89,24 @@ namespace AdministracionSolicitudes.Web.Pages.Tareas
 
             if (!resultado.IsSuccess)
             {
-                MensajeError = resultado.Message;
+                ModelState.AddModelError(string.Empty, resultado.Message);
                 return Page();
             }
 
             TempData["Mensaje"] = resultado.Message;
             TempData["TipoMensaje"] = "success";
             return RedirectToPage("/Tareas/Index", new { idSolicitud = IdSolicitud });
+        }
+
+        private List<string> ObtenerErroresDeValidacion()
+        {
+            return ModelState
+                .Where(kv => !string.IsNullOrWhiteSpace(kv.Key) && kv.Value?.Errors.Count > 0)
+                .SelectMany(kv => kv.Value!.Errors)
+                .Select(e => e.ErrorMessage)
+                .Where(m => !string.IsNullOrWhiteSpace(m))
+                .Distinct()
+                .ToList();
         }
 
         private int ObtenerIdUsuarioSesion()
