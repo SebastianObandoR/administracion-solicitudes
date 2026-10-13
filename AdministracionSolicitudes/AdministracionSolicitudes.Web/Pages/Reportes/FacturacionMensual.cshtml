@@ -1,0 +1,53 @@
+@page
+@model AdministracionSolicitudes.Web.Pages.Reportes.FacturacionMensualModel
+@using AdministracionSolicitudes.Web.Constants
+@{ ViewData["Title"] = "Facturación mensual"; }
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento"><h1>Reporte de facturación mensual</h1></div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Parámetros</div>
+        <form method="get" class="filtros-reporte">
+            <div class="campo-formulario">
+                <label for="Mes">Mes</label>
+                <select id="Mes" name="Mes" required>
+                    <option value="">Seleccione un mes</option>
+                    @for (var mes = 1; mes <= 12; mes++)
+                    {
+                        <option value="@mes" selected="@(Model.Mes == mes)">@Meses.Nombres[mes - 1]</option>
+                    }
+                </select>
+            </div>
+            <div class="campo-formulario"><label for="Anio">Año</label><input id="Anio" name="Anio" type="number" min="1" max="9999" value="@Model.Anio" required /></div>
+            <div class="campo-formulario"><button type="submit" class="boton-generar"><i class="bi bi-search"></i><span>Generar</span></button></div>
+        </form>
+    </div>
+
+    @if (Model.Generado)
+    {
+        <div class="panel-informacion panel-resultado">
+            <div class="titulo-panel">Resultado</div>
+            <div class="contenedor-tabla">
+                <table class="tabla-mantenimiento">
+                    <thead><tr><th>Consecutivo</th><th>Título</th><th>Mes</th><th>Año</th><th class="columna-numerica">Monto</th><th class="columna-numerica">IVA</th><th class="columna-numerica">Total por solicitud</th></tr></thead>
+                    <tbody>
+                    @foreach (var registro in Model.Registros)
+                    {
+                        <tr><td>@registro.ConsecutivoOficio</td><td>@registro.Titulo</td><td>@Meses.Nombres[registro.Mes - 1]</td><td>@registro.Anio</td><td class="columna-numerica">@registro.Monto.ToString("N2")</td><td class="columna-numerica">@registro.Iva.ToString("N2")</td><td class="columna-numerica">@registro.Total.ToString("N2")</td></tr>
+                    }
+                    @if (!Model.Registros.Any()) { <tr><td colspan="7" class="tabla-vacia">No hay montos para los parámetros seleccionados.</td></tr> }
+                    </tbody>
+                    <tfoot><tr><td colspan="4">Totales</td><td class="columna-numerica">@Model.TotalMonto.ToString("N2")</td><td class="columna-numerica">@Model.TotalIva.ToString("N2")</td><td class="columna-numerica">@Model.TotalGeneral.ToString("N2")</td></tr></tfoot>
+                </table>
+            </div>
+        </div>
+    }
+</section>
+
+@section Scripts {
+@if (!string.IsNullOrWhiteSpace(Model.MensajeError))
+{
+    <script>Swal.fire({ text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MensajeError)), icon: 'warning', confirmButtonText: 'Aceptar' });</script>
+}
+}

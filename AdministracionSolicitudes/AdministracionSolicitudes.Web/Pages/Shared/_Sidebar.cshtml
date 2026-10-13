@@ -1,6 +1,12 @@
 ﻿@{
     var currentPath = Context.Request.Path.Value?.ToLowerInvariant() ?? "/";
     var isHome = currentPath == "/" || currentPath == "/index";
+    var isSolicitudes = currentPath.StartsWith("/mantenimientosolicitudes") || currentPath.StartsWith("/desgloses");
+    var isRepresentantes = currentPath == "/representantes" || currentPath.StartsWith("/representantes/", StringComparison.Ordinal);
+    var isEstados = currentPath == "/estados" || currentPath.StartsWith("/estados/", StringComparison.Ordinal);
+    var isReporteFacturacion = currentPath.StartsWith("/reportes/facturacionmensual");
+    var isReporteTareasUsuario = currentPath.StartsWith("/reportes/tareasporusuario");
+    var isReporteTareasSolicitud = currentPath.StartsWith("/reportes/tareasporsolicitud");
 }
 
 <aside class="panel-lateral">
@@ -21,35 +27,44 @@
             <span class="texto-navegacion">Inicio</span>
         </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(isSolicitudes ? "esta-activo" : string.Empty)" asp-page="/MantenimientoSolicitudes/Index">
             <i class="bi bi-file-earmark-text icono-navegacion"></i>
             <span class="texto-navegacion">Solicitudes</span>
-        </span>
+        </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(currentPath.StartsWith("/tareas") ? "esta-activo" : string.Empty)" asp-page="/Tareas/Index">
             <i class="bi bi-list-task icono-navegacion"></i>
             <span class="texto-navegacion">Tareas</span>
-        </span>
+        </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(currentPath.StartsWith("/usuarios") ? "esta-activo" : string.Empty)" asp-page="/Usuarios/Index">
             <i class="bi bi-people icono-navegacion"></i>
             <span class="texto-navegacion">Usuarios</span>
-        </span>
+        </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(isRepresentantes ? "esta-activo" : string.Empty)" asp-page="/Representantes/Index">
             <i class="bi bi-person-badge icono-navegacion"></i>
             <span class="texto-navegacion">Representantes</span>
-        </span>
+        </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(isEstados ? "esta-activo" : string.Empty)" asp-page="/Estados/Index">
             <i class="bi bi-diagram-3 icono-navegacion"></i>
             <span class="texto-navegacion">Estados</span>
-        </span>
+        </a>
 
-        <span class="elemento-navegacion esta-pendiente">
+        <a class="elemento-navegacion @(isReporteFacturacion ? "esta-activo" : string.Empty)" asp-page="/Reportes/FacturacionMensual">
             <i class="bi bi-bar-chart-line icono-navegacion"></i>
-            <span class="texto-navegacion">Reportes</span>
-        </span>
+            <span class="texto-navegacion">Facturación mensual</span>
+        </a>
+
+        <a class="elemento-navegacion @(isReporteTareasUsuario ? "esta-activo" : string.Empty)" asp-page="/Reportes/TareasPorUsuario">
+            <i class="bi bi-person-lines-fill icono-navegacion"></i>
+            <span class="texto-navegacion">Tareas por usuario</span>
+       </a>
+       <a class="elemento-navegacion @(isReporteTareasSolicitud ? "esta-activo" : string.Empty)" asp-page="/Reportes/TareasPorSolicitud">
+            <i class="bi bi-card-checklist icono-navegacion"></i>
+            <span class="texto-navegacion">Tareas por solicitud</span>
+      </a>
     </nav>
 
     <div class="pie-lateral">

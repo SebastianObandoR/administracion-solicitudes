@@ -1,0 +1,151 @@
+﻿@page
+@model AdministracionSolicitudes.Web.Pages.Usuarios.IndexModel
+@using AdministracionSolicitudes.Entities
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <h1>Administracion de Usuarios</h1>
+
+        <a asp-page="/Usuarios/Nuevo" class="boton-nuevo">
+            <i class="bi bi-file-earmark-plus-fill"></i>
+            <span>Nuevo</span>
+        </a>
+    </div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Informacion</div>
+
+        <div class="contenedor-tabla">
+            <table class="tabla-mantenimiento">
+                <thead>
+                    <tr>
+                        <th>Usuario</th>
+                        <th>Nombre completo</th>
+                        <th>Correo</th>
+                        <th>Estado</th>
+                        <th class="columna-acciones">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var usuario in Model.Usuarios)
+                    {
+                        <tr>
+                            <td>@usuario.NombreUsuario</td>
+                            <td>@usuario.NombreCompleto</td>
+                            <td>@usuario.Correo</td>
+                            <td>
+                                <select class="selector-estado"
+                                        data-id="@usuario.IdUsuario"
+                                        data-estado="@((int)usuario.Estado)">
+                                    <option value="1" selected="@(usuario.Estado == EstadoUsuario.Activo)">Activo</option>
+                                    <option value="2" selected="@(usuario.Estado == EstadoUsuario.Inactivo)">Inactivo</option>
+                                    <option value="3" selected="@(usuario.Estado == EstadoUsuario.Bloqueado)">Bloqueado</option>
+                                </select>
+                            </td>
+                            <td class="acciones">
+                                <a asp-page="/Usuarios/Editar"
+                                   asp-route-idUsuario="@usuario.IdUsuario"
+                                   class="boton-accion"
+                                   title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+
+                                <button type="button"
+                                        class="boton-accion boton-eliminar"
+                                        data-id="@usuario.IdUsuario"
+                                        data-nombre="@usuario.NombreUsuario"
+                                        title="Eliminar">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.TotalPaginas > 1)
+        {
+            <div class="paginacion">
+                @for (var pagina = 1; pagina <= Model.TotalPaginas; pagina++)
+                {
+                    <a asp-page="/Usuarios/Index"
+                       asp-route-pagina="@pagina"
+                       class="pagina @(pagina == Model.PaginaActual ? "pagina-activa" : string.Empty)">
+                        @pagina
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<form method="post" asp-page-handler="Eliminar" id="formEliminar">
+    <input type="hidden" name="idUsuario" id="idUsuarioEliminar" />
+</form>
+
+<form method="post" asp-page-handler="CambiarEstado" id="formEstado">
+    <input type="hidden" name="idUsuario" id="idUsuarioEstado" />
+    <input type="hidden" name="estado" id="estadoUsuario" />
+</form>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll(".boton-eliminar").forEach(boton => {
+            boton.addEventListener("click", () => {
+                Swal.fire({
+                    title: "Confirmar eliminacion",
+                    text: "¿Realmente desea eliminar el elemento seleccionado?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No"
+                }).then(resultado => {
+                    if (!resultado.isConfirmed) return;
+                    document.getElementById("idUsuarioEliminar").value = boton.dataset.id;
+                    document.getElementById("formEliminar").submit();
+                });
+            });
+        });
+
+        document.querySelectorAll(".selector-estado").forEach(selector => {
+            selector.addEventListener("change", () => {
+                const estadoAnterior = selector.dataset.estado;
+
+                Swal.fire({
+                    title: "Confirmar cambio",
+                    text: "¿Desea cambiar el estado del usuario?",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No"
+                }).then(resultado => {
+                    if (!resultado.isConfirmed) {
+                        selector.value = estadoAnterior;
+                        return;
+                    }
+
+                    document.getElementById("idUsuarioEstado").value = selector.dataset.id;
+                    document.getElementById("estadoUsuario").value = selector.value;
+                    document.getElementById("formEstado").submit();
+                });
+            });
+        });
+
+        @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+        {
+            <text>
+                Swal.fire({
+                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                    icon: '@Model.TipoMensaje',
+                    confirmButtonText: 'Aceptar'
+                });
+            </text>
+        }
+    </script>
+}

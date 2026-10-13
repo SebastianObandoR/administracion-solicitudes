@@ -1,0 +1,9 @@
+﻿.tareas-compacto .tabla-mantenimiento td {
+    padding: 6px 10px;
+}
+
+.tareas-compacto .boton-accion {
+    font-size: 13px;
+    height: 30px;
+    width: 30px;
+}
