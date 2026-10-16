@@ -142,11 +142,18 @@ namespace AdministracionSolicitudes.Services.Implementations
                 if (existente.IdEstado != solicitud.IdEstado)
                 {
                     var usuario = await _userRepository.GetByIdAsync(idUsuarioEjecutor);
-                    await _notificacionEstadoService.NotificarCambioEstadoAsync(
+                    var notificacion = await _notificacionEstadoService.NotificarCambioEstadoAsync(
                         solicitud.IdSolicitud,
                         existente.IdEstado,
                         solicitud.IdEstado,
                         usuario?.NombreUsuario ?? $"Usuario #{idUsuarioEjecutor}");
+
+                    if (!notificacion.IsSuccess)
+                    {
+                        return SolicitudOperationResult.SuccessWithWarning(
+                            solicitud.IdSolicitud,
+                            "Solicitud actualizada correctamente, pero no se pudo enviar la notificacion por correo.");
+                    }
                 }
                 return SolicitudOperationResult.Success(solicitud.IdSolicitud);
             }

@@ -15,11 +15,9 @@
         </a>
     </div>
 
-    <div class="panel-informacion">
-        <div class="titulo-panel">Informacion</div>
-
-        <div class="contenedor-tabla">
-            <table class="tabla-mantenimiento">
+    <div class="representantes-tarjeta">
+        <div class="table-responsive">
+            <table class="table representantes-tabla align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -81,31 +79,8 @@
     }
 </section>
 
-<form method="post" asp-page-handler="Eliminar" id="formEliminarRepresentante">
-    <input type="hidden" name="id" id="idRepresentanteEliminar" />
-    <input type="hidden" name="pagina" id="paginaRepresentanteEliminar" />
-</form>
-
 @section Scripts {
     <script>
-        document.querySelectorAll(".boton-eliminar").forEach(boton => {
-            boton.addEventListener("click", () => {
-                Swal.fire({
-                    title: "Confirmar eliminacion",
-                    text: "¿Realmente desea eliminar el elemento seleccionado?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Si",
-                    cancelButtonText: "No"
-                }).then(resultado => {
-                    if (!resultado.isConfirmed) return;
-                    document.getElementById("idRepresentanteEliminar").value = boton.dataset.id;
-                    document.getElementById("paginaRepresentanteEliminar").value = boton.dataset.pagina;
-                    document.getElementById("formEliminarRepresentante").submit();
-                });
-            });
-        });
-
         @if (!string.IsNullOrWhiteSpace(Model.MensajeExito))
         {
             <text>
