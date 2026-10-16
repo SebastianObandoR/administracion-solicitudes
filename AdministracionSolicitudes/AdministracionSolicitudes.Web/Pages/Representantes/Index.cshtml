@@ -5,32 +5,33 @@
     ViewData["Title"] = "Representantes";
 }
 
-<section class="container-fluid px-0 representantes-pagina">
-    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <div>
-            <h1 class="representantes-titulo">Representantes</h1>
-            <p class="representantes-descripcion">Administre las personas de contacto de las solicitudes.</p>
-        </div>
-        <a class="representantes-boton representantes-boton--principal" asp-page="Crear">
-            <i class="bi bi-plus-lg me-1"></i>Nuevo
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <h1>Administracion de Representantes</h1>
+
+        <a asp-page="Crear" class="boton-nuevo">
+            <i class="bi bi-file-earmark-plus-fill"></i>
+            <span>Nuevo</span>
         </a>
     </div>
 
-    <div class="representantes-tarjeta">
-        <div class="table-responsive">
-            <table class="table representantes-tabla align-middle mb-0">
+    <div class="panel-informacion">
+        <div class="titulo-panel">Informacion</div>
+
+        <div class="contenedor-tabla">
+            <table class="tabla-mantenimiento">
                 <thead>
                     <tr>
-                        <th scope="col">Nombre</th>
-                        <th scope="col">Email</th>
-                        <th scope="col" class="text-end">Acciones</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th class="columna-acciones">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (Model.Resultado.Representantes.Count == 0)
                     {
                         <tr>
-                            <td colspan="3" class="representantes-vacio">No hay representantes para mostrar.</td>
+                            <td colspan="3" class="sin-registros">No hay representantes para mostrar.</td>
                         </tr>
                     }
                     else
@@ -40,25 +41,22 @@
                             <tr>
                                 <td>@representante.Nombre</td>
                                 <td>@representante.Correo</td>
-                                <td class="text-end text-nowrap">
-                                    <a class="representantes-boton representantes-boton--secundario"
-                                       asp-page="Editar"
+                                <td class="acciones">
+                                    <a asp-page="/Representantes/Editar"
                                        asp-route-id="@representante.IdRepresentante"
+                                       class="boton-accion"
+                                       title="Editar"
                                        aria-label="Editar representante @representante.Nombre">
-                                        <i class="bi bi-pencil"></i><span>Editar</span>
+                                        <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <form method="post"
-                                          asp-page-handler="Eliminar"
-                                          asp-route-id="@representante.IdRepresentante"
-                                          asp-route-pagina="@Model.Resultado.Pagina"
-                                          class="d-inline"
-                                          onsubmit="return confirm('¿Realmente desea eliminar el elemento seleccionado?');">
-                                        <button type="submit"
-                                                class="representantes-boton representantes-boton--eliminar"
-                                                aria-label="Eliminar representante @representante.Nombre">
-                                            <i class="bi bi-trash"></i><span>Eliminar</span>
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            class="boton-accion boton-eliminar"
+                                            data-id="@representante.IdRepresentante"
+                                            data-pagina="@Model.Resultado.Pagina"
+                                            title="Eliminar"
+                                            aria-label="Eliminar representante @representante.Nombre">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
                                 </td>
                             </tr>
                         }
@@ -70,36 +68,44 @@
 
     @if (Model.Resultado.TotalPaginas > 1)
     {
-        <nav class="representantes-paginacion" aria-label="Paginación de representantes">
-            <ul class="pagination justify-content-center">
-                <li class="page-item @(Model.Resultado.Pagina <= 1 ? "disabled" : string.Empty)">
-                    <a class="page-link"
-                       asp-page="./Index"
-                       asp-route-pagina="@(Model.Resultado.Pagina - 1)"
-                       aria-label="Página anterior">Anterior</a>
-                </li>
-                @for (var pagina = 1; pagina <= Model.Resultado.TotalPaginas; pagina++)
-                {
-                    <li class="page-item @(pagina == Model.Resultado.Pagina ? "active" : string.Empty)">
-                        <a class="page-link"
-                           asp-page="./Index"
-                           asp-route-pagina="@pagina"
-                           aria-current="@(pagina == Model.Resultado.Pagina ? "page" : null)">@pagina</a>
-                    </li>
-                }
-                <li class="page-item @(Model.Resultado.Pagina >= Model.Resultado.TotalPaginas ? "disabled" : string.Empty)">
-                    <a class="page-link"
-                       asp-page="./Index"
-                       asp-route-pagina="@(Model.Resultado.Pagina + 1)"
-                       aria-label="Página siguiente">Siguiente</a>
-                </li>
-            </ul>
-        </nav>
+        <div class="paginacion">
+            @for (var pagina = 1; pagina <= Model.Resultado.TotalPaginas; pagina++)
+            {
+                <a asp-page="/Representantes/Index"
+                   asp-route-pagina="@pagina"
+                   class="pagina @(pagina == Model.Resultado.Pagina ? "pagina-activa" : string.Empty)">
+                    @pagina
+                </a>
+            }
+        </div>
     }
 </section>
 
+<form method="post" asp-page-handler="Eliminar" id="formEliminarRepresentante">
+    <input type="hidden" name="id" id="idRepresentanteEliminar" />
+    <input type="hidden" name="pagina" id="paginaRepresentanteEliminar" />
+</form>
+
 @section Scripts {
     <script>
+        document.querySelectorAll(".boton-eliminar").forEach(boton => {
+            boton.addEventListener("click", () => {
+                Swal.fire({
+                    title: "Confirmar eliminacion",
+                    text: "¿Realmente desea eliminar el elemento seleccionado?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No"
+                }).then(resultado => {
+                    if (!resultado.isConfirmed) return;
+                    document.getElementById("idRepresentanteEliminar").value = boton.dataset.id;
+                    document.getElementById("paginaRepresentanteEliminar").value = boton.dataset.pagina;
+                    document.getElementById("formEliminarRepresentante").submit();
+                });
+            });
+        });
+
         @if (!string.IsNullOrWhiteSpace(Model.MensajeExito))
         {
             <text>

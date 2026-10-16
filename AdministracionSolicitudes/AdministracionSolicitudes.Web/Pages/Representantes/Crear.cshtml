@@ -1,35 +1,40 @@
 @page
 @model AdministracionSolicitudes.Web.Pages.Representantes.CrearModel
+@using System.Linq
 
 @{
     ViewData["Title"] = "Nuevo representante";
+    var erroresServidor = ViewData.ModelState.Values
+        .SelectMany(estado => estado.Errors)
+        .Select(error => error.ErrorMessage)
+        .Where(mensaje => !string.IsNullOrWhiteSpace(mensaje))
+        .Distinct()
+        .ToArray();
 }
 
-<section class="container-fluid px-0 representantes-pagina">
-    <div class="representantes-encabezado">
-        <h1 class="representantes-titulo">Nuevo representante</h1>
-        <p class="representantes-descripcion">Ingrese los datos del representante.</p>
+<section class="formulario-mantenimiento">
+    <div class="acciones-formulario">
+        <a asp-page="/Representantes/Index" class="boton-formulario" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+        <button type="submit" form="formRepresentante" class="boton-formulario" title="Guardar">
+            <i class="bi bi-floppy-fill"></i>
+        </button>
     </div>
 
-    <div class="representantes-tarjeta representantes-formulario-tarjeta">
-        <form method="post" class="representantes-formulario">
-            <div asp-validation-summary="ModelOnly" class="representantes-validacion" role="alert"></div>
+    <div class="panel-formulario">
+        <div class="titulo-panel">Formulario Representante</div>
 
-            <div class="representantes-campo">
+        <form method="post" id="formRepresentante" class="campos-formulario" novalidate>
+            <div class="campo-formulario">
                 <label asp-for="Input.Nombre">Nombre</label>
                 <input asp-for="Input.Nombre" autocomplete="name" />
-                <span asp-validation-for="Input.Nombre" class="representantes-error-validacion"></span>
             </div>
 
-            <div class="representantes-campo">
+            <div class="campo-formulario">
                 <label asp-for="Input.Correo">Email</label>
                 <input asp-for="Input.Correo" type="email" autocomplete="email" inputmode="email" />
-                <span asp-validation-for="Input.Correo" class="representantes-error-validacion"></span>
-            </div>
-
-            <div class="representantes-acciones-formulario">
-                <button type="submit" class="representantes-boton representantes-boton--principal">Guardar</button>
-                <a class="representantes-boton representantes-boton--secundario" asp-page="Index">Regresar al listado</a>
             </div>
         </form>
     </div>
@@ -37,4 +42,44 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function mostrarErroresFormulario(mensajes, icono, titulo) {
+            const lista = document.createElement("ul");
+            lista.style.textAlign = "left";
+            lista.style.margin = "0";
+            lista.style.paddingLeft = "20px";
+
+            mensajes.forEach(mensaje => {
+                const elemento = document.createElement("li");
+                elemento.textContent = mensaje;
+                lista.appendChild(elemento);
+            });
+
+            Swal.fire({
+                title: titulo,
+                html: lista,
+                icon: icono,
+                confirmButtonText: "Aceptar",
+                confirmButtonColor: "#2d7a78"
+            });
+        }
+
+        $(function () {
+            const formulario = $("#formRepresentante");
+            const validador = formulario.data("validator");
+
+            if (validador) {
+                validador.settings.errorPlacement = function () { };
+                validador.settings.invalidHandler = function (event, validadorFormulario) {
+                    const mensajes = [...new Set(validadorFormulario.errorList.map(error => error.message))];
+                    mostrarErroresFormulario(mensajes, "warning", "Campos obligatorios");
+                };
+            }
+        });
+
+        const erroresServidor = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(erroresServidor));
+        if (erroresServidor.length > 0) {
+            mostrarErroresFormulario(erroresServidor, "error", "");
+        }
+    </script>
 }
