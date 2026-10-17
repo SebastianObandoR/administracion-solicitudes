@@ -16,7 +16,6 @@ namespace AdministracionSolicitudes.Web.Pages.Tareas
             _tareaService = tareaService;
         }
 
-        public IReadOnlyList<Solicitud> Solicitudes { get; private set; } = new List<Solicitud>();
         public bool HaySolicitudSeleccionada { get; private set; }
         public Solicitud Solicitud { get; private set; } = new();
         public PagedResult<Tarea> Tareas { get; private set; } = new();
@@ -31,13 +30,7 @@ namespace AdministracionSolicitudes.Web.Pages.Tareas
         {
             int idUsuarioSesion = ObtenerIdUsuarioSesion();
 
-            var listaSolicitudes = await _tareaService.ObtenerSolicitudesAsync(idUsuarioSesion);
-
-            if (!listaSolicitudes.IsSuccess) return StatusCode(500, listaSolicitudes.Message);
-
-            Solicitudes = listaSolicitudes.Data ?? new List<Solicitud>();
-
-            if (idSolicitud <= 0) return Page();
+            if (idSolicitud <= 0) return RedirectToPage("/MantenimientoSolicitudes/Index");
 
             var resultado = await _tareaService.ObtenerTareasPorSolicitudAsync(idSolicitud, pagina, idUsuarioSesion);
 
