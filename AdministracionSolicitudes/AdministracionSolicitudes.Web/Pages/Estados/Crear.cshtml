@@ -1,36 +1,82 @@
 @page
 @model AdministracionSolicitudes.Web.Pages.Estados.CrearModel
+@using System.Linq
 
 @{
     ViewData["Title"] = "Nuevo estado";
+    var erroresServidor = ViewData.ModelState.Values
+        .SelectMany(estado => estado.Errors)
+        .Select(error => error.ErrorMessage)
+        .Where(mensaje => !string.IsNullOrWhiteSpace(mensaje))
+        .Distinct()
+        .ToArray();
 }
 
-<section class="container-fluid px-0 estados-pagina">
-    <div class="estados-encabezado">
-        <h1 class="estados-titulo">Nuevo estado</h1>
-        <p class="estados-descripcion">Ingrese el nombre del estado de solicitud.</p>
+<section class="formulario-mantenimiento">
+    <div class="acciones-formulario">
+        <a asp-page="/Estados/Index" class="boton-formulario" title="Regresar">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+        <button type="submit" form="formEstado" class="boton-formulario" title="Guardar">
+            <i class="bi bi-floppy-fill"></i>
+        </button>
     </div>
 
-    <div class="estados-tarjeta estados-formulario-tarjeta">
-        <form method="post" class="estados-formulario">
-            <div asp-validation-summary="ModelOnly" class="estados-validacion" role="alert"></div>
+    <div class="panel-formulario">
+        <div class="titulo-panel">Formulario Estado de Solicitud</div>
 
-            <div class="estados-campo">
+        <form method="post" id="formEstado" class="campos-formulario" novalidate>
+            <div class="campo-formulario">
                 <label asp-for="Input.Nombre">Nombre</label>
                 <input asp-for="Input.Nombre" autocomplete="off" />
-                <span asp-validation-for="Input.Nombre" class="estados-error-validacion"></span>
+                <span class="ayuda-campo">El identificador se asignará automáticamente.</span>
             </div>
 
-            <div class="estados-ayuda">El identificador se asignará automáticamente.</div>
-
-            <div class="estados-acciones-formulario">
-                <button type="submit" class="estados-boton estados-boton--principal">Guardar</button>
-                <a class="estados-boton estados-boton--secundario" asp-page="Index">Regresar al listado</a>
-            </div>
         </form>
     </div>
 </section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function mostrarErroresFormulario(mensajes, icono, titulo) {
+            const lista = document.createElement("ul");
+            lista.style.textAlign = "left";
+            lista.style.margin = "0";
+            lista.style.paddingLeft = "20px";
+
+            mensajes.forEach(mensaje => {
+                const elemento = document.createElement("li");
+                elemento.textContent = mensaje;
+                lista.appendChild(elemento);
+            });
+
+            Swal.fire({
+                title: titulo,
+                html: lista,
+                icon: icono,
+                confirmButtonText: "Aceptar",
+                confirmButtonColor: "#2d7a78"
+            });
+        }
+
+        $(function () {
+            const formulario = $("#formEstado");
+            const validador = formulario.data("validator");
+
+            if (validador) {
+                validador.settings.errorPlacement = function () { };
+                validador.settings.invalidHandler = function (event, validadorFormulario) {
+                    const mensajes = [...new Set(validadorFormulario.errorList.map(error => error.message))];
+                    mostrarErroresFormulario(mensajes, "warning", "Campos obligatorios");
+                };
+            }
+        });
+
+        const erroresServidor = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(erroresServidor));
+        if (erroresServidor.length > 0) {
+            mostrarErroresFormulario(erroresServidor, "error", "");
+        }
+    </script>
 }
