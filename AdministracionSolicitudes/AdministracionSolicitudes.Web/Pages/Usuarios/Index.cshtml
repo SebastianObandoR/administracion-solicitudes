@@ -10,7 +10,7 @@
     <div class="cabecera-mantenimiento">
         <h1>Administracion de Usuarios</h1>
 
-        <a asp-page="/Usuarios/Nuevo" class="boton-nuevo">
+        <a asp-page="/Usuarios/Crear" class="boton-nuevo">
             <i class="bi bi-file-earmark-plus-fill"></i>
             <span>Nuevo</span>
         </a>
@@ -39,27 +39,18 @@
                             <td>@usuario.NombreCompleto</td>
                             <td>@usuario.Correo</td>
                             <td>
-                                <select class="selector-estado"
-                                        data-id="@usuario.IdUsuario"
-                                        data-estado="@((int)usuario.Estado)">
+                                <select class="selector-estado" data-id="@usuario.IdUsuario" data-estado="@((int)usuario.Estado)">
                                     <option value="1" selected="@(usuario.Estado == EstadoUsuario.Activo)">Activo</option>
                                     <option value="2" selected="@(usuario.Estado == EstadoUsuario.Inactivo)">Inactivo</option>
                                     <option value="3" selected="@(usuario.Estado == EstadoUsuario.Bloqueado)">Bloqueado</option>
                                 </select>
                             </td>
                             <td class="acciones">
-                                <a asp-page="/Usuarios/Editar"
-                                   asp-route-idUsuario="@usuario.IdUsuario"
-                                   class="boton-accion"
-                                   title="Editar">
+                                <a asp-page="/Usuarios/Editar" asp-route-idUsuario="@usuario.IdUsuario" class="boton-accion" title="Editar">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
 
-                                <button type="button"
-                                        class="boton-accion boton-eliminar"
-                                        data-id="@usuario.IdUsuario"
-                                        data-nombre="@usuario.NombreUsuario"
-                                        title="Eliminar">
+                                <button type="button" class="boton-accion boton-eliminar" data-id="@usuario.IdUsuario" data-nombre="@usuario.NombreUsuario" title="Eliminar">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                             </td>
@@ -74,9 +65,7 @@
             <div class="paginacion">
                 @for (var pagina = 1; pagina <= Model.TotalPaginas; pagina++)
                 {
-                    <a asp-page="/Usuarios/Index"
-                       asp-route-pagina="@pagina"
-                       class="pagina @(pagina == Model.PaginaActual ? "pagina-activa" : string.Empty)">
+                    <a asp-page="/Usuarios/Index" asp-route-pagina="@pagina" class="pagina @(pagina == Model.PaginaActual ? "pagina-activa" : string.Empty)">
                         @pagina
                     </a>
                 }
@@ -139,13 +128,13 @@
 
         @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
         {
-            <text>
-                Swal.fire({
-                    text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
-                    icon: '@Model.TipoMensaje',
-                    confirmButtonText: 'Aceptar'
-                });
-            </text>
+                <text>
+                        Swal.fire({
+                            text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                            icon: '@Model.TipoMensaje',
+                            confirmButtonText: 'Aceptar'
+                        });
+                </text>
         }
     </script>
 }
