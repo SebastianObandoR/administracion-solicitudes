@@ -146,6 +146,7 @@ namespace AdministracionSolicitudes.Services.Implementations
                         solicitud.IdSolicitud,
                         existente.IdEstado,
                         solicitud.IdEstado,
+                        idUsuarioEjecutor,
                         usuario?.NombreUsuario ?? $"Usuario #{idUsuarioEjecutor}");
 
                     if (!notificacion.IsSuccess)
