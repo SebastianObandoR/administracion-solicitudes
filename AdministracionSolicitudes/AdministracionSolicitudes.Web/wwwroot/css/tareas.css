@@ -7,3 +7,10 @@
     height: 30px;
     width: 30px;
 }
+
+.cabecera-mantenimiento h1.titulo-solicitud {
+    font-size: 30px;
+    line-height: 1.25;
+    margin: 0 0 16px;
+    overflow-wrap: anywhere;
+}
