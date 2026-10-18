@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace AdministracionSolicitudes.Web.Pages.Desgloses
 {
-    public class EditModel : PageModel
+    public class EditarModel : PageModel
     {
         private readonly IDesgloseSolicitudService _service;
-        public EditModel(IDesgloseSolicitudService service) => _service = service;
+        public EditarModel(IDesgloseSolicitudService service) => _service = service;
         [BindProperty] public DesgloseSolicitudInputModel Input { get; set; } = new();
         public List<string> ErroresValidacion { get; set; } = new();
 

@@ -7,11 +7,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace AdministracionSolicitudes.Web.Pages.Usuarios
 {
-    public class NuevoModel : PageModel
+    public class CrearModel : PageModel
     {
         private readonly IUsuarioService _usuarioService;
 
-        public NuevoModel(IUsuarioService usuarioService)
+        public CrearModel(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
         }

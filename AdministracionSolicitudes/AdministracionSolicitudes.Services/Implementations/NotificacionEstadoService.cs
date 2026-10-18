@@ -18,7 +18,12 @@ namespace AdministracionSolicitudes.Services.Implementations
             _auditoria = auditoria;
         }
 
-        public async Task<NotificationResult> NotificarCambioEstadoAsync(int idSolicitud, int idEstadoAnterior, int idEstadoNuevo, string usuario)
+        public async Task<NotificationResult> NotificarCambioEstadoAsync(
+            int idSolicitud,
+            int idEstadoAnterior,
+            int idEstadoNuevo,
+            int idUsuarioEjecutor,
+            string usuario)
         {
             if (idEstadoAnterior == idEstadoNuevo)
                 return new NotificationResult { IsSuccess = true, Message = "El estado no cambio." };
@@ -45,7 +50,7 @@ Administracion de Solicitudes - Publica S.A.";
             }
             catch (Exception ex)
             {
-                await _auditoria.RegistrarErrorSeguroAsync(0, Modulo, ex);
+                await _auditoria.RegistrarErrorSeguroAsync(idUsuarioEjecutor, Modulo, ex);
                 return new NotificationResult { IsSuccess = false, Message = "No se pudo enviar la notificacion por correo." };
             }
         }

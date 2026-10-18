@@ -14,7 +14,7 @@
             <a asp-page="/MantenimientoSolicitudes/Index" class="boton-nuevo" title="Regresar">
                 <i class="bi bi-arrow-left"></i><span>Regresar</span>
             </a>
-            <a asp-page="./Create" asp-route-idSolicitud="@Model.IdSolicitud" class="boton-nuevo">
+            <a asp-page="./Crear" asp-route-idSolicitud="@Model.IdSolicitud" class="boton-nuevo">
                 <i class="bi bi-file-earmark-plus-fill"></i><span>Nuevo</span>
             </a>
         </div>
@@ -33,7 +33,7 @@
                         <td>@desglose.Monto.ToString("N2")</td><td>@desglose.Iva.ToString("N2")</td>
                         <td>@desglose.Total.ToString("N2")</td><td>@desglose.PorcentajeCobro.ToString("N2")%</td>
                         <td class="acciones">
-                            <a asp-page="./Edit" asp-route-idSolicitud="@desglose.IdSolicitud" asp-route-mes="@desglose.Mes" asp-route-anio="@desglose.Anio" class="boton-accion" title="Editar"><i class="bi bi-pencil-square"></i></a>
+                            <a asp-page="./Editar" asp-route-idSolicitud="@desglose.IdSolicitud" asp-route-mes="@desglose.Mes" asp-route-anio="@desglose.Anio" class="boton-accion" title="Editar"><i class="bi bi-pencil-square"></i></a>
                             <button type="button" class="boton-accion boton-eliminar" data-solicitud="@desglose.IdSolicitud" data-mes="@desglose.Mes" data-anio="@desglose.Anio" title="Eliminar"><i class="bi bi-trash-fill"></i></button>
                         </td>
                     </tr>
