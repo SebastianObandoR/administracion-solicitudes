@@ -103,7 +103,7 @@ namespace AdministracionSolicitudes.Services.Implementations
                     null, Modulo, registroAnterior, SolicitudBitacoraPayload.Crear(solicitud));
 
                 await _notificacionEstadoService.NotificarCambioEstadoAsync(
-                    solicitud.IdSolicitud, idEstadoAnterior, idEstadoVencida, "Proceso automatico");
+                    solicitud.IdSolicitud, idEstadoAnterior, idEstadoVencida, SinUsuario, "Proceso automatico");
 
                 return true;
             }
