@@ -11,7 +11,6 @@ namespace AdministracionSolicitudes.Services.Interfaces
         Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int idUsuarioEjecutor);
         Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int idUsuarioEjecutor);
 
-        // Catalogos para los combos de las pantallas de Solicitudes
         Task<IEnumerable<Representante>> GetRepresentantesAsync(int idUsuarioEjecutor);
         Task<IEnumerable<EstadoSolicitud>> GetEstadosAsync(int idUsuarioEjecutor);
     }

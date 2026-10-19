@@ -1,4 +1,4 @@
-﻿.mantenimiento,
+.mantenimiento,
 .formulario-mantenimiento {
     width: 100%;
 }
@@ -208,18 +208,6 @@
 
 .tabla-mantenimiento tbody tr.fila-vencida {
     background: #f7c6c1;
-}
-
-.tabla-mantenimiento tbody tr.fila-al-dia td:first-child {
-    box-shadow: inset 4px 0 0 #2e9e4f;
-}
-
-.tabla-mantenimiento tbody tr.fila-vence-hoy td:first-child {
-    box-shadow: inset 4px 0 0 #e0a100;
-}
-
-.tabla-mantenimiento tbody tr.fila-vencida td:first-child {
-    box-shadow: inset 4px 0 0 #c0392b;
 }
 
 .sin-registros {

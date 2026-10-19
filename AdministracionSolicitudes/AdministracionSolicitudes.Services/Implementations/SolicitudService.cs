@@ -1,4 +1,4 @@
-﻿using AdministracionSolicitudes.Entities;
+using AdministracionSolicitudes.Entities;
 using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Services.Models;
@@ -97,6 +97,12 @@ namespace AdministracionSolicitudes.Services.Implementations
         {
             try
             {
+                var errores = SolicitudValidacion.Validar(solicitud, false);
+                if (errores.Count > 0)
+                    return new SolicitudOperationResult { ValidationErrors = errores };
+                solicitud.ConsecutivoOficio = solicitud.ConsecutivoOficio.Trim();
+                solicitud.Titulo = solicitud.Titulo.Trim();
+
                 if (await _solicitudRepository.ExistsConsecutivoAsync(solicitud.ConsecutivoOficio))
                 {
                     return SolicitudOperationResult.Failure(MensajeConsecutivoDuplicado);
@@ -131,6 +137,11 @@ namespace AdministracionSolicitudes.Services.Implementations
                 }
 
                 solicitud.ConsecutivoOficio = existente.ConsecutivoOficio;
+
+                var errores = SolicitudValidacion.Validar(solicitud, true);
+                if (errores.Count > 0)
+                    return new SolicitudOperationResult { ValidationErrors = errores };
+                solicitud.Titulo = solicitud.Titulo.Trim();
 
                 var registroAnterior = ToBitacoraPayload(existente);
                 await _solicitudRepository.UpdateAsync(solicitud);
