@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
     function escapar(texto) {
@@ -37,9 +37,9 @@
                 .join("");
 
             Swal.fire({
-                title: "Campos obligatorios",
+                title: window.__modalValidacion?.titulo || "Campos obligatorios",
                 html:
-                    '<p style="text-align:left; margin-bottom:8px;">Debe completar los siguientes campos:</p>' +
+                    '<p style="text-align:left; margin-bottom:8px;">' + escapar(window.__modalValidacion?.descripcion || "Debe completar los siguientes campos:") + '</p>' +
                     '<ul style="text-align:left; margin:0; padding-left:20px;">' + items + "</ul>",
                 icon: "warning",
                 confirmButtonText: "Aceptar",

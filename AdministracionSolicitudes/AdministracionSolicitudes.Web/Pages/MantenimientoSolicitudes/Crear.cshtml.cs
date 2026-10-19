@@ -1,4 +1,4 @@
-﻿using AdministracionSolicitudes.Entities;
+using AdministracionSolicitudes.Entities;
 using AdministracionSolicitudes.Services.Interfaces;
 using AdministracionSolicitudes.Web.Constants;
 using AdministracionSolicitudes.Web.Models;
@@ -8,11 +8,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
 {
-    public class CreateModel : PageModel
+    public class CrearModel : PageModel
     {
         private readonly ISolicitudService _solicitudService;
 
-        public CreateModel(ISolicitudService solicitudService)
+        public CrearModel(ISolicitudService solicitudService)
         {
             _solicitudService = solicitudService;
         }
@@ -43,14 +43,14 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
 
             var solicitud = new Solicitud
             {
-                ConsecutivoOficio = Input.ConsecutivoOficio.Trim(),
-                Titulo = Input.Titulo.Trim(),
+                ConsecutivoOficio = Input.ConsecutivoOficio ?? string.Empty,
+                Titulo = Input.Titulo ?? string.Empty,
                 Descripcion = Input.Descripcion,
                 Observaciones = Input.Observaciones,
                 DocumentoInicio = Input.DocumentoInicio,
                 DocumentoRespuesta = Input.DocumentoRespuesta,
-                IdRepresentante = Input.IdRepresentante!.Value,
-                FechaIngreso = Input.FechaIngreso!.Value,
+                IdRepresentante = Input.IdRepresentante.GetValueOrDefault(),
+                FechaIngreso = Input.FechaIngreso.GetValueOrDefault(),
                 FechaRespuesta = Input.FechaRespuesta,
                 FechaInicio = Input.FechaInicio
             };
@@ -59,7 +59,11 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
 
             if (!resultado.IsSuccess)
             {
-                ModelState.AddModelError(string.Empty, resultado.Message);
+                foreach (var campo in resultado.ValidationErrors)
+                    foreach (var mensaje in campo.Value)
+                        ModelState.AddModelError($"Input.{campo.Key}", mensaje);
+                if (!string.IsNullOrWhiteSpace(resultado.Message))
+                    ModelState.AddModelError(string.Empty, resultado.Message);
                 await CargarRepresentantesAsync();
                 ErroresValidacion = ObtenerErroresDeValidacion();
                 return Page();

@@ -1,9 +1,9 @@
-﻿@page
-@model AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes.CreateModel
+@page "{id:int}"
+@model AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes.EditarModel
 @using AdministracionSolicitudes.Web.Models
 
 @{
-    ViewData["Title"] = "Nueva Solicitud";
+    ViewData["Title"] = "Editar Solicitud";
 
     var erroresGenerales = ViewData.ModelState.TryGetValue(string.Empty, out var entradaGeneral)
         ? entradaGeneral.Errors.Select(error => error.ErrorMessage)
@@ -26,9 +26,11 @@
         <div class="titulo-panel">Formulario Solicitud</div>
 
         <form method="post" id="formSolicitud" class="campos-formulario rejilla-campos" novalidate>
+            <input type="hidden" asp-for="Input.IdSolicitud" />
+
             <div class="campo-formulario">
                 <label asp-for="Input.ConsecutivoOficio">Consecutivo de oficio</label>
-                <input asp-for="Input.ConsecutivoOficio" autocomplete="off" />
+                <input asp-for="Input.ConsecutivoOficio" readonly="readonly" autocomplete="off" />
                 <span asp-validation-for="Input.ConsecutivoOficio" class="mensaje-validacion"></span>
             </div>
 
@@ -47,9 +49,9 @@
             </div>
 
             <div class="campo-formulario">
-                <label>Estado</label>
-                <input type="text" value="Nueva" disabled />
-                <small class="ayuda-campo">Las solicitudes se crean por defecto en estado "Nueva".</small>
+                <label asp-for="Input.IdEstado">Estado</label>
+                <select asp-for="Input.IdEstado" asp-items="Model.Estados"></select>
+                <span asp-validation-for="Input.IdEstado" class="mensaje-validacion"></span>
             </div>
 
             <div class="campo-formulario campo-completo campo-fecha-ingreso">
@@ -95,6 +97,10 @@
 
 @section Scripts {
     <script>
+        window.__modalValidacion = {
+            titulo: 'Revise los datos ingresados',
+            descripcion: 'Corrija los siguientes errores:'
+        };
         window.__erroresValidacion = @Html.Raw(
             System.Text.Json.JsonSerializer.Serialize(Model.ErroresValidacion)
         );
