@@ -9,24 +9,26 @@ namespace AdministracionSolicitudes.Repository.Implementations
     public class SolicitudRepository : ISolicitudRepository
     {
         private const string SelectBase = @"
-            SELECT
-                s.id_solicitud AS IdSolicitud,
-                s.consecutivo_oficio AS ConsecutivoOficio,
-                s.titulo AS Titulo,
-                s.descripcion AS Descripcion,
-                s.observaciones AS Observaciones,
-                s.documento_inicio AS DocumentoInicio,
-                s.documento_respuesta AS DocumentoRespuesta,
-                s.id_representante AS IdRepresentante,
-                s.id_estado AS IdEstado,
-                s.fecha_ingreso AS FechaIngreso,
-                s.fecha_respuesta AS FechaRespuesta,
-                s.fecha_inicio AS FechaInicio,
-                r.nombre AS NombreRepresentante,
-                e.nombre AS NombreEstado
-            FROM solicitud s
-            INNER JOIN representante r ON r.id_representante = s.id_representante
-            INNER JOIN estadosolicitud e ON e.id_estado = s.id_estado";
+        SELECT
+            s.id_solicitud AS IdSolicitud,
+            s.consecutivo_oficio AS ConsecutivoOficio,
+            s.titulo AS Titulo,
+            s.descripcion AS Descripcion,
+            s.observaciones AS Observaciones,
+            s.documento_inicio AS DocumentoInicio,
+            s.documento_respuesta AS DocumentoRespuesta,
+            s.id_representante AS IdRepresentante,
+            s.id_estado AS IdEstado,
+            s.fecha_ingreso AS FechaIngreso,
+            s.fecha_respuesta AS FechaRespuesta,
+            s.fecha_inicio AS FechaInicio,
+            s.publicada AS Publicada,
+            s.fecha_vencimiento_publicacion AS FechaVencimientoPublicacion,
+            r.nombre AS NombreRepresentante,
+            e.nombre AS NombreEstado
+        FROM solicitud s
+        INNER JOIN representante r ON r.id_representante = s.id_representante
+        INNER JOIN estadosolicitud e ON e.id_estado = s.id_estado";
 
         private readonly IDbConnectionFactory _connectionFactory;
 
@@ -100,6 +102,27 @@ namespace AdministracionSolicitudes.Repository.Implementations
             using var connection = _connectionFactory.CreateConnection();
             await connection.ExecuteAsync(sql, solicitud);
         }
+
+        public async Task ActualizarPublicacionAsync(
+            int idSolicitud,
+            bool publicada,
+            DateTime? fechaVencimientoPublicacion)
+                {
+                    const string sql = @"
+                UPDATE solicitud
+                SET publicada = @Publicada,
+                    fecha_vencimiento_publicacion = @FechaVencimientoPublicacion
+                WHERE id_solicitud = @IdSolicitud;";
+
+                    using var connection = _connectionFactory.CreateConnection();
+
+                    await connection.ExecuteAsync(sql, new
+                    {
+                        IdSolicitud = idSolicitud,
+                        Publicada = publicada,
+                        FechaVencimientoPublicacion = fechaVencimientoPublicacion
+                    });
+                }
 
         public async Task DeleteAsync(int idSolicitud)
         {

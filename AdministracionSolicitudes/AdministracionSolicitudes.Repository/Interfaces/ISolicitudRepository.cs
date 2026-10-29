@@ -12,6 +12,12 @@ namespace AdministracionSolicitudes.Repository.Interfaces
         Task DeleteAsync(int idSolicitud);
         Task<bool> TieneRegistrosRelacionadosAsync(int idSolicitud);
 
+        // EXT1 - Publicacion de solicitudes
+        Task ActualizarPublicacionAsync(
+            int idSolicitud,
+            bool publicada,
+            DateTime? fechaVencimientoPublicacion);
+
         // Usado por SOL5 (proceso automatico de vencimiento)
         Task<IEnumerable<Solicitud>> GetVencibleCandidatesAsync(int idEstadoVencida, int idEstadoFinalizada);
         Task<bool> MarcarComoVencidaAsync(int idSolicitud, int idEstadoAnterior, int idEstadoVencida);

@@ -176,6 +176,74 @@ namespace AdministracionSolicitudes.Services.Implementations
             }
         }
 
+        public async Task<SolicitudOperationResult> ActualizarPublicacionAsync(
+            int idSolicitud,
+            bool publicada,
+            DateTime? fechaVencimientoPublicacion,
+            int idUsuarioEjecutor)
+                {
+                    try
+                    {
+                        var existente = await _solicitudRepository.GetByIdAsync(idSolicitud);
+
+                        if (existente == null)
+                        {
+                            return SolicitudOperationResult.Failure("La solicitud no existe.");
+                        }
+
+                        if (publicada && !fechaVencimientoPublicacion.HasValue)
+                        {
+                            return SolicitudOperationResult.Failure(
+                                "Debe indicar la fecha de vencimiento de la publicación.");
+                        }
+
+                        DateTime? fechaPublicacion = publicada
+                            ? fechaVencimientoPublicacion?.Date
+                            : null;
+
+                        var registroAnterior = new
+                        {
+                            existente.IdSolicitud,
+                            existente.Publicada,
+                            existente.FechaVencimientoPublicacion
+                        };
+
+                        await _solicitudRepository.ActualizarPublicacionAsync(
+                            idSolicitud,
+                            publicada,
+                            fechaPublicacion);
+
+                        var actualizado = await _solicitudRepository.GetByIdAsync(idSolicitud);
+
+                        if (actualizado == null)
+                        {
+                            return SolicitudOperationResult.Failure(
+                                "No se pudo obtener la solicitud actualizada.");
+                        }
+
+                        var registroActual = new
+                        {
+                            actualizado.IdSolicitud,
+                            actualizado.Publicada,
+                            actualizado.FechaVencimientoPublicacion
+                        };
+
+                        await _auditoriaService.RegistrarActualizacionAsync(
+                            idUsuarioEjecutor,
+                            Modulo,
+                            registroAnterior,
+                            registroActual);
+
+                        return SolicitudOperationResult.Success(idSolicitud);
+                    }
+                    catch (Exception exception)
+                    {
+                        await RegistrarErrorAsync(idUsuarioEjecutor, exception);
+
+                        return SolicitudOperationResult.Failure(
+                            "Ocurrio un error al actualizar la publicacion de la solicitud.");
+                    }
+                }
         public async Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int idUsuarioEjecutor)
         {
             try
