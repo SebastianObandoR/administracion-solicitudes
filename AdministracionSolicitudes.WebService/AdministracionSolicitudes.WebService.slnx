@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="AdministracionSolicitudes.WebService.AccesoDatos/AdministracionSolicitudes.WebService.AccesoDatos.csproj" Id="4fe23e4b-03b7-4366-b0b7-f35df94e9ceb" />
+  <Project Path="AdministracionSolicitudes.WebService.LogicaNegocio/AdministracionSolicitudes.WebService.LogicaNegocio.csproj" Id="903a249a-13fc-4636-886e-5d58649d539b" />
+  <Project Path="AdministracionSolicitudes.WebService.Modelos/AdministracionSolicitudes.WebService.Modelos.csproj" Id="ff79a482-37b5-47dc-a909-ca83ef90156b" />
+  <Project Path="AdministracionSolicitudes.WebService/AdministracionSolicitudes.WebService.csproj" Id="68a71d5c-6632-40c5-a884-e7fa1a1d5dbf" />
+</Solution>
