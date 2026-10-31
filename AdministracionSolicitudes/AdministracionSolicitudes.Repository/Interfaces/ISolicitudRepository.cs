@@ -6,6 +6,7 @@ namespace AdministracionSolicitudes.Repository.Interfaces
     {
         Task<(IEnumerable<Solicitud> Items, int TotalRegistros)> GetPagedAsync(int pageNumber, int pageSize);
         Task<Solicitud?> GetByIdAsync(int idSolicitud);
+        Task<Solicitud?> GetPublicadaVigenteByIdAsync(int idSolicitud);
         Task<bool> ExistsConsecutivoAsync(string consecutivoOficio, int? excludeId = null);
         Task<int> CreateAsync(Solicitud solicitud);
         Task UpdateAsync(Solicitud solicitud);

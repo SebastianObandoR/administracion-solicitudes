@@ -55,6 +55,40 @@ namespace AdministracionSolicitudes.Repository.Implementations
             return await connection.QuerySingleOrDefaultAsync<Solicitud>(sql, new { IdSolicitud = idSolicitud });
         }
 
+        public async Task<Solicitud?> GetPublicadaVigenteByIdAsync(int idSolicitud)
+        {
+            const string sql = @"
+                SELECT
+                    s.id_solicitud AS IdSolicitud,
+                    s.consecutivo_oficio AS ConsecutivoOficio,
+                    s.titulo AS Titulo,
+                    s.descripcion AS Descripcion,
+                    s.observaciones AS Observaciones,
+                    s.documento_inicio AS DocumentoInicio,
+                    s.documento_respuesta AS DocumentoRespuesta,
+                    s.id_representante AS IdRepresentante,
+                    s.id_estado AS IdEstado,
+                    s.fecha_ingreso AS FechaIngreso,
+                    s.fecha_respuesta AS FechaRespuesta,
+                    s.fecha_inicio AS FechaInicio,
+                    s.publicada AS Publicada,
+                    s.fecha_vencimiento_publicacion AS FechaVencimientoPublicacion,
+                    r.nombre AS NombreRepresentante,
+                    e.nombre AS NombreEstado
+                FROM solicitud s
+                INNER JOIN representante r ON r.id_representante = s.id_representante
+                INNER JOIN estadosolicitud e ON e.id_estado = s.id_estado
+                WHERE s.id_solicitud = @IdSolicitud
+                    AND s.publicada = 1
+                    AND (
+                        s.fecha_vencimiento_publicacion IS NULL
+                        OR s.fecha_vencimiento_publicacion >= CURDATE()
+                    );";
+
+            using var connection = _connectionFactory.CreateConnection();
+            return await connection.QuerySingleOrDefaultAsync<Solicitud>(sql, new { IdSolicitud = idSolicitud });
+        }
+
         public async Task<bool> ExistsConsecutivoAsync(string consecutivoOficio, int? excludeId = null)
         {
             const string sql = @"SELECT COUNT(*) FROM solicitud
