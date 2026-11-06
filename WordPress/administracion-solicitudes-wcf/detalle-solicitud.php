@@ -39,7 +39,8 @@ function publicasa_ext3_procesar_detalle()
     }
 
     try {
-        $cliente = new SoapClient('http://localhost:56784/ServicioSolicitudes.svc?wsdl', [
+        $wsdl = 'http://localhost:56784/ServicioSolicitudes.svc?wsdl';
+        $cliente = new SoapClient($wsdl, [
             'exceptions' => true,
             'trace' => false,
             'cache_wsdl' => WSDL_CACHE_NONE
@@ -62,12 +63,12 @@ function publicasa_ext3_procesar_detalle()
         !is_object($solicitud)
         || !isset($solicitud->Publicada)
         || !filter_var($solicitud->Publicada, FILTER_VALIDATE_BOOLEAN)
-        || empty($solicitud->FechaVencimientoPublicacion)
+        || publicasa_ext3_valor_es_nulo($solicitud->FechaVencimientoPublicacion ?? null)
     ) {
         publicasa_ext3_redirigir_a_solicitudes_publicadas();
     }
 
-    $fecha_vencimiento = publicasa_ext3_fecha_timestamp($solicitud->FechaVencimientoPublicacion);
+    $fecha_vencimiento = publicasa_ext3_fecha_timestamp($solicitud->FechaVencimientoPublicacion ?? null);
     $fecha_actual = strtotime(wp_date('Y-m-d'));
 
     if ($fecha_vencimiento === false || $fecha_actual === false || $fecha_vencimiento < $fecha_actual) {
@@ -81,14 +82,23 @@ add_action('template_redirect', 'publicasa_ext3_procesar_detalle');
 
 function publicasa_ext3_fecha_timestamp($valor)
 {
-    return $valor instanceof DateTimeInterface
-        ? $valor->getTimestamp()
-        : strtotime((string) $valor);
+    if (publicasa_ext3_valor_es_nulo($valor)) {
+        return false;
+    }
+
+    return strtotime((string) $valor);
+}
+
+function publicasa_ext3_valor_es_nulo($valor)
+{
+    return $valor === null
+        || trim((string) $valor) === ''
+        || strpos((string) $valor, '0001-01-01') === 0;
 }
 
 function publicasa_ext3_valor_o_no_indicado($valor, $fecha = false)
 {
-    if ($valor === null || (!($valor instanceof DateTimeInterface) && trim((string) $valor) === '')) {
+    if (publicasa_ext3_valor_es_nulo($valor)) {
         return '<em>&lt;No indicado&gt;</em>';
     }
 
@@ -99,11 +109,7 @@ function publicasa_ext3_valor_o_no_indicado($valor, $fecha = false)
             return '<em>&lt;No indicado&gt;</em>';
         }
 
-        $valor = wp_date('d/m/Y', $marca_tiempo);
-    }
-
-    if ($valor instanceof DateTimeInterface) {
-        $valor = $valor->format('Y-m-d H:i:s');
+        $valor = gmdate('d/m/Y', $marca_tiempo);
     }
 
     return esc_html((string) $valor);
@@ -122,22 +128,22 @@ function publicasa_shortcode_detalle_solicitud()
     // EXT4: cuando exista la página con slug "participar", se agrega id_solicitud a su enlace.
     $pagina_participar = get_page_by_path('participar');
     $url_participar = $pagina_participar
-        ? add_query_arg('id_solicitud', absint($solicitud->IdSolicitud), get_permalink($pagina_participar))
+        ? add_query_arg('idSolicitud', absint($solicitud->IdSolicitud), get_permalink($pagina_participar))
         : '#';
 
     $datos = [
-        'Consecutivo de oficio' => [$solicitud->ConsecutivoOficio, false],
-        'Documento de respuesta' => [$solicitud->DocumentoRespuesta, false],
-        'Documento de inicio' => [$solicitud->DocumentoInicio, false],
-        'Título de la solicitud' => [$solicitud->Titulo, false],
-        'Descripción' => [$solicitud->Descripcion, false],
-        'Representante' => [$solicitud->NombreRepresentante, false],
-        'Observaciones' => [$solicitud->Observaciones, false],
-        'Estado de la solicitud' => [$solicitud->NombreEstado, false],
-        'Fecha de ingreso' => [$solicitud->FechaIngreso, true],
-        'Fecha de respuesta' => [$solicitud->FechaRespuesta, true],
-        'Fecha de inicio' => [$solicitud->FechaInicio, true],
-        'Fecha de vencimiento de la publicación' => [$solicitud->FechaVencimientoPublicacion, true],
+        'Consecutivo de oficio' => [$solicitud->ConsecutivoOficio ?? null, false],
+        'Documento de respuesta' => [$solicitud->DocumentoRespuesta ?? null, false],
+        'Documento de inicio' => [$solicitud->DocumentoInicio ?? null, false],
+        'Título de la solicitud' => [$solicitud->Titulo ?? null, false],
+        'Descripción' => [$solicitud->Descripcion ?? null, false],
+        'Representante' => [$solicitud->NombreRepresentante ?? null, false],
+        'Observaciones' => [$solicitud->Observaciones ?? null, false],
+        'Estado de la solicitud' => [$solicitud->NombreEstado ?? null, false],
+        'Fecha de ingreso' => [$solicitud->FechaIngreso ?? null, true],
+        'Fecha de respuesta' => [$solicitud->FechaRespuesta ?? null, true],
+        'Fecha de inicio' => [$solicitud->FechaInicio ?? null, true],
+        'Fecha de vencimiento de la publicación' => [$solicitud->FechaVencimientoPublicacion ?? null, true],
     ];
 
     ob_start();
