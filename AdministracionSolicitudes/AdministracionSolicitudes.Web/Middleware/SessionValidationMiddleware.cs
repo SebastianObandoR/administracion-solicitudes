@@ -6,7 +6,6 @@ namespace AdministracionSolicitudes.Web.Middleware
     {
         private const string LoginPath = "/Cuenta/Login";
         private const string ErrorPath = "/Error";
-        private const string PublicDetailPath = "/detalle-solicitud";
         private const string LoginRequiredMessage = "Por favor inicie sesi\u00F3n para utilizar el sistema";
         private readonly RequestDelegate _next;
 
@@ -31,9 +30,7 @@ namespace AdministracionSolicitudes.Web.Middleware
 
         private static bool IsPublicPath(string path)
         {
-            return path.StartsWith(LoginPath, StringComparison.OrdinalIgnoreCase)
-                || path.StartsWith(ErrorPath, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(path.TrimEnd('/'), PublicDetailPath, StringComparison.OrdinalIgnoreCase);
+            return path.StartsWith(LoginPath, StringComparison.OrdinalIgnoreCase) || path.StartsWith(ErrorPath, StringComparison.OrdinalIgnoreCase);
         }
     }
 }
