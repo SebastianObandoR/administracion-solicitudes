@@ -9,5 +9,8 @@ namespace AdministracionSolicitudes.WebService
     {
         [OperationContract]
         List<SolicitudPublicada> ObtenerSolicitudesPublicadas();
+
+        [OperationContract]
+        SolicitudPublicadaDetalle ObtenerDetalleSolicitudPublicada(int idSolicitud);
     }
 }

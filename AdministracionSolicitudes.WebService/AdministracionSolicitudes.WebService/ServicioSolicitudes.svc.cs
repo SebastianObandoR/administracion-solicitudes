@@ -12,5 +12,12 @@ namespace AdministracionSolicitudes.WebService
 
             return logica.ObtenerSolicitudesPublicadas();
         }
+
+        public SolicitudPublicadaDetalle ObtenerDetalleSolicitudPublicada(int idSolicitud)
+        {
+            var logica = new SolicitudPublicadaDetalleLogica();
+
+            return logica.ObtenerDetalleSolicitudPublicada(idSolicitud);
+        }
     }
 }
