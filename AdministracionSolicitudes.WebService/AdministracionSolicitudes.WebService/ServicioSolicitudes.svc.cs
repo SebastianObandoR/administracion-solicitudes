@@ -9,7 +9,9 @@ namespace AdministracionSolicitudes.WebService
     {
         private readonly IImportacionPropuestaServicio _importacion;
 
-        public ServicioSolicitudes() : this(CrearImportacion()) {}
+        public ServicioSolicitudes() : this(CrearImportacion())
+        {
+        }
 
         internal ServicioSolicitudes(IImportacionPropuestaServicio importacion)
         {
@@ -19,7 +21,11 @@ namespace AdministracionSolicitudes.WebService
         private static IImportacionPropuestaServicio CrearImportacion()
         {
             var configuracion = ConfigurationManager.ConnectionStrings["PublicaSA"];
-            if (configuracion == null) throw new ConfigurationErrorsException("No se encontró la conexión PublicaSA.");
+            if (configuracion == null)
+            {
+                throw new ConfigurationErrorsException("No se encontró la conexión PublicaSA.");
+            }
+
             return new ImportacionPropuestaServicio(configuracion.ConnectionString);
         }
 
@@ -38,6 +44,20 @@ namespace AdministracionSolicitudes.WebService
             var logica = new SolicitudPublicadaLogica();
 
             return logica.ObtenerSolicitudesPublicadas();
+        }
+
+        public SolicitudPublicadaDetalle ObtenerDetalleSolicitudPublicada(int idSolicitud)
+        {
+            var logica = new SolicitudPublicadaDetalleLogica();
+
+            return logica.ObtenerDetalleSolicitudPublicada(idSolicitud);
+        }
+
+        public ResultadoParticipacion RegistrarParticipacion(ParticipacionProveedor participacion)
+        {
+            var logica = new ParticipacionLogica();
+
+            return logica.RegistrarParticipacion(participacion);
         }
     }
 }

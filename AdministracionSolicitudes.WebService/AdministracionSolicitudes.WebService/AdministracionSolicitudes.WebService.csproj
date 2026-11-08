@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AdministracionSolicitudes.WebService</RootNamespace>
     <AssemblyName>AdministracionSolicitudes.WebService</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <UseIISExpress>true</UseIISExpress>
@@ -22,6 +22,7 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -83,13 +84,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AdministracionSolicitudes.WebService.Modelos\AdministracionSolicitudes.WebService.Modelos.csproj">
+      <Project>{FF79A482-37B5-47DC-A909-CA83EF90156B}</Project>
+      <Name>AdministracionSolicitudes.WebService.Modelos</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AdministracionSolicitudes.WebService.LogicaNegocio\AdministracionSolicitudes.WebService.LogicaNegocio.csproj">
       <Project>{903a249a-13fc-4636-886e-5d58649d539b}</Project>
       <Name>AdministracionSolicitudes.WebService.LogicaNegocio</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\AdministracionSolicitudes.WebService.Modelos\AdministracionSolicitudes.WebService.Modelos.csproj">
-      <Project>{ff79a482-37b5-47dc-a909-ca83ef90156b}</Project>
-      <Name>AdministracionSolicitudes.WebService.Modelos</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
