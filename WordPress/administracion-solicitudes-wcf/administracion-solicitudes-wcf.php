@@ -12,6 +12,7 @@ if (!defined('ABSPATH')) {
 }
 
 require_once plugin_dir_path(__FILE__) . 'detalle-solicitud.php';
+require_once plugin_dir_path(__FILE__) . 'participar-solicitud.php';
 
 function publicasa_obtener_solicitudes_publicadas()
 {

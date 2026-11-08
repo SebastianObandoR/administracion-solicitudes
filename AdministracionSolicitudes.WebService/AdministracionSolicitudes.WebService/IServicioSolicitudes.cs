@@ -12,5 +12,8 @@ namespace AdministracionSolicitudes.WebService
 
         [OperationContract]
         SolicitudPublicadaDetalle ObtenerDetalleSolicitudPublicada(int idSolicitud);
+
+        [OperationContract]
+        ResultadoParticipacion RegistrarParticipacion(ParticipacionProveedor participacion);
     }
 }

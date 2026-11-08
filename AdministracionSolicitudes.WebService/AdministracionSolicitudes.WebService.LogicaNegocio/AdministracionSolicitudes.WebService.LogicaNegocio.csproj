@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AdministracionSolicitudes.WebService.LogicaNegocio</RootNamespace>
     <AssemblyName>AdministracionSolicitudes.WebService.LogicaNegocio</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +45,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SolicitudPublicadaLogica.cs" />
     <Compile Include="SolicitudPublicadaDetalleLogica.cs" />
+    <Compile Include="ParticipacionLogica.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AdministracionSolicitudes.WebService.AccesoDatos\AdministracionSolicitudes.WebService.AccesoDatos.csproj">
