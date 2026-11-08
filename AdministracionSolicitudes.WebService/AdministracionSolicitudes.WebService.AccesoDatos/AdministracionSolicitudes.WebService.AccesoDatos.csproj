@@ -94,7 +94,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContratosImportacion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositorios\ErrorImportacionRepositorio.cs" />
+    <Compile Include="Repositorios\RepositorioImportacionBase.cs" />
     <Compile Include="SolicitudPublicadaAccesoDatos.cs" />
   </ItemGroup>
   <ItemGroup>
