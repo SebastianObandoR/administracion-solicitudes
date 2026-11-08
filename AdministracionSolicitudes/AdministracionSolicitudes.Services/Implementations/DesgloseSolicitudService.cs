@@ -51,10 +51,15 @@ namespace AdministracionSolicitudes.Services.Implementations
             }
         }
 
+        public Task<bool> SolicitudTieneParticipacionAprobadaAsync(int idSolicitud)
+            => _repository.SolicitudTieneParticipacionAprobadaAsync(idSolicitud);
+
         public async Task<ResultadoOperacion> CreateAsync(DesgloseSolicitud desglose, int idUsuario)
         {
             try
             {
+                if (await _repository.SolicitudTieneParticipacionAprobadaAsync(desglose.IdSolicitud))
+                    return ResultadoOperacion.Error("La solicitud ya tiene una propuesta aprobada; sus desgloses no se pueden modificar.");
                 if (await _repository.ExistsAsync(desglose.IdSolicitud, desglose.Mes, desglose.Anio))
                     return ResultadoOperacion.Error(MensajeDuplicado);
 
@@ -75,6 +80,8 @@ namespace AdministracionSolicitudes.Services.Implementations
         {
             try
             {
+                if (await _repository.SolicitudTieneParticipacionAprobadaAsync(desglose.IdSolicitud))
+                    return ResultadoOperacion.Error("La solicitud ya tiene una propuesta aprobada; sus desgloses no se pueden modificar.");
                 var anterior = await _repository.GetByIdAsync(desglose.IdSolicitud, originalMes, originalAnio);
                 if (anterior == null) return ResultadoOperacion.Error("El desglose no existe.");
                 if (await _repository.ExistsAsync(desglose.IdSolicitud, desglose.Mes, desglose.Anio, originalMes, originalAnio))
@@ -98,6 +105,8 @@ namespace AdministracionSolicitudes.Services.Implementations
         {
             try
             {
+                if (await _repository.SolicitudTieneParticipacionAprobadaAsync(idSolicitud))
+                    return ResultadoOperacion.Error("La solicitud ya tiene una propuesta aprobada; sus desgloses no se pueden modificar.");
                 var existente = await _repository.GetByIdAsync(idSolicitud, mes, anio);
                 if (existente == null) return ResultadoOperacion.Error("El desglose no existe.");
                 if (!await _repository.DeleteAsync(idSolicitud, mes, anio))

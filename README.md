@@ -634,6 +634,9 @@ diaferiado
 historialestadosolicitud
 bitacora
 errorlog
+proveedor
+participacion
+participaciondesglose
 ```
 
 Relaciones generales:
@@ -643,6 +646,9 @@ erDiagram
     REPRESENTANTE ||--o{ SOLICITUD : representa
     ESTADOSOLICITUD ||--o{ SOLICITUD : clasifica
     SOLICITUD ||--o{ DESGLOSESOLICITUD : contiene
+    SOLICITUD ||--o{ PARTICIPACION : recibe
+    PROVEEDOR ||--o{ PARTICIPACION : presenta
+    PARTICIPACION ||--o{ PARTICIPACIONDESGLOSE : incluye
     SOLICITUD ||--o{ TAREA : contiene
     USUARIOS ||--o{ TAREA : ejecuta
     SOLICITUD ||--o{ HISTORIALESTADOSOLICITUD : registra
@@ -652,6 +658,13 @@ erDiagram
 ```
 
 Las consultas Dapper utilizan los nombres reales de las tablas.
+
+EXT4 registra las propuestas en `participacion` y `participaciondesglose`.
+El esquema de EXT4 ya contiene estas tablas. Si se parte del esquema original
+del repositorio, `Entregable-Final/Script_BD/03_Ext7_Participaciones.sql` agrega
+las tablas faltantes. No aplicar ese script sobre un esquema cuya estructura
+no se haya cotejado con EXT4. EXT7 copia los desgloses aprobados a
+`DesgloseSolicitud` y permite una sola propuesta aprobada por solicitud.
 
 ---
 
