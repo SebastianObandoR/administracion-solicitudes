@@ -87,6 +87,13 @@
                             </td>
 
                             <td class="acciones">
+                                <a asp-page="/Participaciones/Index"
+                                   asp-route-idSolicitud="@solicitud.IdSolicitud"
+                                   class="boton-accion"
+                                   title="Participaciones">
+                                    <i class="bi bi-people-fill"></i>
+                                    <span class="visually-hidden">Participaciones</span>
+                                </a>
                                 <a asp-page="/Desgloses/Index"
                                    asp-route-idSolicitud="@solicitud.IdSolicitud"
                                    class="boton-accion"

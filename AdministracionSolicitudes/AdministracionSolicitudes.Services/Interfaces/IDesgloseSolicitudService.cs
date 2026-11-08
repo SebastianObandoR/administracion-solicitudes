@@ -10,5 +10,6 @@ namespace AdministracionSolicitudes.Services.Interfaces
         Task<ResultadoOperacion> CreateAsync(DesgloseSolicitud desglose, int idUsuario);
         Task<ResultadoOperacion> UpdateAsync(DesgloseSolicitud desglose, int originalMes, int originalAnio, int idUsuario);
         Task<ResultadoOperacion> DeleteAsync(int idSolicitud, int mes, int anio, int idUsuario);
+        Task<bool> SolicitudTieneParticipacionAprobadaAsync(int idSolicitud);
     }
 }

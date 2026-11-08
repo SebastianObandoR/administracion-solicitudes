@@ -69,6 +69,13 @@ namespace AdministracionSolicitudes.Repository.Implementations
             }) > 0;
         }
 
+        public async Task<bool> SolicitudTieneParticipacionAprobadaAsync(int idSolicitud)
+        {
+            const string sql = "SELECT EXISTS(SELECT 1 FROM participacion WHERE id_solicitud = @IdSolicitud AND aprobada = 1);";
+            using var connection = _connectionFactory.CreateConnection();
+            return await connection.ExecuteScalarAsync<bool>(sql, new { IdSolicitud = idSolicitud });
+        }
+
         public async Task CreateAsync(DesgloseSolicitud desglose)
         {
             const string sql = @"
