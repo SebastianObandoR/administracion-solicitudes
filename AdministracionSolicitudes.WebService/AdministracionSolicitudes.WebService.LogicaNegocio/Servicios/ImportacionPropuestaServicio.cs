@@ -34,7 +34,7 @@ namespace AdministracionSolicitudes.WebService.LogicaNegocio
             {
                 if (filas == null || filas.Count == 0)
                 {
-                    resultado.Errores.Add("El Excel no contiene desgloses.");
+                    resultado.Errores.Add("Todos los datos son requeridos.");
                     return resultado;
                 }
 
