@@ -11,6 +11,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+require_once plugin_dir_path(__FILE__) . 'detalle-solicitud.php';
+require_once plugin_dir_path(__FILE__) . 'participar-solicitud.php';
+
 function publicasa_obtener_solicitudes_publicadas()
 {
     $wsdl = 'http://localhost:56784/ServicioSolicitudes.svc?wsdl';
