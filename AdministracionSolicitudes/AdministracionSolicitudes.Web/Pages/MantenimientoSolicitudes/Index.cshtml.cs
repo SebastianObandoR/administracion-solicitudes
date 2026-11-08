@@ -38,28 +38,79 @@ namespace AdministracionSolicitudes.Web.Pages.MantenimientoSolicitudes
 
         public async Task OnGetAsync()
         {
-            if (PageNumber < 1) PageNumber = 1;
+            if (PageNumber < 1)
+            {
+                PageNumber = 1;
+            }
 
             int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
 
-            var (items, total) = await _solicitudService.GetPagedAsync(PageNumber, PageSize, idUsuarioActual);
-            Solicitudes = items.ToList();
-            TotalPaginas = (int)Math.Ceiling(total / (double)PageSize);
-            if (TotalPaginas == 0) TotalPaginas = 1;
+            var (items, total) = await _solicitudService.GetPagedAsync(
+                PageNumber,
+                PageSize,
+                idUsuarioActual);
 
-            EstadosVencimiento = await _vencimientoService.CalcularEstadosAsync(Solicitudes, idUsuarioActual);
+            Solicitudes = items.ToList();
+
+            TotalPaginas = (int)Math.Ceiling(total / (double)PageSize);
+
+            if (TotalPaginas == 0)
+            {
+                TotalPaginas = 1;
+            }
+
+            EstadosVencimiento = await _vencimientoService.CalcularEstadosAsync(
+                Solicitudes,
+                idUsuarioActual);
         }
 
         public async Task<IActionResult> OnPostEliminarAsync(int idSolicitud)
         {
             int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
 
-            var resultado = await _solicitudService.DeleteAsync(idSolicitud, idUsuarioActual);
+            var resultado = await _solicitudService.DeleteAsync(
+                idSolicitud,
+                idUsuarioActual);
 
-            Mensaje = resultado.IsSuccess ? "Solicitud eliminada correctamente." : resultado.Message;
-            TipoMensaje = resultado.IsSuccess ? "success" : "error";
+            Mensaje = resultado.IsSuccess
+                ? "Solicitud eliminada correctamente."
+                : resultado.Message;
+
+            TipoMensaje = resultado.IsSuccess
+                ? "success"
+                : "error";
 
             return RedirectToPage(new { PageNumber });
         }
+
+        public async Task<IActionResult> OnPostActualizarPublicacionAsync(
+            int idSolicitud,
+            bool publicada,
+            DateTime? fechaVencimientoPublicacion)
+                {
+                    int idUsuarioActual = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
+
+                    var resultado = await _solicitudService.ActualizarPublicacionAsync(
+                        idSolicitud,
+                        publicada,
+                        fechaVencimientoPublicacion,
+                        idUsuarioActual);
+
+                    if (resultado.IsSuccess)
+                    {
+                        Mensaje = publicada
+                            ? "Solicitud publicada correctamente."
+                            : "Solicitud retirada de publicación correctamente.";
+
+                        TipoMensaje = "success";
+                    }
+                    else
+                    {
+                        Mensaje = resultado.Message;
+                        TipoMensaje = "error";
+                    }
+
+                    return RedirectToPage(new { PageNumber });
+                }
     }
 }

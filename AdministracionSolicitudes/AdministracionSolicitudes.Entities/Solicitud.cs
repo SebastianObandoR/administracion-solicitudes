@@ -14,6 +14,8 @@
         public DateTime FechaIngreso { get; set; }
         public DateTime? FechaRespuesta { get; set; }
         public DateTime? FechaInicio { get; set; }
+        public bool Publicada { get; set; }
+        public DateTime? FechaVencimientoPublicacion { get; set; }
 
         public string? NombreRepresentante { get; set; }
         public string? NombreEstado { get; set; }

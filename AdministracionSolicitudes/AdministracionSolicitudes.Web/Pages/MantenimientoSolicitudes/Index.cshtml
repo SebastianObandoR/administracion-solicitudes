@@ -29,6 +29,7 @@
                         <th>Estado</th>
                         <th>Fecha ingreso</th>
                         <th>Fecha respuesta</th>
+                        <th>Publicacion</th>
                         <th class="columna-acciones">Acciones</th>
                     </tr>
                 </thead>
@@ -37,6 +38,7 @@
                     @foreach (var solicitud in Model.Solicitudes)
                     {
                         var vencimiento = Model.EstadosVencimiento[solicitud.IdSolicitud];
+
                         string filaClase = vencimiento switch
                         {
                             EstadoVencimiento.Vencida => "fila-vencida",
@@ -45,6 +47,16 @@
                             _ => "fila-sin-color"
                         };
 
+                        bool publicacionVigente =
+                            solicitud.Publicada &&
+                            solicitud.FechaVencimientoPublicacion.HasValue &&
+                            solicitud.FechaVencimientoPublicacion.Value.Date >= DateTime.Today;
+
+                        bool publicacionVencida =
+                            solicitud.Publicada &&
+                            solicitud.FechaVencimientoPublicacion.HasValue &&
+                            solicitud.FechaVencimientoPublicacion.Value.Date < DateTime.Today;
+
                         <tr class="@filaClase">
                             <td>@solicitud.ConsecutivoOficio</td>
                             <td>@solicitud.Titulo</td>
@@ -52,6 +64,28 @@
                             <td>@solicitud.NombreEstado</td>
                             <td>@solicitud.FechaIngreso.ToString("dd/MM/yyyy")</td>
                             <td>@(solicitud.FechaRespuesta?.ToString("dd/MM/yyyy") ?? "-")</td>
+
+                            <td>
+                                @if (publicacionVigente)
+                                {
+                                    <span>
+                                        Publicada hasta
+                                        @solicitud.FechaVencimientoPublicacion!.Value.ToString("dd/MM/yyyy")
+                                    </span>
+                                }
+                                else if (publicacionVencida)
+                                {
+                                    <span>
+                                        Publicacion vencida
+                                        @solicitud.FechaVencimientoPublicacion!.Value.ToString("dd/MM/yyyy")
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>No publicada</span>
+                                }
+                            </td>
+
                             <td class="acciones">
                                 <a asp-page="/Desgloses/Index"
                                    asp-route-idSolicitud="@solicitud.IdSolicitud"
@@ -60,6 +94,7 @@
                                     <i class="bi bi-receipt"></i>
                                     <span class="visually-hidden">Desglose</span>
                                 </a>
+
                                 <a asp-page="/Tareas/Index"
                                    asp-route-idSolicitud="@solicitud.IdSolicitud"
                                    class="boton-accion"
@@ -67,6 +102,28 @@
                                     <i class="bi bi-list-task"></i>
                                     <span class="visually-hidden">Tareas</span>
                                 </a>
+
+                                @if (publicacionVigente)
+                                {
+                                    <button type="button"
+                                            class="boton-accion boton-despublicar"
+                                            data-id="@solicitud.IdSolicitud"
+                                            data-nombre="@solicitud.Titulo"
+                                            title="Despublicar">
+                                        <i class="bi bi-eye-slash-fill"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="boton-accion boton-publicar"
+                                            data-id="@solicitud.IdSolicitud"
+                                            data-nombre="@solicitud.Titulo"
+                                            title="Publicar">
+                                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                                    </button>
+                                }
+
                                 <a asp-page="/MantenimientoSolicitudes/Editar"
                                    asp-route-id="@solicitud.IdSolicitud"
                                    class="boton-accion"
@@ -88,7 +145,9 @@
                     @if (!Model.Solicitudes.Any())
                     {
                         <tr>
-                            <td colspan="7" class="sin-registros">No hay solicitudes registradas.</td>
+                            <td colspan="8" class="sin-registros">
+                                No hay solicitudes registradas.
+                            </td>
                         </tr>
                     }
 
@@ -99,7 +158,7 @@
                     @for (var i = 0; i < filasVacias; i++)
                     {
                         <tr class="fila-vacia" aria-hidden="true">
-                            <td colspan="7"></td>
+                            <td colspan="8"></td>
                         </tr>
                     }
                 </tbody>
@@ -122,12 +181,88 @@
     </div>
 </section>
 
-<form method="post" asp-page-handler="Eliminar" asp-route-PageNumber="@Model.PageNumber" id="formEliminar">
-    <input type="hidden" name="idSolicitud" id="idSolicitudEliminar" />
+<form method="post"
+      asp-page-handler="Eliminar"
+      asp-route-PageNumber="@Model.PageNumber"
+      id="formEliminar">
+
+    <input type="hidden"
+           name="idSolicitud"
+           id="idSolicitudEliminar" />
+</form>
+
+<form method="post"
+      asp-page-handler="ActualizarPublicacion"
+      asp-route-PageNumber="@Model.PageNumber"
+      id="formPublicacion">
+
+    <input type="hidden"
+           name="idSolicitud"
+           id="idSolicitudPublicacion" />
+
+    <input type="hidden"
+           name="publicada"
+           id="publicadaSolicitud" />
+
+    <input type="hidden"
+           name="fechaVencimientoPublicacion"
+           id="fechaVencimientoPublicacion" />
 </form>
 
 @section Scripts {
     <script>
+        document.querySelectorAll(".boton-publicar").forEach(boton => {
+            boton.addEventListener("click", async () => {
+                const resultado = await Swal.fire({
+                    title: "Publicar solicitud",
+                    text: "Indique la fecha de vencimiento de la publicacion.",
+                    input: "date",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonText: "Publicar",
+                    cancelButtonText: "Cancelar",
+                    inputValidator: valor => {
+                        if (!valor) {
+                            return "Debe indicar la fecha de vencimiento de la publicacion.";
+                        }
+                    }
+                });
+
+                if (!resultado.isConfirmed) {
+                    return;
+                }
+
+                document.getElementById("idSolicitudPublicacion").value = boton.dataset.id;
+                document.getElementById("publicadaSolicitud").value = "true";
+                document.getElementById("fechaVencimientoPublicacion").value = resultado.value;
+
+                document.getElementById("formPublicacion").submit();
+            });
+        });
+
+        document.querySelectorAll(".boton-despublicar").forEach(boton => {
+            boton.addEventListener("click", () => {
+                Swal.fire({
+                    title: "Retirar publicacion",
+                    text: "¿Desea dejar de publicar esta solicitud?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Si",
+                    cancelButtonText: "No"
+                }).then(resultado => {
+                    if (!resultado.isConfirmed) {
+                        return;
+                    }
+
+                    document.getElementById("idSolicitudPublicacion").value = boton.dataset.id;
+                    document.getElementById("publicadaSolicitud").value = "false";
+                    document.getElementById("fechaVencimientoPublicacion").value = "";
+
+                    document.getElementById("formPublicacion").submit();
+                });
+            });
+        });
+
         document.querySelectorAll(".boton-eliminar").forEach(boton => {
             boton.addEventListener("click", () => {
                 Swal.fire({
@@ -138,7 +273,10 @@
                     confirmButtonText: "Si",
                     cancelButtonText: "No"
                 }).then(resultado => {
-                    if (!resultado.isConfirmed) return;
+                    if (!resultado.isConfirmed) {
+                        return;
+                    }
+
                     document.getElementById("idSolicitudEliminar").value = boton.dataset.id;
                     document.getElementById("formEliminar").submit();
                 });
