@@ -53,6 +53,27 @@ namespace AdministracionSolicitudes.WebService
             return logica.ObtenerDetalleSolicitudPublicada(idSolicitud);
         }
 
+        public ResultadoConsultaParticipaciones ConsultarParticipaciones(string cedulaJuridica)
+        {
+            return CrearConsultaParticipaciones().Consultar(cedulaJuridica);
+        }
+
+        public bool RegistrarErrorConsultaParticipaciones(string referencia, string mensaje)
+        {
+            return CrearConsultaParticipaciones().RegistrarErrorConsulta(referencia, mensaje);
+        }
+
+        private static IConsultaParticipacionesServicio CrearConsultaParticipaciones()
+        {
+            var configuracion = ConfigurationManager.ConnectionStrings["PublicaSA"];
+            if (configuracion == null)
+            {
+                throw new ConfigurationErrorsException("No se encontró la conexión PublicaSA.");
+            }
+
+            return new ConsultaParticipacionesServicio(configuracion.ConnectionString);
+        }
+
         public ResultadoParticipacion RegistrarParticipacion(ParticipacionProveedor participacion)
         {
             var logica = new ParticipacionLogica();

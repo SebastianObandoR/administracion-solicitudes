@@ -46,6 +46,8 @@
     <Compile Include="ParticipacionDesglose.cs" />
     <Compile Include="FilaDesgloseExcel.cs" />
     <Compile Include="ResultadoCargaPropuesta.cs" />
+    <Compile Include="SolicitudParticipacion.cs" />
+    <Compile Include="ResultadoConsultaParticipaciones.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SolicitudPublicada.cs" />
     <Compile Include="SolicitudPublicadaDetalle.cs" />

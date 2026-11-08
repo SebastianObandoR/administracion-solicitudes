@@ -20,6 +20,12 @@ namespace AdministracionSolicitudes.WebService
         bool RegistrarErrorImportacion(string referencia, string mensaje);
 
         [OperationContract]
+        ResultadoConsultaParticipaciones ConsultarParticipaciones(string cedulaJuridica);
+
+        [OperationContract]
+        bool RegistrarErrorConsultaParticipaciones(string referencia, string mensaje);
+
+        [OperationContract]
         ResultadoParticipacion RegistrarParticipacion(ParticipacionProveedor participacion);
     }
 }
