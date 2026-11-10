@@ -1,0 +1,127 @@
+@page
+@model AdministracionSolicitudes.Web.Pages.Participaciones.DetalleModel
+
+@{
+    ViewData["Title"] = "Detalle de propuesta";
+    var participacion = Model.Detalle!.Participacion;
+}
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <div>
+            <h1>Detalle de propuesta</h1>
+            <p class="mb-0">Solicitud @Model.Solicitud?.ConsecutivoOficio - @Model.Solicitud?.Titulo</p>
+        </div>
+        <a asp-page="./Index" asp-route-idSolicitud="@Model.IdSolicitud" class="boton-nuevo" title="Regresar">
+            <i class="bi bi-arrow-left"></i><span>Regresar</span>
+        </a>
+    </div>
+
+    <div class="panel-informacion mb-4">
+        <div class="titulo-panel">Proveedor</div>
+        <dl class="row mb-0 p-3">
+            <dt class="col-sm-3">Identificación</dt>
+            <dd class="col-sm-9">@participacion.CedulaJuridica</dd>
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@participacion.NombreProveedor</dd>
+            <dt class="col-sm-3">Fecha de participación</dt>
+            <dd class="col-sm-9">@participacion.FechaParticipacion.ToString("dd/MM/yyyy HH:mm")</dd>
+        </dl>
+    </div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Desglose propuesto</div>
+        <div class="contenedor-tabla">
+            <table class="tabla-mantenimiento">
+                <thead>
+                    <tr>
+                        <th>Mes</th><th>Año</th><th>Horas</th><th>Monto</th>
+                        <th>IVA</th><th>Total</th><th>Observaciones</th><th>% de cobro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var desglose in Model.Detalle!.Desgloses)
+                    {
+                        <tr>
+                            <td>@desglose.Mes</td>
+                            <td>@desglose.Anio</td>
+                            <td>@desglose.Horas.ToString("N2")</td>
+                            <td>₡@desglose.Monto.ToString("N2")</td>
+                            <td>₡@desglose.Iva.ToString("N2")</td>
+                            <td>₡@desglose.Total.ToString("N2")</td>
+                            <td>@desglose.Observaciones</td>
+                            <td>@desglose.PorcentajeCobro.ToString("N2")%</td>
+                        </tr>
+                    }
+                    @if (!Model.Detalle!.Desgloses.Any())
+                    {
+                        <tr><td colspan="8" class="sin-registros">La propuesta no contiene desgloses.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (participacion.Aprobada)
+        {
+            <div class="alert alert-success mt-3 mb-0" role="status">
+                Esta propuesta fue aprobada.
+            </div>
+        }
+        else if (Model.Detalle.SolicitudTieneAprobada)
+        {
+            <div class="alert alert-info mt-3 mb-0" role="status">
+                Ya se aprobó otra propuesta para esta solicitud.
+            </div>
+        }
+        else if (!Model.Detalle.Desgloses.Any())
+        {
+            <div class="alert alert-warning mt-3 mb-0" role="status">
+                No se puede aprobar una propuesta sin desgloses.
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a asp-page="./Index" asp-route-idSolicitud="@Model.IdSolicitud" class="boton-nuevo">
+            <i class="bi bi-arrow-left"></i><span>Regresar</span>
+        </a>
+        <form method="post" asp-page-handler="Aprobar" id="formAprobar">
+            <input type="hidden" asp-for="IdSolicitud" />
+            <input type="hidden" asp-for="IdParticipacion" />
+            <button type="submit" class="boton-nuevo"
+                    disabled="@(participacion.Aprobada || Model.Detalle.SolicitudTieneAprobada || !Model.Detalle.Desgloses.Any())">
+                <i class="bi bi-check-circle-fill"></i><span>Aprobar</span>
+            </button>
+        </form>
+    </div>
+</section>
+
+@section Scripts {
+    @if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+    {
+        <script>
+            Swal.fire({
+                text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                icon: '@Model.TipoMensaje',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    }
+
+    <script>
+        document.getElementById("formAprobar")?.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const form = this;
+            Swal.fire({
+                title: "¿Aprobar esta propuesta?",
+                text: "Sus desgloses reemplazarán los desgloses actuales de la solicitud.",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Aprobar",
+                cancelButtonText: "Cancelar"
+            }).then(resultado => {
+                if (resultado.isConfirmed) form.submit();
+            });
+        });
+    </script>
+}

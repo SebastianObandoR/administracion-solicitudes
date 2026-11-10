@@ -11,6 +11,13 @@ namespace AdministracionSolicitudes.Services.Interfaces
         Task<SolicitudOperationResult> UpdateAsync(Solicitud solicitud, int idUsuarioEjecutor);
         Task<SolicitudOperationResult> DeleteAsync(int idSolicitud, int idUsuarioEjecutor);
 
+        // EXT1 - Publicacion de solicitudes
+        Task<SolicitudOperationResult> ActualizarPublicacionAsync(
+            int idSolicitud,
+            bool publicada,
+            DateTime? fechaVencimientoPublicacion,
+            int idUsuarioEjecutor);
+
         Task<IEnumerable<Representante>> GetRepresentantesAsync(int idUsuarioEjecutor);
         Task<IEnumerable<EstadoSolicitud>> GetEstadosAsync(int idUsuarioEjecutor);
     }

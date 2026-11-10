@@ -24,6 +24,7 @@ namespace AdministracionSolicitudes.Web.Pages.Desgloses
         public Solicitud? Solicitud { get; set; }
         public int TotalPaginas { get; set; }
         public int TamanoPagina => PageSize;
+        public bool SolicitudTieneParticipacionAprobada { get; private set; }
         [TempData] public string? Mensaje { get; set; }
         [TempData] public string? TipoMensaje { get; set; }
 
@@ -34,6 +35,7 @@ namespace AdministracionSolicitudes.Web.Pages.Desgloses
             int idUsuario = HttpContext.Session.GetInt32(SessionKeys.UserId) ?? 0;
             Solicitud = await _solicitudService.GetByIdAsync(IdSolicitud, idUsuario);
             if (Solicitud == null) return RedirectToPage("/MantenimientoSolicitudes/Index");
+            SolicitudTieneParticipacionAprobada = await _desgloseService.SolicitudTieneParticipacionAprobadaAsync(IdSolicitud);
 
             var (items, total) = await _desgloseService.GetPagedAsync(IdSolicitud, PageNumber, PageSize, idUsuario);
             Desgloses = items.ToList();

@@ -1,0 +1,85 @@
+@page
+@model AdministracionSolicitudes.Web.Pages.Participaciones.IndexModel
+
+@{
+    ViewData["Title"] = "Participaciones";
+}
+
+<section class="mantenimiento">
+    <div class="cabecera-mantenimiento">
+        <div>
+            <h1>Participaciones de solicitudes</h1>
+            <p class="mb-0">@Model.Solicitud?.ConsecutivoOficio - @Model.Solicitud?.Titulo</p>
+        </div>
+        <a asp-page="/MantenimientoSolicitudes/Index" class="boton-nuevo" title="Regresar a solicitudes">
+            <i class="bi bi-arrow-left"></i><span>Regresar</span>
+        </a>
+    </div>
+
+    <div class="panel-informacion">
+        <div class="titulo-panel">Proveedores participantes</div>
+        <div class="contenedor-tabla">
+            <table class="tabla-mantenimiento">
+                <thead>
+                    <tr>
+                        <th>Identificación del proveedor</th>
+                        <th>Nombre del proveedor</th>
+                        <th>Fecha de participación</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var participacion in Model.Participaciones)
+                    {
+                        <tr class="@(participacion.Aprobada ? "table-success" : "")">
+                            <td>
+                                <a asp-page="./Detalle"
+                                   asp-route-idSolicitud="@Model.IdSolicitud"
+                                   asp-route-idParticipacion="@participacion.IdParticipacion">
+                                    @participacion.CedulaJuridica
+                                </a>
+                            </td>
+                            <td><strong>@(participacion.Aprobada ? "Principal · " : "")</strong>@participacion.NombreProveedor</td>
+                            <td>@participacion.FechaParticipacion.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                @if (participacion.Aprobada)
+                                {
+                                    <span class="badge text-bg-success">Aprobada</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary">Pendiente</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!Model.Participaciones.Any())
+                    {
+                        <tr><td colspan="4" class="sin-registros">Esta solicitud todavía no tiene participaciones.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.SolicitudTieneAprobada)
+        {
+            <div class="alert alert-info mt-3 mb-0" role="status">
+                Ya se aprobó una propuesta para esta solicitud. No es posible aprobar otra.
+            </div>
+        }
+    </div>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.Mensaje))
+{
+    @section Scripts {
+        <script>
+            Swal.fire({
+                text: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Mensaje)),
+                icon: '@Model.TipoMensaje',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    }
+}

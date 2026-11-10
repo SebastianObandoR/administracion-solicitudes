@@ -14,7 +14,7 @@
             <a asp-page="/MantenimientoSolicitudes/Index" class="boton-nuevo" title="Regresar">
                 <i class="bi bi-arrow-left"></i><span>Regresar</span>
             </a>
-            <a asp-page="./Crear" asp-route-idSolicitud="@Model.IdSolicitud" class="boton-nuevo">
+            <a asp-page="./Crear" asp-route-idSolicitud="@Model.IdSolicitud" class="boton-nuevo @(Model.SolicitudTieneParticipacionAprobada ? "disabled" : "")" aria-disabled="@Model.SolicitudTieneParticipacionAprobada" tabindex="@(Model.SolicitudTieneParticipacionAprobada ? "-1" : "0")" onclick="@(Model.SolicitudTieneParticipacionAprobada ? "return false;" : "")" title="@(Model.SolicitudTieneParticipacionAprobada ? "Deshabilitado: existe una propuesta aprobada" : "Nuevo desglose")">
                 <i class="bi bi-file-earmark-plus-fill"></i><span>Nuevo</span>
             </a>
         </div>
@@ -22,6 +22,10 @@
 
     <div class="panel-informacion">
         <div class="titulo-panel">Informacion</div>
+        @if (Model.SolicitudTieneParticipacionAprobada)
+        {
+            <div class="alert alert-info mb-3">Esta solicitud tiene una propuesta aprobada. Sus desgloses quedan bloqueados para conservar el desglose seleccionado.</div>
+        }
         <div class="contenedor-tabla">
             <table class="tabla-mantenimiento">
                 <thead><tr><th>Mes</th><th>Año</th><th>Horas</th><th>Monto</th><th>IVA</th><th>Total</th><th>% cobro</th><th class="columna-acciones">Acciones</th></tr></thead>
@@ -33,8 +37,8 @@
                         <td>@desglose.Monto.ToString("N2")</td><td>@desglose.Iva.ToString("N2")</td>
                         <td>@desglose.Total.ToString("N2")</td><td>@desglose.PorcentajeCobro.ToString("N2")%</td>
                         <td class="acciones">
-                            <a asp-page="./Editar" asp-route-idSolicitud="@desglose.IdSolicitud" asp-route-mes="@desglose.Mes" asp-route-anio="@desglose.Anio" class="boton-accion" title="Editar"><i class="bi bi-pencil-square"></i></a>
-                            <button type="button" class="boton-accion boton-eliminar" data-solicitud="@desglose.IdSolicitud" data-mes="@desglose.Mes" data-anio="@desglose.Anio" title="Eliminar"><i class="bi bi-trash-fill"></i></button>
+                            <a asp-page="./Editar" asp-route-idSolicitud="@desglose.IdSolicitud" asp-route-mes="@desglose.Mes" asp-route-anio="@desglose.Anio" class="boton-accion @(Model.SolicitudTieneParticipacionAprobada ? "disabled" : "")" aria-disabled="@Model.SolicitudTieneParticipacionAprobada" tabindex="@(Model.SolicitudTieneParticipacionAprobada ? "-1" : "0")" onclick="@(Model.SolicitudTieneParticipacionAprobada ? "return false;" : "")" title="@(Model.SolicitudTieneParticipacionAprobada ? "Deshabilitado: existe una propuesta aprobada" : "Editar")"><i class="bi bi-pencil-square"></i></a>
+                            <button type="button" class="boton-accion boton-eliminar @(Model.SolicitudTieneParticipacionAprobada ? "disabled" : "")" data-solicitud="@desglose.IdSolicitud" data-mes="@desglose.Mes" data-anio="@desglose.Anio" title="@(Model.SolicitudTieneParticipacionAprobada ? "Deshabilitado: existe una propuesta aprobada" : "Eliminar")" @(Model.SolicitudTieneParticipacionAprobada ? "disabled" : "")><i class="bi bi-trash-fill"></i></button>
                         </td>
                     </tr>
                 }

@@ -43,6 +43,10 @@ builder.Services.AddScoped<IVencimientoService, VencimientoService>();
 builder.Services.AddScoped<IDesgloseSolicitudRepository, DesgloseSolicitudRepository>();
 builder.Services.AddScoped<IDesgloseSolicitudService, DesgloseSolicitudService>();
 
+// EXT7
+builder.Services.AddScoped<IParticipacionSolicitudRepository, ParticipacionSolicitudRepository>();
+builder.Services.AddScoped<IParticipacionSolicitudService, ParticipacionSolicitudService>();
+
 // SOL3
 builder.Services.AddScoped<IRepresentanteService, RepresentanteService>();
 
