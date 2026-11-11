@@ -2,7 +2,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-$claseMensaje = $esError ? 'publicasa-mensaje-error' : 'publicasa-mensaje-vacio';
 ?>
 
 <div class="publicasa-participaciones">
@@ -10,7 +9,7 @@ $claseMensaje = $esError ? 'publicasa-mensaje-error' : 'publicasa-mensaje-vacio'
         Indique la cédula jurídica del proveedor para consultar sus participaciones en solicitudes.
     </p>
 
-    <form method="post" action="<?php echo esc_url(get_permalink()); ?>">
+    <form method="post" novalidate action="<?php echo esc_url(get_permalink()); ?>">
         <?php wp_nonce_field('consultar_participaciones'); ?>
 
         <div class="publicasa-campo">
@@ -30,11 +29,8 @@ $claseMensaje = $esError ? 'publicasa-mensaje-error' : 'publicasa-mensaje-vacio'
     </form>
 
     <?php if ($mensaje !== ''): ?>
-        <div
-            class="publicasa-mensaje <?php echo esc_attr($claseMensaje); ?>"
-            role="<?php echo $esError ? 'alert' : 'status'; ?>"
-        >
-            <?php echo esc_html($mensaje); ?>
+        <div hidden data-publicasa-modal="<?php echo $esError ? 'error' : 'warning'; ?>">
+            <span><?php echo esc_html($mensaje); ?></span>
         </div>
     <?php endif; ?>
 
