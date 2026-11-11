@@ -31,6 +31,20 @@ add_action('wp_enqueue_scripts', static function (): void {
             'consultar_participaciones'
         )
     ) {
+        wp_enqueue_script(
+            'publicasa-sweetalert2',
+            'https://cdn.jsdelivr.net/npm/sweetalert2@11',
+            [],
+            null,
+            true
+        );
+        wp_enqueue_script(
+            'publicasa-modal-mensajes',
+            plugins_url('public/assets/js/modal-mensajes.js', __FILE__),
+            ['publicasa-sweetalert2'],
+            '1.0.0',
+            true
+        );
         wp_enqueue_style(
             'publicasa-participaciones',
             plugins_url('public/assets/css/participaciones.css', __FILE__),
