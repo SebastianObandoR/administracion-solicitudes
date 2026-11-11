@@ -21,23 +21,22 @@ $columnas = [
     </p>
 
     <?php if ($errores): ?>
-        <div class="publicasa-mensaje publicasa-mensaje-error" role="alert">
-            <ul>
-                <?php foreach ($errores as $error): ?>
-                    <li><?php echo esc_html((string) $error); ?></li>
-                <?php endforeach; ?>
-            </ul>
+        <div hidden data-publicasa-modal="error">
+            <?php foreach ($errores as $error): ?>
+                <span><?php echo esc_html((string) $error); ?></span>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
 
     <?php if ($mensaje): ?>
-        <div class="publicasa-mensaje publicasa-mensaje-exito" role="status">
-            <?php echo esc_html($mensaje); ?>
+        <div hidden data-publicasa-modal="success">
+            <span><?php echo esc_html($mensaje); ?></span>
         </div>
     <?php endif; ?>
 
     <form
         method="post"
+        novalidate
         enctype="multipart/form-data"
         action="<?php echo esc_url(get_permalink()); ?>"
     >
