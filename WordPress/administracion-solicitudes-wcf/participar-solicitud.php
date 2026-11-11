@@ -4,34 +4,34 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-if (!defined('PUBLICASA_EXT4_WSDL')) {
-    define('PUBLICASA_EXT4_WSDL', 'http://localhost:56784/ServicioSolicitudes.svc?wsdl');
+if (!defined('WSDL_PARTICIPACION')) {
+    define('WSDL_PARTICIPACION', 'http://localhost:56784/ServicioSolicitudes.svc?wsdl');
 }
 
-define('PUBLICASA_EXT4_TASA_IVA', 0.13);
+define('TASA_IVA_PARTICIPACION', 0.13);
 
-function publicasa_ext4_cliente_wcf()
+function cliente_wcf_participacion()
 {
-    return new SoapClient(PUBLICASA_EXT4_WSDL, [
+    return new SoapClient(WSDL_PARTICIPACION, [
         'exceptions' => true,
         'trace' => false,
         'cache_wsdl' => WSDL_CACHE_NONE
     ]);
 }
 
-function publicasa_ext4_url_solicitudes()
+function url_solicitudes_participacion()
 {
     $pagina = get_page_by_path('solicitudes-publicadas');
 
     return $pagina ? get_permalink($pagina) : home_url('/');
 }
 
-function publicasa_ext4_url_detalle($id_solicitud)
+function url_detalle_participacion($id_solicitud)
 {
     return home_url('/detalle-solicitud/?idSolicitud=' . absint($id_solicitud));
 }
 
-function publicasa_ext4_meses()
+function meses_participacion()
 {
     return [
         1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
@@ -40,17 +40,17 @@ function publicasa_ext4_meses()
     ];
 }
 
-function publicasa_ext4_numero($valor)
+function convertir_numero_participacion($valor)
 {
     $valor = str_replace(',', '.', trim((string) $valor));
 
     return is_numeric($valor) ? (float) $valor : null;
 }
 
-function publicasa_ext4_obtener_solicitud($id_solicitud)
+function obtener_solicitud_participacion($id_solicitud)
 {
     try {
-        $respuesta = publicasa_ext4_cliente_wcf()->ObtenerDetalleSolicitudPublicada([
+        $respuesta = cliente_wcf_participacion()->ObtenerDetalleSolicitudPublicada([
             'idSolicitud' => $id_solicitud
         ]);
     } catch (Throwable $exception) {
@@ -70,7 +70,7 @@ function publicasa_ext4_obtener_solicitud($id_solicitud)
     return $solicitud;
 }
 
-function publicasa_ext4_procesar()
+function procesar_participacion()
 {
     global $post;
 
@@ -87,10 +87,10 @@ function publicasa_ext4_procesar()
         $id_solicitud = absint(wp_unslash($_GET['idSolicitud']));
     }
 
-    $solicitud = $id_solicitud > 0 ? publicasa_ext4_obtener_solicitud($id_solicitud) : null;
+    $solicitud = $id_solicitud > 0 ? obtener_solicitud_participacion($id_solicitud) : null;
 
     if ($solicitud === null) {
-        wp_safe_redirect(publicasa_ext4_url_solicitudes());
+        wp_safe_redirect(url_solicitudes_participacion());
         exit;
     }
 
@@ -105,15 +105,34 @@ function publicasa_ext4_procesar()
     $estado = apply_filters('publicasa_ext4_estado_precargado', $estado, $id_solicitud);
 
     if ($es_post && isset($_POST['publicasa_ext4_confirmar'])) {
-        $estado = publicasa_ext4_confirmar($estado, $id_solicitud);
+        $estado = confirmar_participacion($estado, $id_solicitud);
     }
 
     $GLOBALS['publicasa_ext4_estado'] = $estado;
 }
 
-add_action('template_redirect', 'publicasa_ext4_procesar');
+add_action('template_redirect', 'procesar_participacion');
 
-function publicasa_ext4_confirmar($estado, $id_solicitud)
+function encolar_sweetalert_participacion()
+{
+    global $post;
+
+    if (!$post || !has_shortcode($post->post_content, 'participar_solicitud')) {
+        return;
+    }
+
+    wp_enqueue_script(
+        'publicasa-sweetalert2',
+        'https://cdn.jsdelivr.net/npm/sweetalert2@11',
+        [],
+        null,
+        true
+    );
+}
+
+add_action('wp_enqueue_scripts', 'encolar_sweetalert_participacion');
+
+function confirmar_participacion($estado, $id_solicitud)
 {
     $nonce = isset($_POST['publicasa_ext4_nonce'])
         ? sanitize_text_field(wp_unslash($_POST['publicasa_ext4_nonce']))
@@ -156,11 +175,11 @@ function publicasa_ext4_confirmar($estado, $id_solicitud)
         }
         $valores['filas'][] = $limpia;
 
-        $mes = publicasa_ext4_numero($limpia['mes']);
-        $anio = publicasa_ext4_numero($limpia['anio']);
-        $horas = publicasa_ext4_numero($limpia['horas']);
-        $monto = publicasa_ext4_numero($limpia['monto']);
-        $porcentaje = publicasa_ext4_numero($limpia['porcentaje_cobro']);
+        $mes = convertir_numero_participacion($limpia['mes']);
+        $anio = convertir_numero_participacion($limpia['anio']);
+        $horas = convertir_numero_participacion($limpia['horas']);
+        $monto = convertir_numero_participacion($limpia['monto']);
+        $porcentaje = convertir_numero_participacion($limpia['porcentaje_cobro']);
 
         if (
             $mes === null || $anio === null || $horas === null || $monto === null
@@ -170,7 +189,7 @@ function publicasa_ext4_confirmar($estado, $id_solicitud)
             continue;
         }
 
-        $iva = round($monto * PUBLICASA_EXT4_TASA_IVA, 2);
+        $iva = round($monto * TASA_IVA_PARTICIPACION, 2);
 
         $filas_soap[] = [
             'Mes' => (int) $mes,
@@ -210,7 +229,7 @@ function publicasa_ext4_confirmar($estado, $id_solicitud)
     }
 
     try {
-        $respuesta = publicasa_ext4_cliente_wcf()->RegistrarParticipacion([
+        $respuesta = cliente_wcf_participacion()->RegistrarParticipacion([
             'participacion' => [
                 'IdSolicitud' => $id_solicitud,
                 'CedulaJuridica' => $valores['cedula_juridica'],
@@ -246,12 +265,12 @@ function publicasa_ext4_confirmar($estado, $id_solicitud)
     return $estado;
 }
 
-function publicasa_ext4_html_fila($indice, $fila)
+function dibujar_fila_participacion($indice, $fila)
 {
-    $meses = publicasa_ext4_meses();
+    $meses = meses_participacion();
     $n = 'desgloses[' . $indice . ']';
     ?>
-    <tr class="publicasa-ext4-fila">
+    <tr class="participacion-fila">
         <td>
             <select name="<?php echo esc_attr($n); ?>[mes]" required>
                 <option value="">Mes</option>
@@ -285,13 +304,13 @@ function publicasa_ext4_html_fila($indice, $fila)
                    value="<?php echo esc_attr($fila['porcentaje_cobro']); ?>" placeholder="%">
         </td>
         <td>
-            <button type="button" class="publicasa-ext4-quitar" aria-label="Quitar desglose">&times;</button>
+            <button type="button" class="participacion-quitar" aria-label="Quitar desglose">&times;</button>
         </td>
     </tr>
     <?php
 }
 
-function publicasa_shortcode_participar_solicitud()
+function shortcode_participar_solicitud()
 {
     if (empty($GLOBALS['publicasa_ext4_estado'])) {
         return '';
@@ -301,7 +320,7 @@ function publicasa_shortcode_participar_solicitud()
     $solicitud = $estado['solicitud'];
     $id_solicitud = absint($solicitud->IdSolicitud);
 
-    $url_detalle = publicasa_ext4_url_detalle($id_solicitud);
+    $url_detalle = url_detalle_participacion($id_solicitud);
 
     $pagina_excel = get_page_by_path('cargar-excel');
     $url_excel = $pagina_excel
@@ -332,65 +351,51 @@ function publicasa_shortcode_participar_solicitud()
     ?>
 
     <style>
-        .publicasa-ext4-tarjeta { width: 100%; max-width: 1100px; margin: 20px auto 40px; padding: 30px; box-sizing: border-box; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 10px 30px rgba(15, 23, 42, .06); }
-        .publicasa-ext4-tarjeta h3 { margin: 28px 0 12px; color: #0f5f58; font-size: 18px; }
-        .publicasa-ext4-tarjeta h3:first-of-type { margin-top: 0; }
-        .publicasa-ext4-resumen { margin: 0 0 24px; color: #64748b; font-size: 16px; line-height: 1.6; }
-        .publicasa-ext4-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
-        .publicasa-ext4-campo label { display: block; margin-bottom: 6px; color: #334155; font-size: 14px; font-weight: 600; }
-        .publicasa-ext4-campo input, .publicasa-ext4-tabla input, .publicasa-ext4-tabla select { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
-        .publicasa-ext4-tabla input[readonly] { background: #f1f5f9; color: #475569; }
-        .publicasa-ext4-contenedor { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
-        .publicasa-ext4-tabla { width: 100%; min-width: 980px; margin: 0; border-collapse: collapse; }
-        .publicasa-ext4-tabla thead { background: #147d73; }
-        .publicasa-ext4-tabla th { padding: 12px 10px; color: #fff; font-size: 14px; font-weight: 600; text-align: left; border: none; }
-        .publicasa-ext4-tabla td { padding: 8px 6px; border: none; border-bottom: 1px solid #e2e8f0; }
-        .publicasa-ext4-quitar { width: 32px; height: 32px; border: 1px solid #fecaca; border-radius: 6px; background: #fef2f2; color: #991b1b; font-size: 18px; line-height: 1; cursor: pointer; }
-        .publicasa-ext4-quitar:disabled { opacity: .4; cursor: not-allowed; }
-        .publicasa-ext4-agregar { margin-top: 12px; padding: 8px 14px; border: 1px dashed #147d73; border-radius: 6px; background: #f0fdfa; color: #147d73; font-size: 14px; cursor: pointer; }
-        .publicasa-ext4-acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
-        .publicasa-ext4-boton { display: inline-block; padding: 10px 18px; border: 1px solid #147d73; border-radius: 6px; font-size: 15px; line-height: 1.5; text-decoration: none; cursor: pointer; }
-        .publicasa-ext4-boton-confirmar { background: #147d73; color: #fff; }
-        .publicasa-ext4-boton-secundario { background: #fff; color: #147d73; }
-        .publicasa-ext4-mensaje { margin-bottom: 20px; padding: 14px 18px; border-radius: 10px; font-size: 15px; line-height: 1.5; }
-        .publicasa-ext4-mensaje ul { margin: 0; padding-left: 20px; }
-        .publicasa-ext4-error { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; }
-        .publicasa-ext4-exito { color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; }
-        .publicasa-ext4-aviso { color: #92400e; background: #fffbeb; border: 1px solid #fde68a; }
-        @media (max-width: 768px) { .publicasa-ext4-tarjeta { margin-top: 10px; padding: 20px; } }
+        .participacion-tarjeta { width: 100%; max-width: 1100px; margin: 20px auto 40px; padding: 30px; box-sizing: border-box; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 10px 30px rgba(15, 23, 42, .06); }
+        .participacion-tarjeta h3 { margin: 28px 0 12px; color: #0f5f58; font-size: 18px; }
+        .participacion-tarjeta h3:first-of-type { margin-top: 0; }
+        .participacion-resumen { margin: 0 0 24px; color: #64748b; font-size: 16px; line-height: 1.6; }
+        .participacion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+        .participacion-campo label { display: block; margin-bottom: 6px; color: #334155; font-size: 14px; font-weight: 600; }
+        .participacion-campo input, .participacion-tabla input, .participacion-tabla select { width: 100%; box-sizing: border-box; padding: 9px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; background: #fff; }
+        .participacion-tabla input[readonly] { background: #f1f5f9; color: #475569; }
+        .participacion-contenedor { overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 10px; }
+        .participacion-tabla { width: 100%; min-width: 980px; margin: 0; border-collapse: collapse; }
+        .participacion-tabla thead { background: #147d73; }
+        .participacion-tabla th { padding: 12px 10px; color: #fff; font-size: 14px; font-weight: 600; text-align: left; border: none; }
+        .participacion-tabla td { padding: 8px 6px; border: none; border-bottom: 1px solid #e2e8f0; }
+        .participacion-quitar { width: 32px; height: 32px; border: 1px solid #fecaca; border-radius: 6px; background: #fef2f2; color: #991b1b; font-size: 18px; line-height: 1; cursor: pointer; }
+        .participacion-quitar:disabled { opacity: .4; cursor: not-allowed; }
+        .participacion-agregar { margin-top: 12px; padding: 8px 14px; border: 1px dashed #147d73; border-radius: 6px; background: #f0fdfa; color: #147d73; font-size: 14px; cursor: pointer; }
+        .participacion-acciones { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+        .participacion-boton { display: inline-block; padding: 10px 18px; border: 1px solid #147d73; border-radius: 6px; font-size: 15px; line-height: 1.5; text-decoration: none; cursor: pointer; }
+        .participacion-boton-confirmar { background: #147d73; color: #fff; }
+        .participacion-boton-secundario { background: #fff; color: #147d73; }
+        .participacion-mensaje { margin-bottom: 20px; padding: 14px 18px; border-radius: 10px; font-size: 15px; line-height: 1.5; }
+        .participacion-mensaje ul { margin: 0; padding-left: 20px; }
+        .participacion-error { color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; }
+        .participacion-exito { color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; }
+        .participacion-aviso { color: #92400e; background: #fffbeb; border: 1px solid #fde68a; }
+        @media (max-width: 768px) { .participacion-tarjeta { margin-top: 10px; padding: 20px; } }
     </style>
 
-    <section class="publicasa-ext4-tarjeta">
+    <section class="participacion-tarjeta">
 
-        <p class="publicasa-ext4-resumen">
+        <p class="participacion-resumen">
             <strong><?php echo esc_html($solicitud->ConsecutivoOficio ?? ''); ?></strong>
             &mdash; <?php echo esc_html($solicitud->Titulo ?? ''); ?>
         </p>
 
         <?php if ($estado['enviado']): ?>
 
-            <div class="publicasa-ext4-mensaje publicasa-ext4-exito">
-                Su participación fue enviada correctamente.
-            </div>
-
-            <div class="publicasa-ext4-acciones">
-                <a class="publicasa-ext4-boton publicasa-ext4-boton-secundario" href="<?php echo esc_url($url_detalle); ?>">Volver al detalle</a>
-                <a class="publicasa-ext4-boton publicasa-ext4-boton-confirmar" href="<?php echo esc_url(publicasa_ext4_url_solicitudes()); ?>">Ver solicitudes publicadas</a>
+            <div class="participacion-acciones">
+                <a class="participacion-boton participacion-boton-secundario" href="<?php echo esc_url($url_detalle); ?>">Volver al detalle</a>
+                <a class="participacion-boton participacion-boton-confirmar" href="<?php echo esc_url(url_solicitudes_participacion()); ?>">Ver solicitudes publicadas</a>
             </div>
 
         <?php else: ?>
 
-            <?php if (!empty($estado['errores'])): ?>
-                <div class="publicasa-ext4-mensaje publicasa-ext4-error" role="alert">
-                    <ul>
-                        <?php foreach ($estado['errores'] as $error): ?>
-                            <li><?php echo esc_html($error); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            <?php endif; ?>
-
-            <form method="post" action="<?php echo esc_url(add_query_arg('idSolicitud', $id_solicitud, get_permalink())); ?>" id="publicasa-ext4-form">
+            <form method="post" action="<?php echo esc_url(add_query_arg('idSolicitud', $id_solicitud, get_permalink())); ?>" id="participacion-form" novalidate>
 
                 <?php wp_nonce_field('publicasa_ext4_confirmar', 'publicasa_ext4_nonce'); ?>
                 <input type="hidden" name="idSolicitud" value="<?php echo esc_attr($id_solicitud); ?>">
@@ -398,15 +403,15 @@ function publicasa_shortcode_participar_solicitud()
 
                 <h3>Datos del proveedor</h3>
 
-                <div class="publicasa-ext4-grid">
-                    <div class="publicasa-ext4-campo">
+                <div class="participacion-grid">
+                    <div class="participacion-campo">
                         <label for="cedula_juridica">Cédula jurídica</label>
                         <input type="text" id="cedula_juridica" name="cedula_juridica" required maxlength="13"
                                pattern="3-?[0-9]{3}-?[0-9]{6}" placeholder="3-101-123456"
                                title="Formato: 3-101-123456"
                                value="<?php echo esc_attr($valores['cedula_juridica']); ?>">
                     </div>
-                    <div class="publicasa-ext4-campo">
+                    <div class="participacion-campo">
                         <label for="nombre_proveedor">Nombre del proveedor</label>
                         <input type="text" id="nombre_proveedor" name="nombre_proveedor" required maxlength="150"
                                value="<?php echo esc_attr($valores['nombre_proveedor']); ?>">
@@ -416,22 +421,19 @@ function publicasa_shortcode_participar_solicitud()
                 <?php if ($estado['pedir_contacto']): ?>
                     <h3>Proveedor nuevo: datos de contacto</h3>
 
-                    <div class="publicasa-ext4-mensaje publicasa-ext4-aviso">
-                        Este proveedor aún no está registrado. Complete los datos de contacto para crearlo.
-                    </div>
 
-                    <div class="publicasa-ext4-grid">
-                        <div class="publicasa-ext4-campo">
+                    <div class="participacion-grid">
+                        <div class="participacion-campo">
                             <label for="nombre_representante">Nombre del representante</label>
                             <input type="text" id="nombre_representante" name="nombre_representante" required maxlength="150"
                                    value="<?php echo esc_attr($valores['nombre_representante']); ?>">
                         </div>
-                        <div class="publicasa-ext4-campo">
+                        <div class="participacion-campo">
                             <label for="telefono">Teléfono</label>
                             <input type="tel" id="telefono" name="telefono" required maxlength="20"
                                    value="<?php echo esc_attr($valores['telefono']); ?>">
                         </div>
-                        <div class="publicasa-ext4-campo">
+                        <div class="participacion-campo">
                             <label for="correo">Correo electrónico</label>
                             <input type="email" id="correo" name="correo" required maxlength="150"
                                    value="<?php echo esc_attr($valores['correo']); ?>">
@@ -441,49 +443,49 @@ function publicasa_shortcode_participar_solicitud()
 
                 <h3>Detalle de la propuesta</h3>
 
-                <div class="publicasa-ext4-contenedor">
-                    <table class="publicasa-ext4-tabla">
+                <div class="participacion-contenedor">
+                    <table class="participacion-tabla">
                         <thead>
                             <tr>
                                 <th>Mes</th><th>Año</th><th>Horas</th><th>Monto</th>
                                 <th>IVA (13%)</th><th>Total</th><th>Observaciones</th><th>% cobro</th><th></th>
                             </tr>
                         </thead>
-                        <tbody id="publicasa-ext4-filas">
+                        <tbody id="participacion-filas">
                             <?php foreach (array_values($filas) as $indice => $fila): ?>
-                                <?php publicasa_ext4_html_fila($indice, array_merge($fila_vacia, $fila)); ?>
+                                <?php dibujar_fila_participacion($indice, array_merge($fila_vacia, $fila)); ?>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
 
-                <template id="publicasa-ext4-plantilla">
-                    <?php publicasa_ext4_html_fila('__i__', $fila_vacia); ?>
+                <template id="participacion-plantilla">
+                    <?php dibujar_fila_participacion('__i__', $fila_vacia); ?>
                 </template>
 
-                <button type="button" class="publicasa-ext4-agregar" id="publicasa-ext4-agregar">+ Agregar desglose</button>
+                <button type="button" class="participacion-agregar" id="participacion-agregar">+ Agregar desglose</button>
 
-                <div class="publicasa-ext4-acciones">
+                <div class="participacion-acciones">
                     <button
                         type="submit"
                         name="publicasa_ext5_abrir"
                         value="1"
-                        class="publicasa-ext4-boton publicasa-ext4-boton-secundario"
+                        class="participacion-boton participacion-boton-secundario"
                         formaction="<?php echo esc_url($url_excel); ?>"
                         formnovalidate
                         <?php disabled($url_excel, '#'); ?>
                     >Cargar Excel</button>
-                    <a class="publicasa-ext4-boton publicasa-ext4-boton-secundario" href="<?php echo esc_url($url_detalle); ?>">Cancelar</a>
-                    <button type="submit" class="publicasa-ext4-boton publicasa-ext4-boton-confirmar">Confirmar</button>
+                    <a class="participacion-boton participacion-boton-secundario" href="<?php echo esc_url($url_detalle); ?>">Cancelar</a>
+                    <button type="submit" class="participacion-boton participacion-boton-confirmar">Confirmar</button>
                 </div>
             </form>
 
             <script>
                 (function () {
-                    var cuerpo = document.getElementById('publicasa-ext4-filas');
-                    var plantilla = document.getElementById('publicasa-ext4-plantilla');
+                    var cuerpo = document.getElementById('participacion-filas');
+                    var plantilla = document.getElementById('participacion-plantilla');
                     var siguiente = cuerpo.children.length;
-                    var TASA_IVA = <?php echo (float) PUBLICASA_EXT4_TASA_IVA; ?>;
+                    var TASA_IVA = <?php echo (float) TASA_IVA_PARTICIPACION; ?>;
 
                     function dos(n) { return (Math.round(n * 100) / 100).toFixed(2); }
 
@@ -500,7 +502,7 @@ function publicasa_shortcode_participar_solicitud()
                     }
 
                     function actualizarBotonesQuitar() {
-                        var botones = cuerpo.querySelectorAll('.publicasa-ext4-quitar');
+                        var botones = cuerpo.querySelectorAll('.participacion-quitar');
                         for (var i = 0; i < botones.length; i++) {
                             botones[i].disabled = (botones.length === 1);
                         }
@@ -516,7 +518,7 @@ function publicasa_shortcode_participar_solicitud()
                     });
 
                     cuerpo.addEventListener('click', function (e) {
-                        if (e.target.classList.contains('publicasa-ext4-quitar')) {
+                        if (e.target.classList.contains('participacion-quitar')) {
                             if (cuerpo.children.length > 1) {
                                 e.target.closest('tr').remove();
                                 actualizarBotonesQuitar();
@@ -524,7 +526,7 @@ function publicasa_shortcode_participar_solicitud()
                         }
                     });
 
-                    document.getElementById('publicasa-ext4-agregar').addEventListener('click', function () {
+                    document.getElementById('participacion-agregar').addEventListener('click', function () {
                         var contenedor = document.createElement('tbody');
                         contenedor.innerHTML = plantilla.innerHTML.replace(/__i__/g, siguiente++);
                         cuerpo.appendChild(contenedor.firstElementChild);
@@ -537,9 +539,149 @@ function publicasa_shortcode_participar_solicitud()
 
     </section>
 
+    <script>
+        (function () {
+            var ERRORES_SERVIDOR = <?php echo wp_json_encode(array_values($estado['errores']), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>;
+            var ENVIADO = <?php echo $estado['enviado'] ? 'true' : 'false'; ?>;
+            var URL_DETALLE = <?php echo wp_json_encode(esc_url_raw($url_detalle)); ?>;
+            var URL_SOLICITUDES = <?php echo wp_json_encode(esc_url_raw(url_solicitudes_participacion())); ?>;
+            var COLOR = '#147d73';
+
+            function listaHtml(mensajes) {
+                var lista = document.createElement('ul');
+                lista.style.textAlign = 'left';
+                lista.style.margin = '0';
+                lista.style.paddingLeft = '20px';
+
+                mensajes.forEach(function (mensaje) {
+                    var li = document.createElement('li');
+                    li.textContent = mensaje;
+                    lista.appendChild(li);
+                });
+
+                return lista;
+            }
+
+            function mostrarErrores(mensajes, icono, titulo, alCerrar) {
+                if (typeof Swal === 'undefined') {
+                    alert(mensajes.join('\n'));
+                    if (alCerrar) { alCerrar(); }
+                    return;
+                }
+
+                Swal.fire({
+                    title: titulo,
+                    html: listaHtml(mensajes),
+                    icon: icono,
+                    confirmButtonText: 'Aceptar',
+                    confirmButtonColor: COLOR
+                }).then(function () {
+                    if (alCerrar) { alCerrar(); }
+                });
+            }
+
+            function validarFormulario(form) {
+                var mensajes = [];
+                var primerInvalido = null;
+
+                function marcar(campo) {
+                    if (!primerInvalido) { primerInvalido = campo; }
+                }
+
+                function revisar(id, etiqueta, mensajeFormato) {
+                    var campo = form.querySelector('#' + id);
+                    if (!campo) { return; }
+
+                    if (campo.value.trim() === '') {
+                        mensajes.push(etiqueta + ' es requerido.');
+                        marcar(campo);
+                    } else if (!campo.validity.valid) {
+                        mensajes.push(mensajeFormato || (etiqueta + ' no es válido.'));
+                        marcar(campo);
+                    }
+                }
+
+                revisar('cedula_juridica', 'La cédula jurídica', 'La cédula jurídica no tiene un formato válido (ejemplo: 3-101-123456).');
+                revisar('nombre_proveedor', 'El nombre del proveedor');
+                revisar('nombre_representante', 'El nombre del representante');
+                revisar('telefono', 'El teléfono');
+                revisar('correo', 'El correo electrónico', 'El correo electrónico no tiene un formato válido.');
+
+                var filas = form.querySelectorAll('#participacion-filas tr');
+                var nombres = { mes: 'Mes', anio: 'Año', horas: 'Horas', monto: 'Monto', observaciones: 'Observaciones', porcentaje_cobro: '% cobro' };
+
+                filas.forEach(function (fila, i) {
+                    var faltan = [];
+                    var invalidos = [];
+
+                    Object.keys(nombres).forEach(function (clave) {
+                        var campo = fila.querySelector('[name$="[' + clave + ']"]');
+                        if (!campo) { return; }
+
+                        if (campo.value.trim() === '') {
+                            faltan.push(nombres[clave]);
+                            marcar(campo);
+                        } else if (!campo.validity.valid) {
+                            invalidos.push(nombres[clave]);
+                            marcar(campo);
+                        }
+                    });
+
+                    if (faltan.length) {
+                        mensajes.push('Desglose ' + (i + 1) + ': falta completar ' + faltan.join(', ') + '.');
+                    }
+                    if (invalidos.length) {
+                        mensajes.push('Desglose ' + (i + 1) + ': valor fuera del rango permitido en ' + invalidos.join(', ') + '.');
+                    }
+                });
+
+                return { mensajes: mensajes, primerInvalido: primerInvalido };
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                if (ENVIADO && typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Participación enviada',
+                        text: 'Su participación fue enviada correctamente.',
+                        icon: 'success',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ver solicitudes publicadas',
+                        cancelButtonText: 'Volver al detalle',
+                        confirmButtonColor: COLOR,
+                        allowOutsideClick: false
+                    }).then(function (resultado) {
+                        window.location.href = resultado.isConfirmed ? URL_SOLICITUDES : URL_DETALLE;
+                    });
+                    return;
+                }
+
+                if (ERRORES_SERVIDOR.length) {
+                    mostrarErrores(ERRORES_SERVIDOR, 'error', 'No se pudo enviar la participación');
+                }
+
+                var form = document.getElementById('participacion-form');
+                if (!form) { return; }
+
+                form.addEventListener('submit', function (e) {
+                    
+                    if (e.submitter && e.submitter.hasAttribute('formnovalidate')) { return; }
+
+                    var resultado = validarFormulario(form);
+
+                    if (resultado.mensajes.length) {
+                        e.preventDefault();
+                        mostrarErrores(resultado.mensajes, 'warning', 'Campos obligatorios', function () {
+                            if (resultado.primerInvalido) { resultado.primerInvalido.focus(); }
+                        });
+                    }
+                });
+            });
+        })();
+    </script>
+
     <?php
 
     return ob_get_clean();
 }
 
-add_shortcode('participar_solicitud', 'publicasa_shortcode_participar_solicitud');
+add_shortcode('participar_solicitud', 'shortcode_participar_solicitud');
