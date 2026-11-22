@@ -1,0 +1,275 @@
+
+:root {
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #263238;
+  background: #f5f7f8;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-sidebar {
+  width: 260px;
+  min-width: 260px;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  background: #203b46;
+  color: white;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 25px 18px;
+  border-bottom: 1px solid #405761;
+}
+
+.brand-information h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.brand-information p {
+  font-size: 13px;
+  margin: 5px 0 0;
+  color: #d2dde0;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #203b46;
+}
+
+.brand-logo-sm {
+  width: 50px;
+  height: 50px;
+  font-size: 38px;
+  color: white;
+}
+
+.brand-logo-md {
+  width: 75px;
+  height: 75px;
+  font-size: 52px;
+}
+
+.brand-logo-xl {
+  width: 150px;
+  height: 150px;
+  font-size: 120px;
+}
+
+.sidebar-navigation {
+  flex: 1;
+  padding: 20px 10px;
+  overflow-y: auto;
+}
+
+.sidebar-section-title,
+.sidebar-footer {
+  display: none;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 13px 18px;
+  color: #dce5e8;
+  text-decoration: none;
+  font-size: 15px;
+  border-radius: 5px;
+}
+
+.sidebar-link i {
+  font-size: 19px;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  color: white;
+  background: #315762;
+}
+
+.sidebar-link-disabled {
+  cursor: default;
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-navbar {
+  height: 80px;
+  padding: 0 30px;
+  background: white;
+  border-bottom: 1px solid #e0e5e7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-location,
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.navbar-label {
+  font-size: 12px;
+  color: #788992;
+  letter-spacing: 1px;
+}
+
+.navbar-location h3 {
+  font-size: 21px;
+  margin: 3px 0 0;
+  font-weight: 600;
+}
+
+.navbar-user-info {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar-user-info span {
+  font-size: 12px;
+  color: #788992;
+}
+
+.navbar-user-info strong {
+  font-size: 16px;
+}
+
+.navbar-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e4f1ef;
+  color: #28666c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+}
+
+.navbar-logout,
+.navbar-menu-button {
+  border: none;
+  background: none;
+  color: #28666c;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.navbar-menu-button {
+  display: none;
+}
+
+.app-main {
+  background: #f5f7f8;
+}
+
+.welcome-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  padding: 50px;
+}
+
+.welcome-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.welcome-text {
+  max-width: 700px;
+}
+
+.welcome-text h1 {
+  font-size: clamp(36px, 4vw, 58px);
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.welcome-logo {
+  color: #203b46;
+}
+
+.loading-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .app-sidebar {
+    position: fixed;
+    left: 0;
+    z-index: 20;
+    transform: translateX(-100%);
+  }
+
+  .app-sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: #0006;
+    border: none;
+  }
+
+  .navbar-menu-button {
+    display: block;
+  }
+
+  .app-navbar {
+    padding: 0 15px;
+  }
+
+  .navbar-user-info {
+    display: none;
+  }
+
+  .welcome-page {
+    padding: 30px;
+  }
+
+  .welcome-content {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+}
