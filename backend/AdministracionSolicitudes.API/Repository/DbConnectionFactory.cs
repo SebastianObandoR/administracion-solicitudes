@@ -1,10 +1,11 @@
 ﻿
 using MySqlConnector;
 using System.Data;
+using SharedConnectionFactory = AdministracionSolicitudes.Repository.Data.IDbConnectionFactory;
 
 namespace AdministracionSolicitudes.API.Repository
 {
-    public class DbConnectionFactory : IDbConnectionFactory
+    public class DbConnectionFactory : IDbConnectionFactory, SharedConnectionFactory
     {
         private readonly IConfiguration _configuration;
 

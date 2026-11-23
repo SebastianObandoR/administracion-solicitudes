@@ -6,10 +6,10 @@ namespace AdministracionSolicitudes.Services.Interfaces
 {
     public interface IRepresentanteService
     {
-        Task<RepresentantePagina> ObtenerPaginaAsync(int pagina, int usuarioId);
+        Task<RepresentantePagina> ObtenerPaginaAsync(int pagina, int usuarioId, int? idRepresentante = null);
         Task<Representante?> ObtenerPorIdAsync(int id, int usuarioId);
-        Task<bool> CrearAsync(Representante representante, int usuarioId);
-        Task<ActualizarRepresentanteResultado> ActualizarAsync(Representante representante, int usuarioId);
+        Task<(Representante? Representante, Dictionary<string, string[]> Errores)> GuardarAsync(
+            RepresentanteInputModel input, int usuarioId, int? id = null);
         Task<EliminarRepresentanteResultado> EliminarAsync(int id, int usuarioId);
     }
 }

@@ -19,11 +19,13 @@ if (jwtKey.Length < 32)
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
+builder.Services.AddSingleton<DbConnectionFactory>();
+builder.Services.AddSingleton<IDbConnectionFactory>(services => services.GetRequiredService<DbConnectionFactory>());
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
+builder.Services.AddRepresentantes();
 
 
 
@@ -108,5 +110,6 @@ app.MapGet("/", () =>
 .WithTags("General");
 
 app.MapLoginEndpoints();
+app.MapRepresentanteEndpoints();
 
 app.Run();

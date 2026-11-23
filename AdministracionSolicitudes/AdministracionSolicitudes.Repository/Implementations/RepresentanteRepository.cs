@@ -3,6 +3,7 @@ using AdministracionSolicitudes.Repository.Data;
 using AdministracionSolicitudes.Repository.Interfaces;
 using Dapper;
 using MySqlConnector;
+using System.Data;
 using System.Text.Json;
 
 namespace AdministracionSolicitudes.Repository.Implementations
@@ -17,9 +18,20 @@ namespace AdministracionSolicitudes.Repository.Implementations
             _connectionFactory = connectionFactory;
         }
 
-        public async Task<(IReadOnlyList<Representante> Representantes, int Total)> ObtenerPaginaAsync(int pagina, int tamanoPagina, int usuarioId)
+        public async Task<(IReadOnlyList<Representante> Representantes, int Total, int Pagina)> ObtenerPaginaAsync(
+            int pagina, int tamanoPagina, int usuarioId, int? idRepresentante = null)
         {
             const string totalSql = "SELECT COUNT(*) FROM representante;";
+            const string posicionSql = """
+                SELECT (
+                    SELECT COUNT(*)
+                    FROM representante AS anterior
+                    WHERE anterior.nombre < elegido.nombre
+                       OR (anterior.nombre = elegido.nombre AND anterior.id_representante < elegido.id_representante)
+                )
+                FROM representante AS elegido
+                WHERE elegido.id_representante = @IdRepresentante;
+                """;
             const string paginaSql = @"SELECT id_representante AS IdRepresentante, nombre AS Nombre, correo AS Correo
                                        FROM representante
                                        ORDER BY nombre, id_representante
@@ -27,9 +39,19 @@ namespace AdministracionSolicitudes.Repository.Implementations
 
             using var connection = _connectionFactory.CreateConnection();
             connection.Open();
-            using var transaction = connection.BeginTransaction();
+            using var transaction = connection.BeginTransaction(IsolationLevel.RepeatableRead);
 
             var total = await connection.QuerySingleAsync<int>(totalSql, transaction: transaction);
+            if (idRepresentante.HasValue)
+            {
+                var posicion = await connection.QuerySingleOrDefaultAsync<int?>(
+                    posicionSql, new { IdRepresentante = idRepresentante.Value }, transaction);
+                if (posicion.HasValue)
+                {
+                    pagina = posicion.Value / tamanoPagina + 1;
+                }
+            }
+
             var representantes = (await connection.QueryAsync<Representante>(
                 paginaSql,
                 new { TamanoPagina = tamanoPagina, Offset = (long)(pagina - 1) * tamanoPagina },
@@ -38,7 +60,7 @@ namespace AdministracionSolicitudes.Repository.Implementations
             await RegistrarBitacoraAsync(connection, transaction, usuarioId, "CONSULT", "El usuario consulta representantes");
             transaction.Commit();
 
-            return (representantes, total);
+            return (representantes, total, pagina);
         }
 
         public async Task<Representante?> ObtenerPorIdAsync(int id, int usuarioId)

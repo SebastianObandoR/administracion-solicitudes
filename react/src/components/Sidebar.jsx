@@ -5,7 +5,7 @@ import BrandLogo from "./BrandLogo";
 const modulos = [
   { nombre: "Solicitudes", icono: "bi-file-earmark-text" },
   { nombre: "Usuarios", icono: "bi-people" },
-  { nombre: "Representantes", icono: "bi-person-vcard" },
+  { nombre: "Representantes", icono: "bi-person-vcard", ruta: "/representantes" },
   { nombre: "Estados", icono: "bi-diagram-3" },
   { nombre: "Facturacion mensual", icono: "bi-bar-chart" },
   { nombre: "Tareas por usuario", icono: "bi-person-lines-fill" },
@@ -40,7 +40,19 @@ function Sidebar({ abierto, cerrar }) {
           <span>Inicio</span>
         </NavLink>
 
-        {modulos.map((modulo) => (
+        {modulos.map((modulo) => modulo.ruta ? (
+          <NavLink
+            key={modulo.nombre}
+            to={modulo.ruta}
+            onClick={cerrar}
+            className={({ isActive }) =>
+              `sidebar-link ${isActive ? "active" : ""}`
+            }
+          >
+            <i className={`bi ${modulo.icono}`} aria-hidden="true"></i>
+            <span>{modulo.nombre}</span>
+          </NavLink>
+        ) : (
           <div
             key={modulo.nombre}
             className="sidebar-link sidebar-link-disabled"

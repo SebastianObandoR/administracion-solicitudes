@@ -1,7 +1,6 @@
-using AdministracionSolicitudes.Entities;
 using AdministracionSolicitudes.Services.Interfaces;
+using AdministracionSolicitudes.Services.Models;
 using AdministracionSolicitudes.Web.Constants;
-using AdministracionSolicitudes.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -33,15 +32,16 @@ namespace AdministracionSolicitudes.Web.Pages.Representantes
                 return Page();
             }
 
-            var representante = new Representante
+            var (_, errores) = await _representanteService.GuardarAsync(Input, UsuarioId);
+            if (errores.Count > 0)
             {
-                Nombre = Input.Nombre.Trim(),
-                Correo = Input.Correo.Trim()
-            };
-
-            if (!await _representanteService.CrearAsync(representante, UsuarioId))
-            {
-                ModelState.AddModelError("Input.Correo", "Ya existe un representante con ese email.");
+                foreach (var (campo, mensajes) in errores)
+                {
+                    foreach (var mensaje in mensajes)
+                    {
+                        ModelState.AddModelError($"Input.{campo}", mensaje);
+                    }
+                }
                 return Page();
             }
 

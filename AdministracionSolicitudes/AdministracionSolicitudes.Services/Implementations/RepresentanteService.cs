@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
 using AdministracionSolicitudes.Entities;
 using AdministracionSolicitudes.Repository.Interfaces;
@@ -21,16 +22,16 @@ namespace AdministracionSolicitudes.Services.Implementations
             _errorLogRepository = errorLogRepository;
         }
 
-        public async Task<RepresentantePagina> ObtenerPaginaAsync(int pagina, int usuarioId)
+        public async Task<RepresentantePagina> ObtenerPaginaAsync(int pagina, int usuarioId, int? idRepresentante = null)
         {
             pagina = Math.Max(pagina, 1);
             return await EjecutarAsync(async () =>
             {
-                var resultado = await _representanteRepository.ObtenerPaginaAsync(pagina, TamanoPagina, usuarioId);
+                var resultado = await _representanteRepository.ObtenerPaginaAsync(pagina, TamanoPagina, usuarioId, idRepresentante);
                 return new RepresentantePagina
                 {
                     Representantes = resultado.Representantes,
-                    Pagina = pagina,
+                    Pagina = resultado.Pagina,
                     TamanoPagina = TamanoPagina,
                     Total = resultado.Total
                 };
@@ -42,14 +43,47 @@ namespace AdministracionSolicitudes.Services.Implementations
             return EjecutarAsync(() => _representanteRepository.ObtenerPorIdAsync(id, usuarioId), usuarioId);
         }
 
-        public Task<bool> CrearAsync(Representante representante, int usuarioId)
+        public async Task<(Representante? Representante, Dictionary<string, string[]> Errores)> GuardarAsync(
+            RepresentanteInputModel input, int usuarioId, int? id = null)
         {
-            return EjecutarAsync(() => _representanteRepository.CrearAsync(representante, usuarioId), usuarioId);
-        }
+            var validaciones = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(input, new ValidationContext(input), validaciones, validateAllProperties: true))
+            {
+                var errores = validaciones
+                    .SelectMany(resultado => resultado.MemberNames.Select(campo => (Campo: campo, Mensaje: resultado.ErrorMessage!)))
+                    .GroupBy(error => error.Campo)
+                    .ToDictionary(grupo => grupo.Key, grupo => grupo.Select(error => error.Mensaje).ToArray());
+                return (null, errores);
+            }
 
-        public Task<ActualizarRepresentanteResultado> ActualizarAsync(Representante representante, int usuarioId)
-        {
-            return EjecutarAsync(() => _representanteRepository.ActualizarAsync(representante, usuarioId), usuarioId);
+            var representante = new Representante
+            {
+                IdRepresentante = id.GetValueOrDefault(),
+                Nombre = input.Nombre.Trim(),
+                Correo = input.Correo.Trim()
+            };
+
+            if (id is null)
+            {
+                if (await EjecutarAsync(() => _representanteRepository.CrearAsync(representante, usuarioId), usuarioId))
+                {
+                    return (representante, []);
+                }
+            }
+            else
+            {
+                var resultado = await EjecutarAsync(
+                    () => _representanteRepository.ActualizarAsync(representante, usuarioId), usuarioId);
+                if (resultado != ActualizarRepresentanteResultado.CorreoDuplicado)
+                {
+                    return (resultado == ActualizarRepresentanteResultado.Actualizado ? representante : null, []);
+                }
+            }
+
+            return (null, new Dictionary<string, string[]>
+            {
+                [nameof(input.Correo)] = ["Ya existe un representante con ese email."]
+            });
         }
 
         public Task<EliminarRepresentanteResultado> EliminarAsync(int id, int usuarioId)

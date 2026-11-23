@@ -1,5 +1,8 @@
 
+import { useMatch } from "react-router-dom";
+
 function Navbar({ usuario, onLogout, onToggleMenu }) {
+  const enRepresentantes = useMatch("/representantes/*");
   return (
     <header className="app-navbar">
       <div className="navbar-location">
@@ -17,7 +20,7 @@ function Navbar({ usuario, onLogout, onToggleMenu }) {
             AREA DE TRABAJO
           </span>
 
-          <h3>Inicio</h3>
+          <h3>{enRepresentantes ? "Representantes" : "Inicio"}</h3>
         </div>
       </div>
 

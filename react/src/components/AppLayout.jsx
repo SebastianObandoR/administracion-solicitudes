@@ -1,8 +1,9 @@
 
 import { useEffect, useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useMatch, useNavigate } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import RepresentantesLayout from "../pages/Representantes/RepresentantesLayout";
 import {
   getCurrentUser,
   logout,
@@ -10,6 +11,7 @@ import {
 
 function AppLayout() {
   const navigate = useNavigate();
+  const enRepresentantes = useMatch("/representantes/*");
 
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -76,6 +78,20 @@ function AppLayout() {
           Reintentar
         </button>
       </div>
+    );
+  }
+
+  if (enRepresentantes) {
+    return (
+      <RepresentantesLayout
+        usuario={usuario}
+        abierto={menuAbierto}
+        onToggleMenu={() => setMenuAbierto(!menuAbierto)}
+        onCloseMenu={() => setMenuAbierto(false)}
+        onLogout={cerrarSesion}
+      >
+        <Outlet context={{ usuario }} />
+      </RepresentantesLayout>
     );
   }
 

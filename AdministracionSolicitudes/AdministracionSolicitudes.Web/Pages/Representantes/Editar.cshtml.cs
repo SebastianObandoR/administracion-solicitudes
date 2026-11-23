@@ -1,8 +1,7 @@
 using AdministracionSolicitudes.Entities;
-using AdministracionSolicitudes.Repository.Interfaces;
 using AdministracionSolicitudes.Services.Interfaces;
+using AdministracionSolicitudes.Services.Models;
 using AdministracionSolicitudes.Web.Constants;
-using AdministracionSolicitudes.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -45,28 +44,27 @@ namespace AdministracionSolicitudes.Web.Pages.Representantes
                 return Page();
             }
 
-            var representante = new Representante
+            var (representante, errores) = await _representanteService.GuardarAsync(Input, UsuarioId, Id);
+            if (errores.Count > 0)
             {
-                IdRepresentante = Id,
-                Nombre = Input.Nombre.Trim(),
-                Correo = Input.Correo.Trim()
-            };
-
-            var resultado = await _representanteService.ActualizarAsync(representante, UsuarioId);
-            switch (resultado)
-            {
-                case ActualizarRepresentanteResultado.Actualizado:
-                    MensajeError = null;
-                    TempData["MensajeExito"] = "Representante actualizado correctamente.";
-                    return RedirectToPage("Index");
-                case ActualizarRepresentanteResultado.CorreoDuplicado:
-                    ModelState.AddModelError("Input.Correo", "Ya existe un representante con ese email.");
-                    return Page();
-                case ActualizarRepresentanteResultado.NoEncontrado:
-                    return NotFound();
-                default:
-                    throw new InvalidOperationException("El resultado de actualización no es válido.");
+                foreach (var (campo, mensajes) in errores)
+                {
+                    foreach (var mensaje in mensajes)
+                    {
+                        ModelState.AddModelError($"Input.{campo}", mensaje);
+                    }
+                }
+                return Page();
             }
+
+            if (representante is null)
+            {
+                return NotFound();
+            }
+
+            MensajeError = null;
+            TempData["MensajeExito"] = "Representante actualizado correctamente.";
+            return RedirectToPage("Index");
         }
 
         private void CargarFormulario(Representante representante)

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AdministracionSolicitudes.Web.Models
+namespace AdministracionSolicitudes.Services.Models
 {
     public class RepresentanteInputModel
     {
