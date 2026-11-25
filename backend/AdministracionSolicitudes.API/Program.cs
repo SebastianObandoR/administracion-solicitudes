@@ -21,7 +21,19 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IEstadoSolicitudRepository, EstadoSolicitudRepository>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IBitacoraRepository, BitacoraRepository>();
+builder.Services.AddScoped<IBitacoraService, BitacoraService>();
+
+builder.Services.AddScoped<IEstadoSolicitudRepository, EstadoSolicitudRepository>();
+builder.Services.AddScoped<IEstadoSolicitudService, EstadoSolicitudService>();
+
+
+builder.Services.AddScoped<IRepresentanteRepository, RepresentanteRepository>();
+builder.Services.AddScoped<IRepresentanteService, RepresentanteService>();
+
+
 builder.Services.AddSingleton<IPasswordEncryptionService, PasswordEncryptionService>();
 builder.Services.AddSingleton<IJwtService, JwtService>();
 
@@ -108,5 +120,7 @@ app.MapGet("/", () =>
 .WithTags("General");
 
 app.MapLoginEndpoints();
+app.MapEstadoSolicitudEndpoints();
+app.MapRepresentanteEndpoints();
 
 app.Run();

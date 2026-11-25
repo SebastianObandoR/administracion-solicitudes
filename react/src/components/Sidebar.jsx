@@ -5,11 +5,19 @@ import BrandLogo from "./BrandLogo";
 const modulos = [
   { nombre: "Solicitudes", icono: "bi-file-earmark-text" },
   { nombre: "Usuarios", icono: "bi-people" },
-  { nombre: "Representantes", icono: "bi-person-vcard" },
-  { nombre: "Estados", icono: "bi-diagram-3" },
+  {
+    nombre: "Representantes",
+    icono: "bi-person-vcard",
+    ruta: "/representantes"
+  },
+  {
+    nombre: "Estados",
+    icono: "bi-diagram-3",
+    ruta: "/estados"
+  },
   { nombre: "Facturacion mensual", icono: "bi-bar-chart" },
   { nombre: "Tareas por usuario", icono: "bi-person-lines-fill" },
-  { nombre: "Tareas por solicitud", icono: "bi-card-checklist" },
+  { nombre: "Tareas por solicitud", icono: "bi-card-checklist" }
 ];
 
 function Sidebar({ abierto, cerrar }) {
@@ -40,16 +48,30 @@ function Sidebar({ abierto, cerrar }) {
           <span>Inicio</span>
         </NavLink>
 
-        {modulos.map((modulo) => (
-          <div
-            key={modulo.nombre}
-            className="sidebar-link sidebar-link-disabled"
-            title="Modulo pendiente"
-          >
-            <i className={`bi ${modulo.icono}`}></i>
-            <span>{modulo.nombre}</span>
-          </div>
-        ))}
+        {modulos.map((modulo) =>
+          modulo.ruta ? (
+            <NavLink
+              key={modulo.nombre}
+              to={modulo.ruta}
+              onClick={cerrar}
+              className={({ isActive }) =>
+                `sidebar-link ${isActive ? "active" : ""}`
+              }
+            >
+              <i className={`bi ${modulo.icono}`}></i>
+              <span>{modulo.nombre}</span>
+            </NavLink>
+          ) : (
+            <div
+              key={modulo.nombre}
+              className="sidebar-link sidebar-link-disabled"
+              title="Modulo pendiente"
+            >
+              <i className={`bi ${modulo.icono}`}></i>
+              <span>{modulo.nombre}</span>
+            </div>
+          )
+        )}
       </nav>
 
       <div className="sidebar-footer">
